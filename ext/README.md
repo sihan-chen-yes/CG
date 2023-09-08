@@ -1,4 +1,3 @@
-## Subdirectories have been removed from git history
 
 ### Overview of dependency libraries used by Nori
 
