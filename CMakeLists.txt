@@ -1,17 +1,29 @@
 # This is the main CMake build file used to compile Nori
-cmake_minimum_required (VERSION 2.8)
-project("nori")
+cmake_minimum_required (VERSION 3.14..3.27)
+project(nori LANGUAGES CXX)
 
-# This file included below takes care of compiling dependencies
-# and setting compiler flags on different platforms
-include("CMakeConfig.txt")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(ext)
+
+if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
+    message(FATAL_ERROR "In source build are not allowed! Please create a build directory")
+endif()
+
+add_subdirectory(ext ext_build)
+
+
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  SYSTEM ${EXTERNAL_INCLUDE_DIRS}
+)
+
 
 # The following lines build the main executable. If you add a source
 # code file to Nori, be sure to include it in this list.
-add_executable(nori
 
+set(NORI_SOURCE_FILES
   # Header files
   include/nori/bbox.h
   include/nori/bitmap.h
@@ -53,7 +65,7 @@ add_executable(nori
   src/consttexture.cpp
   src/checkerboard.cpp
   src/diffuse.cpp
-  src/gui.cpp
+  # src/gui.cpp
   src/independent.cpp
   src/main.cpp
   src/mesh.cpp
@@ -77,35 +89,18 @@ add_executable(nori
   src/arealight.cpp
 )
 
+add_executable(nori ${NORI_SOURCE_FILES})
+
 # The following lines build the warping test application
-add_executable(warptest
-  include/nori/warp.h
-  src/warp.cpp
-  src/warptest.cpp
-  src/microfacet.cpp
-  src/object.cpp
-  src/proplist.cpp
-  src/common.cpp
-)
+# add_executable(warptest
+#   include/nori/warp.h
+#   src/warp.cpp
+#   src/warptest.cpp
+#   src/microfacet.cpp
+#   src/object.cpp
+#   src/proplist.cpp
+#   src/common.cpp
+# )
 
-add_executable(tonemapper
-        include/nori/bitmap.h
-        src/bitmap.cpp
-        src/common.cpp
-        src/hdrToLdr.cpp)
-
-# Nori depends on some libraries created in CMakeConfig.txt. The following two
-# lines ensure that Nori is built *after* those libraries have been created.
-add_dependencies(nori OpenEXR_p)
-add_dependencies(nori nanogui_p)
-add_dependencies(nori tbb_p)
-add_dependencies(nori pugixml)
-add_dependencies(warptest nori)
-add_dependencies(tonemapper nori)
-
-# Link to dependency libraries
-target_link_libraries(nori ${extra_libs})
-target_link_libraries(warptest ${extra_libs})
-target_link_libraries(tonemapper ${extra_libs})
-
-# vim: set et ts=2 sw=2 ft=cmake nospell:
+target_link_libraries(nori ${EXTERNAL_LIBS})
+# target_link_libraries(warptest ${EXTERNAL_LIBS})
