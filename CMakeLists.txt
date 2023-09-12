@@ -65,7 +65,7 @@ set(NORI_SOURCE_FILES
   src/consttexture.cpp
   src/checkerboard.cpp
   src/diffuse.cpp
-  # src/gui.cpp
+  src/gui.cpp
   src/independent.cpp
   src/main.cpp
   src/mesh.cpp

@@ -21,31 +21,50 @@
 
 #include <nori/common.h>
 #include <nanogui/screen.h>
+#include <nanogui/renderpass.h>
+#include <nanogui/shader.h>
+#include <nanogui/canvas.h>
 #include <nori/render.h>
 
 NORI_NAMESPACE_BEGIN
 
+class NoriCanvas : public nanogui::Canvas {
+public:
+    NoriCanvas(nanogui::Widget* parent, const ImageBlock& block);
+    void draw_contents() override;
+    void update();
+    void set_scale(float scale) {
+        m_scale = scale;
+    }
+private:
+    const ImageBlock& m_block;
+    nanogui::ref<nanogui::Shader> m_shader;
+    nanogui::ref<nanogui::Texture> m_texture;
+    nanogui::ref<nanogui::RenderPass> m_renderPass;
+    float m_scale = 1.f;
+};
+
 class NoriScreen : public nanogui::Screen {
 public:
-    NoriScreen(ImageBlock &block);
-    virtual ~NoriScreen();
+    NoriScreen(ImageBlock& block);
+     void draw_contents() override;
 
-    void drawContents();
+    virtual bool keyboard_event(int key, int scancode, int action, int modifiers) override;
+    virtual bool drop_event(const std::vector<std::string>& filenames) override;
 
-    virtual bool keyboardEvent(int key, int scancode, bool press, int modifiers) override;
-    virtual void dropEvent(const std::vector<std::string> &filenames) override;
-
-    void openXML(const std::string & filename);
-    void openEXR(const std::string & filename);
+    void openXML(const std::string& filename);
+    void openEXR(const std::string& filename);
 
 private:
-    ImageBlock &m_block;
-    nanogui::GLShader *m_shader = nullptr;
-    nanogui::Slider *m_slider = nullptr;
-    nanogui::ProgressBar *m_progressBar = nullptr;
-    uint32_t m_texture = 0;
+    ImageBlock& m_block;
+    nanogui::ref<NoriCanvas> m_render_canvas;
+    nanogui::ref<nanogui::Shader> m_shader;
+    nanogui::ref<nanogui::RenderPass> m_renderPass;
+    nanogui::Slider* m_slider = nullptr;
+    nanogui::ProgressBar* m_progressBar = nullptr;
+    nanogui::ref<nanogui::Texture> m_texture;
     float m_scale = 1.f;
-    Widget *panel = nullptr;
+    Widget* panel = nullptr;
 
     RenderThread m_renderThread;
 };

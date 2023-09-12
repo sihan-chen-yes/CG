@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
             }
         }
 
-        nanogui::mainloop();
+        nanogui::mainloop(50.f);
         delete screen;
         nanogui::shutdown();
 
