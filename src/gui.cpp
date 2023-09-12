@@ -112,7 +112,6 @@ NoriCanvas::NoriCanvas(nanogui::Widget* parent, const ImageBlock& block) : nanog
 
 
 void NoriCanvas::draw_contents() {
-    //return;
     // Reload the partially rendered image onto the GPU
     m_block.lock();
     const Vector2i& size = m_block.getSize();
@@ -135,10 +134,9 @@ void NoriCanvas::draw_contents() {
 
 void NoriCanvas::update() {
     using namespace nanogui;
-    m_block.lock();
+    // Assumes that m_block stays static
     const Vector2i& size = m_block.getSize();
     const int borderSize = m_block.getBorderSize();
-    m_block.unlock();
 
     // Allocate texture memory for the rendered image
     m_texture = new Texture(
@@ -230,6 +228,9 @@ void NoriScreen::draw_contents() {
 bool NoriScreen::drop_event(const std::vector<std::string>& filenames) {
     if (filenames.size() > 0) {
         std::string filename = filenames[0];
+        if (filename.size() == 0) {
+            return true;
+        }
         filesystem::path path(filename);
 
         if (path.extension() == "xml") {
@@ -302,7 +303,6 @@ void NoriScreen::openEXR(const std::string& filename) {
     }
 
     Bitmap bitmap(filename);
-
     m_block.lock();
     m_block.init(Vector2i(bitmap.cols(), bitmap.rows()), nullptr);
     m_block.fromBitmap(bitmap);

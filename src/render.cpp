@@ -28,6 +28,7 @@
 #include <nori/gui.h>
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
+#include <tbb/task_scheduler_init.h>
 #include <filesystem/resolver.h>
 #include <tbb/concurrent_vector.h>
 
@@ -129,7 +130,9 @@ void RenderThread::renderScene(const std::string & filename) {
 
         /* Do the following in parallel and asynchronously */
         m_render_status = 1;
-        m_render_thread = std::thread([this,outputName] {
+        int n_threads = tbb::task_scheduler_init::automatic; 
+        m_render_thread = std::thread([&] {
+            tbb::task_scheduler_init init;
             const Camera *camera = m_scene->getCamera();
             Vector2i outputSize = camera->getOutputSize();
 
