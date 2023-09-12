@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
-    message(FATAL_ERROR "In source build are not allowed! Please create a build directory")
+if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR} )
+    message(FATAL_ERROR "In source build (${CMAKE_CURRENT_BINARY_DIR}) are not allowed! Please create a build directory")
 endif()
 
 add_subdirectory(ext ext_build)
@@ -104,3 +104,14 @@ add_executable(nori ${NORI_SOURCE_FILES})
 
 target_link_libraries(nori ${EXTERNAL_LIBS})
 # target_link_libraries(warptest ${EXTERNAL_LIBS})
+
+# Force colored output for the ninja generator
+if (CMAKE_GENERATOR STREQUAL "Ninja")
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
+  elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
+  endif()
+endif()
