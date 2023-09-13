@@ -45,11 +45,14 @@ public:
     /// Load an OpenEXR file with the specified filename
     Bitmap(const std::string &filename);
 
+    /// Save the bitmap as an EXR and PNG file with the specified filename
+    void save(const std::string &filenameStem);
+
     /// Save the bitmap as an EXR file with the specified filename
-    void save(const std::string &filename);
+    void saveEXR(const std::string &filenameStem);
 
     /// Save the bitmap as a PNG file with the specified filename
-    void saveToLDR(const std::string &filename);
+    void savePNG(const std::string &filenameStem);
 };
 
 NORI_NAMESPACE_END

@@ -122,16 +122,15 @@ void RenderThread::renderScene(const std::string & filename) {
         m_block.clear();
 
         /* Determine the filename of the output bitmap */
-        std::string outputName = filename;
-        size_t lastdot = outputName.find_last_of(".");
+        std::string outputNameStem = filename;
+        size_t lastdot = outputNameStem.find_last_of(".");
         if (lastdot != std::string::npos)
-            outputName.erase(lastdot, std::string::npos);
-        outputName += ".exr";
+            outputNameStem.erase(lastdot, std::string::npos);
 
         /* Do the following in parallel and asynchronously */
         m_render_status = 1;
         int n_threads = tbb::task_scheduler_init::automatic; 
-        m_render_thread = std::thread([&] {
+        m_render_thread = std::thread([this, outputNameStem] {
             tbb::task_scheduler_init init;
             const Camera *camera = m_scene->getCamera();
             Vector2i outputSize = camera->getOutputSize();
@@ -198,8 +197,8 @@ void RenderThread::renderScene(const std::string & filename) {
             std::unique_ptr<Bitmap> bitmap(m_block.toBitmap());
             m_block.unlock();
 
-            /* Save using the OpenEXR format */
-            bitmap->save(outputName);
+            /* Save using the OpenEXR and PNG formats */
+            bitmap->save(outputNameStem);
 
             delete m_scene;
             m_scene = nullptr;

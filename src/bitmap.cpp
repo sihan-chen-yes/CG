@@ -79,7 +79,14 @@ Bitmap::Bitmap(const std::string &filename) {
     file.readPixels(dw.min.y, dw.max.y);
 }
 
-void Bitmap::save(const std::string &filename) {
+void Bitmap::save(const std::string &filenameStem) {
+    std::cout << "Saving " << filenameStem;
+    saveEXR(filenameStem);
+    savePNG(filenameStem);
+}
+
+void Bitmap::saveEXR(const std::string &filenameStem) {
+    std::string filename = filenameStem + ".exr";
     cout << "Writing a " << cols() << "x" << rows() 
          << " OpenEXR file to \"" << filename << "\"" << endl;
 
@@ -119,7 +126,8 @@ static float Clamp(float val, float low, float high) {
         return val;
 }
 
-void Bitmap::saveToLDR(const std::string &filename) {
+void Bitmap::savePNG(const std::string &filenameStem) {
+    std::string filename = filenameStem + ".png";
     cout << "Writing a " << cols() << "x" << rows()
     << " PNG file to \"" << filename << "\"" << endl;
 
@@ -135,7 +143,10 @@ void Bitmap::saveToLDR(const std::string &filename) {
             dst += 3;
         }
     }
-    stbi_write_png(filename.c_str(),cols(),rows(),3,rgb8.get(),3*cols());
+    int ret = stbi_write_png(filename.c_str(),cols(),rows(),3,rgb8.get(),3*cols());
+    if (ret == 0) {
+        cout << "Bitmap::savePNG(): Could not save PNG file \"" << filename << "%s\"" << endl;
+    }
 }
 
 NORI_NAMESPACE_END
