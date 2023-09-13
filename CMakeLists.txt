@@ -7,12 +7,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
+set(NORI_HEADLESS OFF CACHE BOOL "Compile in headless mode")
+set(NORI_COMPILE_LIB OFF CACHE BOOL "Compile lib instead of executable")
+
+
 if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR} )
     message(FATAL_ERROR "In source build (${CMAKE_CURRENT_BINARY_DIR}) are not allowed! Please create a build directory")
 endif()
 
-add_subdirectory(ext ext_build)
-
+# Please do not change this as it is used for testing
+if (DEFINED NORI_CMAKE_INCLUDE)
+  include(${NORI_CMAKE_INCLUDE})
+else()
+  add_subdirectory(ext ext_build)
+endif()
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -89,7 +97,11 @@ set(NORI_SOURCE_FILES
   src/arealight.cpp
 )
 
-add_executable(nori ${NORI_SOURCE_FILES})
+if (NORI_COMPILE_LIB)
+  add_library(nori ${NORI_SOURCE_FILES})
+else()
+  add_executable(nori ${NORI_SOURCE_FILES})
+endif()
 
 # The following lines build the warping test application
 # add_executable(warptest
@@ -103,6 +115,11 @@ add_executable(nori ${NORI_SOURCE_FILES})
 # )
 
 target_link_libraries(nori ${EXTERNAL_LIBS})
+
+# Please do not change this as it is used for testing
+if (NORI_HEADLESS)
+  target_compile_definitions(nori PUBLIC NORI_HEADLESS)
+endif()
 # target_link_libraries(warptest ${EXTERNAL_LIBS})
 
 # Force colored output for the ninja generator
