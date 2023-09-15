@@ -196,6 +196,23 @@ NoriScreen::NoriScreen(ImageBlock& block)
     }
     );
 
+    Button* buttonSave = new Button(panel, "", FA_SAVE);
+    buttonSave->set_callback(
+        [this]() {
+        using FileType = std::pair<std::string, std::string>;
+        std::vector<FileType> filetypes = { FileType("", "Image File Name") };
+        std::string filename = nanogui::file_dialog(filetypes, true);
+        if (filename.size() > 0) {
+            m_block.lock();
+            std::unique_ptr<Bitmap> bitmap(m_block.toBitmap());
+            m_block.unlock();
+            bitmap->array() *= m_scale;   // apply exposure
+            bitmap->save(filename);
+        }
+    }
+    );
+    buttonSave->set_tooltip("Save rendering with the selected exposure to disk");
+
     perform_layout();
     panel->set_position(nanogui::Vector2i((m_size.x() - panel->size().x()) / 2, 0));
 
