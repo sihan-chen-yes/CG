@@ -104,17 +104,18 @@ else()
 endif()
 
 # The following lines build the warping test application
-# add_executable(warptest
-#   include/nori/warp.h
-#   src/warp.cpp
-#   src/warptest.cpp
-#   src/microfacet.cpp
-#   src/object.cpp
-#   src/proplist.cpp
-#   src/common.cpp
-# )
+add_executable(warptest
+  include/nori/warp.h
+  src/warp.cpp
+  src/warptest.cpp
+  src/microfacet.cpp
+  src/object.cpp
+  src/proplist.cpp
+  src/common.cpp
+)
 
 target_link_libraries(nori ${EXTERNAL_LIBS})
+target_link_libraries(warptest ${EXTERNAL_LIBS})
 
 # Please do not change this as it is used for testing
 if (NORI_HEADLESS)
