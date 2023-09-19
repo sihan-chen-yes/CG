@@ -149,6 +149,10 @@ set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF CACHE BOOL " " FORCE)
 add_subdirectory(nanogui)
 set_property(TARGET glfw glfw_objects nanogui PROPERTY FOLDER "dependencies")
 
+if (MSVC)
+    set_property(TARGET glfw_objects PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 # Build the pugixml parser
 add_library(pugixml STATIC pugixml/src/pugixml.cpp)
 set_property(TARGET pugixml PROPERTY
