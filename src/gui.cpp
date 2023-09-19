@@ -98,15 +98,6 @@ NoriCanvas::NoriCanvas(nanogui::Widget* parent, const ImageBlock& block) : nanog
     m_shader->set_uniform("size", nanogui::Vector2i(size.x(), size.y()));
     m_shader->set_uniform("borderSize", m_block.getBorderSize());
 
-    // Allocate texture memory for the rendered image
-    /*m_texture = new Texture(
-        Texture::PixelFormat::RGBA,
-        Texture::ComponentFormat::Float32,
-        nanogui::Vector2i(size.x() + 2 * m_block.getBorderSize(),
-            size.y() + 2 * m_block.getBorderSize()),
-        Texture::InterpolationMode::Nearest,
-        Texture::InterpolationMode::Nearest);*/
-
     update();
 }
 
@@ -116,18 +107,11 @@ void NoriCanvas::draw_contents() {
     m_block.lock();
     const Vector2i& size = m_block.getSize();
     m_shader->set_uniform("scale", m_scale);
-    // m_renderPass->resize(nanogui::Vector2i(60, 60));
-    //m_renderPass->begin();
-    //m_renderPass->set_viewport(nanogui::Vector2i(0, 0),
-    //    nanogui::Vector2i(m_pixel_ratio * size[0],
-    //        m_pixel_ratio * size[1]));
     m_texture->upload((uint8_t*)m_block.data());
     m_shader->set_texture("source", m_texture);
     m_shader->begin();
     m_shader->draw_array(nanogui::Shader::PrimitiveType::Triangle, 0, 6, true);
     m_shader->end();
-    //m_renderPass->set_viewport(nanogui::Vector2i(0, 0), framebuffer_size());
-    //m_renderPass->end();
     m_block.unlock();
 }
 
@@ -149,15 +133,12 @@ void NoriCanvas::update() {
 }
 
 NoriScreen::NoriScreen(ImageBlock& block)
-    : nanogui::Screen(nanogui::Vector2i(block.getSize().x(), block.getSize().y() + PANEL_HEIGHT), "Nori", false),
+    : nanogui::Screen(nanogui::Vector2i(block.getSize().x(), block.getSize().y() + PANEL_HEIGHT), "Nori", true),
     m_block(block), m_renderThread(m_block)
 {
     using namespace nanogui;
     
     set_size(nanogui::Vector2i(block.getSize().x(), block.getSize().y() + PANEL_HEIGHT));
-
-    //block.getSize().x()
-    //set_size(se;)
 
     /* Add some UI elements to adjust the exposure value */
     panel = new Widget(this);
@@ -213,32 +194,52 @@ NoriScreen::NoriScreen(ImageBlock& block)
     );
     buttonSave->set_tooltip("Save rendering with the selected exposure to disk");
 
-    perform_layout();
-    panel->set_position(nanogui::Vector2i((m_size.x() - panel->size().x()) / 2, 0));
+    set_resize_callback([this](nanogui::Vector2i) { requestLayoutUpdate(); });
 
     m_render_canvas = new NoriCanvas(this, m_block);
     m_render_canvas->set_background_color({ 100, 100, 100, 255 });
-    m_render_canvas->set_fixed_size({ block.getSize().x(), block.getSize().y() });
-    m_render_canvas->set_position(nanogui::Vector2i(0, PANEL_HEIGHT));
 
-    std::cout << panel->size() << std::endl;
-    std::cout << size() << std::endl;
-
-    perform_layout();
+    updateLayout();
 
     draw_all();
     set_visible(true);
-    std::cout << panel->size() << " " << PANEL_HEIGHT << std::endl;
-    std::cout << size() << std::endl;
-    std::cout << m_render_canvas->size() << std::endl;
 }
 
 
 void NoriScreen::draw_contents() {
+    if (m_requiresLayoutUpdate) {
+        updateLayout();
+        m_requiresLayoutUpdate = false;
+    }
+
     if (m_progressBar) {
         m_progressBar->set_value(m_renderThread.getProgress());
     }
     nanogui::Screen::draw_contents();
+}
+
+
+void NoriScreen::updateLayout() {
+    perform_layout();
+
+    {
+        panel->set_position(nanogui::Vector2i((m_size.x() - panel->size().x()) / 2, 0));
+    }
+
+    nanogui::Vector2i contentOffset(0, PANEL_HEIGHT);
+
+    {  
+        nanogui::Vector2i contentWindow = m_size - contentOffset;
+        nanogui::Vector2f blockSize(m_block.getSize().x(), m_block.getSize().y());
+        nanogui::Vector2f ratio = (blockSize / nanogui::Vector2f(contentWindow));
+        float maxRatio = std::max(ratio.x(), ratio.y());
+        nanogui::Vector2i canvasSize = blockSize / maxRatio;
+
+        m_render_canvas->set_fixed_size(canvasSize);
+        m_render_canvas->set_position({ ((contentWindow - canvasSize) / 2 + contentOffset).x(), PANEL_HEIGHT });
+    }
+
+    perform_layout();
 }
 
 
@@ -298,13 +299,7 @@ void NoriScreen::openXML(const std::string& filename) {
         m_render_canvas->update();
         m_block.unlock();
 
-        //Vector2i wsize = bsize + Vector2i(0, PANEL_HEIGHT);
-        //glfwSetWindowSize(glfwWindow(), wsize.x(), wsize.y());
-        //panel->setSize(bsize);
-        //performLayout(mNVGContext);
-
-        //panel->setPosition(
-        //        Vector2i((wsize.x() - panel->size().x()) / 2, 0));
+        requestLayoutUpdate();
 
     } catch (const std::exception &e) {
         cerr << "Fatal error: " << e.what() << endl;
@@ -327,13 +322,7 @@ void NoriScreen::openEXR(const std::string& filename) {
     m_render_canvas->update();
     m_block.unlock();
 
-    //Vector2i wsize = bsize + Vector2i(0, PANEL_HEIGHT);
-    //glfwSetWindowSize(glfwWindow(),wsize.x(),wsize.y());
-    //panel->setSize(bsize);
-    //performLayout(mNVGContext);
-
-    //panel->setPosition(
-    //        Vector2i((wsize.x() - panel->size().x()) / 2, 0));
+    requestLayoutUpdate();
 }
 
 NORI_NAMESPACE_END

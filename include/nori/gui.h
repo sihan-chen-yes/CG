@@ -52,6 +52,12 @@ public:
     virtual bool keyboard_event(int key, int scancode, int action, int modifiers) override;
     virtual bool drop_event(const std::vector<std::string>& filenames) override;
 
+    void updateLayout();
+
+    void requestLayoutUpdate() {
+        m_requiresLayoutUpdate = true;
+    }
+
     void openXML(const std::string& filename);
     void openEXR(const std::string& filename);
 
@@ -63,6 +69,7 @@ private:
     nanogui::Slider* m_slider = nullptr;
     nanogui::ProgressBar* m_progressBar = nullptr;
     nanogui::ref<nanogui::Texture> m_texture;
+    bool m_requiresLayoutUpdate = false;
     float m_scale = 1.f;
     Widget* panel = nullptr;
 
