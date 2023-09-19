@@ -3,6 +3,8 @@
 /nori
 /warptest
 /ext_build
+/.vs
+/out
 CMakeCache.txt
 CMakeFiles
 Makefile
