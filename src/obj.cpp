@@ -123,12 +123,19 @@ public:
                 m_UV.col(i) = texcoords.at(vertices[i].uv-1);
         }
 
+        size_t meshSize = m_F.size() * sizeof(uint32_t) +
+            sizeof(float) * (m_V.size() + m_N.size() + m_UV.size());
+
+        if (meshSize == 0) {
+            cout << endl;
+            throw NoriException("OBJ file \"%s\" contains no data! Make sure you have Git LFS installed", filename);
+        }
+
         m_name = filename.str();
         cout << "done. (V=" << m_V.cols() << ", F=" << m_F.cols() << ", took "
-             << timer.elapsedString() << " and "
-             << memString(m_F.size() * sizeof(uint32_t) +
-                          sizeof(float) * (m_V.size() + m_N.size() + m_UV.size()))
-             << ")" << endl;
+            << timer.elapsedString() << " and "
+            << memString(meshSize)
+            << ")" << endl;
     }
 
 protected:
