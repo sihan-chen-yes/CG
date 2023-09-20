@@ -77,6 +77,7 @@ bool render_headless(std::string filename, bool is_xml) {
 		// StringBar m_cliBar;
 		renderer.renderScene(filename);
 
+#ifndef NORI_HEADLESS
         indicators::ProgressBar bar{
             indicators::option::PrefixText{"Rendering... "},
             indicators::option::BarWidth{50},
@@ -88,6 +89,12 @@ bool render_headless(std::string filename, bool is_xml) {
             bar.set_progress(renderer.getProgress() * 100);
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
+#else
+        while (renderer.isBusy()) {
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+#endif
+
 	}
 	catch (const std::exception &e) {
 		cerr << "Failed to render in the headless mode " << e.what() << endl;
