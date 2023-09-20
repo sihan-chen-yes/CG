@@ -52,7 +52,10 @@ NORI_NAMESPACE_BEGIN
  * 1. that the illumination scattered by a BRDF model under uniform illumination
  *    into a certain direction matches a given value (modulo noise).
  *
- * 2. that the average radiance received by a camera within some scene
+ * 2. that the irradiance caused by a single light source received by a reference
+ *    point within some scene matches a given value (modulo noise).
+ *
+ * 3. that the average radiance received by a camera within some scene
  *    matches a given value (modulo noise).
  */
 class StudentsTTest : public NoriObject {
@@ -67,6 +70,11 @@ public:
         for (auto angle : angles)
             m_angles.push_back(toFloat(angle));
 
+        /* This parameter specifies a list of distances from the origin, for light source testing */
+        std::vector<std::string> distances = tokenize(propList.getString("distances", ""));
+        for (auto distance : distances)
+            m_distances.push_back(toFloat(distance));
+
         /* This parameter specifies a list of reference values, one for each angle */
         std::vector<std::string> references = tokenize(propList.getString("references", ""));
         for (auto angle : references)
@@ -79,6 +87,8 @@ public:
     virtual ~StudentsTTest() {
         for (auto bsdf : m_bsdfs)
             delete bsdf;
+        for (auto emitter : m_emitters)
+            delete emitter;
         for (auto scene : m_scenes)
             delete scene;
     }
@@ -88,6 +98,11 @@ public:
             case EBSDF:
                 m_bsdfs.push_back(static_cast<BSDF *>(obj));
                 break;
+
+            case EEmitter:
+                m_emitters.push_back(static_cast<Emitter *>(obj));
+                break;
+                // TODO: allow area lights?
 
             case EScene:
                 m_scenes.push_back(static_cast<Scene *>(obj));
@@ -108,8 +123,8 @@ public:
             if (m_references.size() != m_bsdfs.size() * m_angles.size())
                 throw NoriException("Specified a different number of angles and reference values! %d != %d x %d",
                                     m_references.size(), m_bsdfs.size(), m_angles.size());
-            if (!m_scenes.empty())
-                throw NoriException("Cannot test BSDFs and scenes at the same time!");
+            if (!m_emitters.empty() || !m_scenes.empty())
+                throw NoriException("Cannot test BSDFs, emitters, and scenes at the same time!");
 
             /* Test each registered BSDF */
             int ctr = 0;
@@ -145,9 +160,52 @@ public:
                     cout << result.second << endl;
                 }
             }
+        } else if (!m_emitters.empty()) {
+            if (m_references.size() != m_emitters.size() * m_distances.size())
+                throw NoriException("Specified a different number of distances and reference values! %d != %d x %d",
+                                    m_references.size(), m_emitters.size(), m_distances.size());
+            if (!m_bsdfs.empty() || !m_scenes.empty())
+                throw NoriException("Cannot test BSDFs, emitters, and scenes at the same time!");
+
+            /* Test each registered emitter */
+            int ctr = 0;
+            for (auto emitter : m_emitters) {
+                for (float distance : m_distances) {
+                    float reference = m_references[ctr++];
+
+                    cout << "------------------------------------------------------" << endl;
+                    cout << "Testing (distance=" << distance << "): " << emitter->toString() << endl;
+                    ++total;
+
+                    EmitterQueryRecord lRec(Point3f(0, 0, distance));
+
+                    cout << "Drawing " << m_sampleCount << " samples .. " << endl;
+                    double mean=0, variance = 0;
+                    for (int k=0; k<m_sampleCount; ++k) {
+                        Point2f sample(random.nextFloat(), random.nextFloat());
+                        double result = (double) emitter->sample(lRec, sample).getLuminance();
+
+                        /* Numerically robust online variance estimation using an
+                           algorithm proposed by Donald Knuth (TAOCP vol.2, 3rd ed., p.232) */
+                        double delta = result - mean;
+                        mean += delta / (double) (k+1);
+                        variance += delta * (result - mean);
+                    }
+                    variance /= m_sampleCount - 1;
+                    std::pair<bool, std::string>
+                        result = hypothesis::students_t_test(mean, variance, reference,
+                            m_sampleCount, m_significanceLevel, (int) m_references.size());
+
+                    if (result.first)
+                        ++passed;
+                    cout << result.second << endl;
+                }
+            }
         } else {
             if (m_references.size() != m_scenes.size())
                 throw NoriException("Specified a different number of scenes and reference values!");
+            if (!m_bsdfs.empty() || !m_emitters.empty())
+                throw NoriException("Cannot test BSDFs, emitters, and scenes at the same time!");
 
             Sampler *sampler = static_cast<Sampler *>(
                 NoriObjectFactory::createInstance("independent", PropertyList()));
@@ -210,8 +268,10 @@ public:
     virtual EClassType getClassType() const override { return ETest; }
 private:
     std::vector<BSDF *> m_bsdfs;
+    std::vector<Emitter *> m_emitters;
     std::vector<Scene *> m_scenes;
     std::vector<float> m_angles;
+    std::vector<float> m_distances;
     std::vector<float> m_references;
     float m_significanceLevel;
     int m_sampleCount;
