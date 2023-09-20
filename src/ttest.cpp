@@ -177,13 +177,44 @@ public:
                     cout << "Testing (distance=" << distance << "): " << emitter->toString() << endl;
                     ++total;
 
-                    EmitterQueryRecord lRec(Point3f(0, 0, distance));
+                    Point3f ref(0, 0, distance);
+                    EmitterQueryRecord lRec(ref);
 
                     cout << "Drawing " << m_sampleCount << " samples .. " << endl;
                     double mean=0, variance = 0;
+                    bool fields_correct = true;
+                    std::string reason;
                     for (int k=0; k<m_sampleCount; ++k) {
                         Point2f sample(random.nextFloat(), random.nextFloat());
                         double result = (double) emitter->sample(lRec, sample).getLuminance();
+
+                        // Check if the fields of the EmitterQueryRecord are correctly set
+                        Vector3f ref2p = lRec.p - lRec.ref;
+                        Vector3f wi = ref2p.normalized();
+                        auto vectorEqual = [](const Vector3f &a, const Vector3f &b) {
+                            const float eps = 1e-6f;
+                            return std::abs(a.x() - b.x()) < eps &&
+                                   std::abs(a.y() - b.y()) < eps &&
+                                   std::abs(a.z() - b.z()) < eps;
+                        };
+                        if (!vectorEqual(ref, lRec.ref)) {
+                            fields_correct = false;
+                            reason = "`ref` is incorrect";
+                        }
+                        else if (!vectorEqual(wi, lRec.wi)) {
+                            fields_correct = false;
+                            reason = "`wi` is incorrect";
+                        }
+                        else if (!vectorEqual(ref, lRec.shadowRay.o) || !vectorEqual(wi, lRec.shadowRay.d)) {
+                            fields_correct = false;
+                            reason = "`shadowRay.o` or `shadowRay.d` is incorrect";
+                        }
+                        else if (std::abs(lRec.shadowRay.maxt - lRec.shadowRay.mint - ref2p.norm()) > 1e-3) {
+                            fields_correct = false;
+                            reason = "`shadowRay.maxt` - `shadowRay.mint` should equal to the distance between `ref` and `p`";
+                        }
+                        if (!fields_correct)
+                            break;
 
                         /* Numerically robust online variance estimation using an
                            algorithm proposed by Donald Knuth (TAOCP vol.2, 3rd ed., p.232) */
@@ -191,6 +222,11 @@ public:
                         mean += delta / (double) (k+1);
                         variance += delta * (result - mean);
                     }
+                    if (!fields_correct) {
+                        cout << "EmitterQueryRecord fields are not set correctly: " << reason << endl;
+                        continue;
+                    }
+
                     variance /= m_sampleCount - 1;
                     std::pair<bool, std::string>
                         result = hypothesis::students_t_test(mean, variance, reference,
