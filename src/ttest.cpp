@@ -183,6 +183,8 @@ public:
                     cout << "Drawing " << m_sampleCount << " samples .. " << endl;
                     double mean=0, variance = 0;
                     bool fields_correct = true;
+                    bool eval_correct = true;
+                    bool pdf_correct = true;
                     std::string reason;
                     for (int k=0; k<m_sampleCount; ++k) {
                         Point2f sample(random.nextFloat(), random.nextFloat());
@@ -213,8 +215,12 @@ public:
                             fields_correct = false;
                             reason = "`shadowRay.maxt` - `shadowRay.mint` should equal to the distance between `ref` and `p`";
                         }
-                        if (!fields_correct)
-                            break;
+                        if (std::abs((double) emitter->eval(lRec).getLuminance() / lRec.pdf - result) > 1e-6) {
+                            eval_correct = false;
+                        }
+                        else if (std::abs((double) emitter->pdf(lRec) - lRec.pdf) > 1e-6) {
+                            pdf_correct = false;
+                        }
 
                         /* Numerically robust online variance estimation using an
                            algorithm proposed by Donald Knuth (TAOCP vol.2, 3rd ed., p.232) */
@@ -222,19 +228,32 @@ public:
                         mean += delta / (double) (k+1);
                         variance += delta * (result - mean);
                     }
-                    if (!fields_correct) {
-                        cout << "EmitterQueryRecord fields are not set correctly: " << reason << endl;
-                        continue;
-                    }
 
                     variance /= m_sampleCount - 1;
                     std::pair<bool, std::string>
                         result = hypothesis::students_t_test(mean, variance, reference,
                             m_sampleCount, m_significanceLevel, (int) m_references.size());
 
-                    if (result.first)
-                        ++passed;
                     cout << result.second << endl;
+
+                    if (!result.first) {
+                        cout << "The return of `sample` method is incorrect" << endl;
+                        continue;
+                    }
+                    if (!fields_correct) {
+                        cout << "EmitterQueryRecord fields are not set correctly during sampling: " << reason << endl;
+                        continue;
+                    }
+                    if (!eval_correct) {
+                        cout << "Either `eval` method is wrongly implemented or `pdf` field is incorrectly set" << endl;
+                        continue;
+                    }
+                    if (!pdf_correct) {
+                        cout << "Either `pdf` method is wrongly implemented or `pdf` field is incorrectly set" << endl;
+                        continue;
+                    }
+
+                    ++passed;
                 }
             }
         } else {
