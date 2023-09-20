@@ -129,6 +129,7 @@ void RenderThread::renderScene(const std::string & filename) {
 
         /* Do the following in parallel and asynchronously */
         m_render_status = 1;
+        m_progress = 0.f;
         int n_threads = tbb::task_scheduler_init::automatic; 
         m_render_thread = std::thread([this, outputNameStem] {
             tbb::task_scheduler_init init;

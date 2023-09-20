@@ -201,8 +201,8 @@ NoriScreen::NoriScreen(ImageBlock& block)
 
     updateLayout();
 
-    draw_all();
     set_visible(true);
+    draw_all();
 }
 
 

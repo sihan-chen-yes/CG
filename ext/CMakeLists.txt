@@ -190,6 +190,8 @@ set(FILESYSTEM_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/filesystem)
 set(PUGIXML_INCLUDE_DIR
   ${CMAKE_CURRENT_SOURCE_DIR}/pugixml/src)
+set(INDICATORS_INCLUDE_DIR
+  ${CMAKE_CURRENT_SOURCE_DIR}/indicators/include)
 
 # Compile remainder of the codebase with compiler warnings turned on
 if(MSVC)
@@ -228,6 +230,7 @@ set(IncludeDirectories
       NANOVG_INCLUDE_DIR NANOGUI_INCLUDE_DIR EIGEN_INCLUDE_DIR
       STB_IMAGE_WRITE_INCLUDE_DIR TBB_INCLUDE_DIR
       FILESYSTEM_INCLUDE_DIR PUGIXML_INCLUDE_DIR
+      INDICATORS_INCLUDE_DIR
 )
 foreach(IncludeDir ${IncludeDirectories})
   set(EXTERNAL_INCLUDE_DIRS "${${IncludeDir}}" ${EXTERNAL_INCLUDE_DIRS})

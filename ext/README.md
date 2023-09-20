@@ -5,8 +5,10 @@ Nori requires several utility libraries to function correctly; a full list with
 explanations is given below. You should feel free to use any of their
 functionality in your own submissions—however, you are not required to do so.
 
+* `eigen`: library for linear algebra: matrices, vectors, and related algorithms
 * `filesystem`: tiny self-contained library for manipulating file paths
 * `hypothesis`: utility functions for statistical hypothesis tests
+* `indicators`: header-only library to display progress bar 
 * `nanogui`: minimalistic GUI library for OpenGL
 * `openexr`: High dynamic range image format library
 * `pcg32`: tiny self-contained pseudorandom number generator

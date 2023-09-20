@@ -19,6 +19,7 @@
 #include <nori/block.h>
 #include <nori/gui.h>
 #include <filesystem/path.h>
+#include <indicators/progress_bar.hpp>
 
 using namespace nori;
 
@@ -75,9 +76,16 @@ bool render_headless(std::string filename, bool is_xml) {
 	try {
 		// StringBar m_cliBar;
 		renderer.renderScene(filename);
+
+        indicators::ProgressBar bar{
+            indicators::option::PrefixText{"Rendering... "},
+            indicators::option::BarWidth{50},
+            indicators::option::ShowPercentage{true},
+            indicators::option::ShowElapsedTime{true},
+            indicators::option::ShowRemainingTime{true}
+        };
 		while (renderer.isBusy()) {
-            std::cout << "rendering " << std::endl;
-			// cout << "\r" + m_cliBar.toString(renderer.getProgress(), 1.f);
+            bar.set_progress(renderer.getProgress() * 100);
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
@@ -91,12 +99,32 @@ bool render_headless(std::string filename, bool is_xml) {
 
 
 int main(int argc, char **argv) {
-
-    // if file is passed as argument, handle it
     std::string filename = "";
+    bool headless = false;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string token(argv[i]);
+        if (token == "--help") {
+            cout << "Syntax: " << argv[0] << "[-b] <scene.[xml|exr]>" <<  endl;
+            return 0;
+        }
+        
+        if (token == "-b" || token == "--background") {
+            headless = true;
+            continue;
+        }
+
+        if (!filename.length()) {
+            filename = token;
+            continue;
+        } else {
+            cerr << "Syntax: " << argv[0] << "[-b] <scene.[xml|exr]>" <<  endl;
+            return -1;
+        }
+    }
+
     bool is_xml = false;
-    if (argc == 2) {
-        filename = argv[1];
+    if (filename.length()) {
         filesystem::path path(filename);
 
         if (path.extension() == "xml") {
@@ -110,10 +138,17 @@ int main(int argc, char **argv) {
         }
     }
 
-#ifndef NORI_HEADLESS
-    return run_gui(filename, is_xml);
-#else
-    return render_headless(filename, is_xml);
+#ifdef NORI_HEADLESS
+    if (!headless) {
+        cout << "Forcing background mode" << endl;
+        headless = true;
+    }
 #endif
+
+    if (headless) {
+        return render_headless(filename, is_xml);
+    } else {
+        return run_gui(filename, is_xml);
+    }
 
 }
