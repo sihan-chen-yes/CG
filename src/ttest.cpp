@@ -105,16 +105,17 @@ public:
         pcg32 random;
 
         if (!m_bsdfs.empty()) {
-            if (m_references.size() * m_bsdfs.size() != m_angles.size())
-                throw NoriException("Specified a different number of angles and reference values!");
+            if (m_references.size() != m_bsdfs.size() * m_angles.size())
+                throw NoriException("Specified a different number of angles and reference values! %d != %d x %d",
+                                    m_references.size(), m_bsdfs.size(), m_angles.size());
             if (!m_scenes.empty())
                 throw NoriException("Cannot test BSDFs and scenes at the same time!");
 
             /* Test each registered BSDF */
             int ctr = 0;
             for (auto bsdf : m_bsdfs) {
-                for (size_t i=0; i<m_references.size(); ++i) {
-                    float angle = m_angles[i], reference = m_references[ctr++];
+                for (float angle : m_angles) {
+                    float reference = m_references[ctr++];
 
                     cout << "------------------------------------------------------" << endl;
                     cout << "Testing (angle=" << angle << "): " << bsdf->toString() << endl;
