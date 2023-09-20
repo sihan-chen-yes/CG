@@ -917,6 +917,7 @@ public:
         m_angleSlider->set_value(.5f);
 
         refresh();
+        set_size(Vector2i(800, 600));
         set_visible(true);
         draw_all();
     }
