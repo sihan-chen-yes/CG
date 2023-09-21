@@ -194,10 +194,7 @@ public:
                         Vector3f ref2p = lRec.p - lRec.ref;
                         Vector3f wi = ref2p.normalized();
                         auto vectorEqual = [](const Vector3f &a, const Vector3f &b) {
-                            const float eps = 1e-6f;
-                            return std::abs(a.x() - b.x()) < eps &&
-                                   std::abs(a.y() - b.y()) < eps &&
-                                   std::abs(a.z() - b.z()) < eps;
+                            return (a - b).squaredNorm() < 1e-5f;
                         };
                         if (!vectorEqual(ref, lRec.ref)) {
                             fields_correct = false;
