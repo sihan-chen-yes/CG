@@ -192,6 +192,10 @@ public:
         }
 
         cout << "Passed " << passed << "/" << total << " tests." << endl;
+
+        if (passed < total) {
+            throw std::runtime_error("Failed some of the tests");
+        }
     }
 
     virtual std::string toString() const override {
