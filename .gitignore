@@ -11,3 +11,4 @@ Makefile
 *.cmake
 .idea
 chi*test*.m
+scenes/pa*/**/*.exr
