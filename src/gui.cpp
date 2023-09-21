@@ -33,6 +33,7 @@
 #include <nanogui/opengl.h>
 
 #include <filesystem/resolver.h>
+#include <fstream>
 
 NORI_NAMESPACE_BEGIN
 
@@ -182,8 +183,19 @@ NoriScreen::NoriScreen(ImageBlock& block)
         [this]() {
         using FileType = std::pair<std::string, std::string>;
         std::vector<FileType> filetypes = { FileType("", "Image File Name") };
-        std::string filename = nanogui::file_dialog(filetypes, true);
-        if (filename.size() > 0) {
+        std::string filename;
+        // Keep asking for a filename until the user cancels or the file does not exist
+        auto file_exists = [](const std::string& name) {
+            std::ifstream f(name.c_str());
+            return f.good();
+        };
+        while (true) {
+            filename = nanogui::file_dialog(filetypes, true);
+            if (filename.empty() || (!file_exists(filename + ".png") && !file_exists(filename + ".exr")))
+                break;
+            cerr << "Error: file \"" << filename << "\" already exists!" << endl;
+        }
+        if (!filename.empty()) {
             m_block.lock();
             std::unique_ptr<Bitmap> bitmap(m_block.toBitmap());
             m_block.unlock();
