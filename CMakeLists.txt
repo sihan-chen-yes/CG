@@ -95,6 +95,15 @@ set(NORI_SOURCE_FILES
   src/photonmapper.cpp
   src/sphere.cpp
   src/arealight.cpp
+  src/av.cpp
+  src/direct.cpp
+  src/direct_ems.cpp
+  src/direct_mats.cpp
+  src/direct_mis.cpp
+  src/normals.cpp
+  src/path_mats.cpp
+  src/path_mis.cpp
+  src/pointlight.cpp
 )
 
 if (NORI_COMPILE_LIB)
@@ -121,7 +130,6 @@ target_link_libraries(warptest ${EXTERNAL_LIBS})
 if (NORI_HEADLESS)
   target_compile_definitions(nori PUBLIC NORI_HEADLESS)
 endif()
-# target_link_libraries(warptest ${EXTERNAL_LIBS})
 
 # Force colored output for the ninja generator
 if (CMAKE_GENERATOR STREQUAL "Ninja")
