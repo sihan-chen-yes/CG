@@ -6,7 +6,7 @@ assignments in the course Computer Graphics taught at ETH Zürich.
 
 ### Course information and framework documentation
 
-For access to course information including slides and reading material, visit the main [Computer Graphics website](https://graphics.ethz.ch/teaching/cg22/home.php). The Nori 2 framework and coding assignments will be described on the [Nori website](https://graphics.ethz.ch/teaching/cg22/nori.php).
+For access to course information including slides and reading material, visit the main [Computer Graphics website](https://graphics.ethz.ch/teaching/cg23/home.php). The Nori 2 framework and coding assignments will be described on the [Nori website](https://graphics.ethz.ch/teaching/cg23/nori.php).
 
 ### Important note
 
