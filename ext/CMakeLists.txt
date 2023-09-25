@@ -77,6 +77,9 @@ if (MSVC)
   # Parallel build on MSVC (all targets)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
+  # Use utf-8 source and execution character sets on MSVC
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+
   if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:SSE2")
 
