@@ -122,12 +122,17 @@ public:
                 /* Generate many samples from the BSDF and create
                    a histogram / contingency table */
                 BSDFQueryRecord bRec(wi);
+                bool belowSurface = false;
                 for (int i=0; i<m_sampleCount; ++i) {
                     Point2f sample(random.nextFloat(), random.nextFloat());
                     Color3f result = bsdf->sample(bRec, sample);
 
                     if ((result.array() == 0).all())
                         continue;
+
+                    // Raise a warning if the sample is below the surface, i.e. wo.z < 0
+                    if (bRec.wo.z() < 0)
+                        belowSurface = true;
 
                     int cosThetaBin = std::min(std::max(0, (int) std::floor((bRec.wo.z()*0.5f+0.5f)
                             * m_cosThetaResolution)), m_cosThetaResolution-1);
@@ -140,6 +145,9 @@ public:
                         (int) std::floor(scaledPhi * m_phiResolution)), m_phiResolution-1);
                     obsFrequencies[cosThetaBin * m_phiResolution + phiBin] += 1;
                 }
+                if (belowSurface)
+                    cerr << "Warning: some samples are below the surface (wo.z < 0). "
+                         << "Make sure the `sample` method returns Color3f(0) in such cases to reject these bad samples!" << endl;
                 cout << "done." << endl;
 
                 /* Numerically integrate the probability density
