@@ -1,0 +1,93 @@
+# -------------------------------------------------------------------------------
+# DO NOT MODIFY THIS FILE
+
+# This file is used for automatic testing. Any modifications could disrupt the
+# test process and lead to inaccurate results.
+
+# If you believe changes are necessary, please contact the TAs.
+# -------------------------------------------------------------------------------
+
+default:
+  image: registry.ethz.ch/course-cg/nori-docker:latest
+
+variables:
+  BUILD_DIR: "build"
+  RUN_COMPILE:
+    value: "OFF"
+    options:
+      - "ON"
+      - "OFF"
+    description: "Manually trigger the compilation stage"
+  NORI_COMPILE_LIB:
+    value: "OFF"
+    options:
+      - "ON"
+      - "OFF"
+    description: "Also compile nori as a static library"
+
+
+compile:
+  stage: build
+  variables:
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /protected\/submission/
+      variables:
+        NORI_COMPILE_LIB: "ON"
+      when: always
+    - if: $CI_COMMIT_MESSAGE =~ /\[[pP][aA]\d\]/ || $RUN_COMPILE == "ON"
+      when: always
+  script:
+    - export CCACHE_DIR=$CI_PROJECT_DIR/.ccache
+    - mkdir $BUILD_DIR; cd $BUILD_DIR
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DNORI_HEADLESS=ON -DNORI_COMPILE_LIB=$NORI_COMPILE_LIB -DNORI_CMAKE_INCLUDE=/nori_libs/PrecompiledLibs.cmake -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+    - make -j 2
+  artifacts:
+    paths:
+      - $BUILD_DIR/nori
+      - $BUILD_DIR/warptest
+      - $BUILD_DIR/liblibnori.a
+    expire_in: 30 mins
+  cache:
+    key: "$CI_JOB_STAGE" # one cache for build stage in all unprotected branches 
+    paths:
+      - .ccache
+
+test-pa1:
+  stage: test
+  needs:
+    - job: compile
+  rules:
+    - if: $CI_COMMIT_BRANCH == "protected/submission-pa1" || $CI_COMMIT_MESSAGE =~ /\[[pP][aA]1\]/
+      when: always
+  script:
+    - python run_tests.py --build_dir ./$BUILD_DIR/ --pa 1 --verbose
+
+test-pa2:
+  stage: test
+  needs:
+    - job: compile
+  rules:
+    - if: $CI_COMMIT_BRANCH == "protected/submission-pa2" || $CI_COMMIT_MESSAGE =~ /\[[pP][aA]2\]/
+      when: always
+  script:
+    - python run_tests.py --build_dir ./$BUILD_DIR/ --pa 2 --verbose
+
+test-pa3:
+  stage: test
+  needs:
+    - job: compile
+  rules:
+    - if: $CI_COMMIT_BRANCH == "protected/submission-pa3" || $CI_COMMIT_MESSAGE =~ /\[[pP][aA]3\]/
+      when: always
+  script:
+    - python run_tests.py --build_dir ./$BUILD_DIR/ --pa 3 --verbose
+  
+test-pa4:
+  stage: test
+  needs:
+    - job: compile
+  rules:
+    - if: $CI_COMMIT_BRANCH == "protected/submission-pa4" || $CI_COMMIT_MESSAGE =~ /\[[pP][aA]4\]/
+      when: always
+  script:
+    - python run_tests.py --build_dir ./$BUILD_DIR/ --pa 4 --verbose
