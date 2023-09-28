@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Tests the checkboard texture for a mesh and sphere.
+    If any of the first two tests fail, there is likely a problem with
+    the checkerboard texture or the direct illumination integrator.
+    If any of the last two tests fail while the first ones do not, there
+    is likely a problem with the uv values of the sphere.
+-->
+
+<test type="ttest">
+	<string name="references" value="0.132254,0.125814,0.279456,0.651606"/>
+
+    <scene>
+        <sampler type="independent" />
+
+        <integrator type="direct" />
+
+        <camera type="perspective">
+            <transform name="toWorld">
+                <lookat target="2,8,0" origin="50,50,50" up="0,1,0"/>
+            </transform>
+
+            <float name="fov" value="1"/>
+
+            <integer name="width" value="1"/>
+            <integer name="height" value="1"/>
+        </camera>
+
+        <mesh type="obj">
+            <string name="filename" value="plane.obj"/>
+
+            <bsdf type="diffuse">
+                <texture type="checkerboard_color" name="albedo">
+                    <point name="delta" value="0.3,0.3"/>
+                    <vector name="scale" value="0.1,0.2"/>
+                    <color name="value1" value="0.8,0.2,0.4"/>
+                    <color name="value2" value="0.2,0.55,0.1"/>
+                </texture>
+            </bsdf>
+
+            <transform name="toWorld">
+                <scale value="100,1,100"/>
+            </transform>
+        </mesh>
+
+        <emitter type="point">
+            <point name="position" value="20,50,0"/>
+            <color name="power" value="50000,50000,50000"/>
+        </emitter>
+    </scene>
+
+    <scene>
+        <sampler type="independent" />
+
+        <integrator type="direct" />
+
+        <camera type="perspective">
+            <transform name="toWorld">
+                <lookat target="2,7,0" origin="50,50,50" up="0,1,0"/>
+            </transform>
+
+            <float name="fov" value="1"/>
+
+            <integer name="width" value="1"/>
+            <integer name="height" value="1"/>
+        </camera>
+
+        <mesh type="obj">
+            <string name="filename" value="plane.obj"/>
+
+            <bsdf type="diffuse">
+                <texture type="checkerboard_color" name="albedo">
+                    <point name="delta" value="0.5,0.5"/>
+                    <vector name="scale" value="0.1,0.2"/>
+                    <color name="value1" value="0.8,0.2,0.4"/>
+                    <color name="value2" value="0.2,0.55,0.1"/>
+                </texture>
+            </bsdf>
+
+            <transform name="toWorld">
+                <scale value="100,1,100"/>
+            </transform>
+        </mesh>
+
+        <emitter type="point">
+            <point name="position" value="20,50,0"/>
+            <color name="power" value="50000,50000,50000"/>
+        </emitter>
+    </scene>
+
+    <scene>
+        <sampler type="independent" />
+
+        <integrator type="direct" />
+
+        <camera type="perspective">
+            <transform name="toWorld">
+                <lookat target="0,0,3" origin="10,10,10" up="0,0,1"/>
+            </transform>
+
+            <float name="fov" value="10"/>
+
+            <integer name="width" value="1"/>
+            <integer name="height" value="1"/>
+        </camera>
+
+        <mesh type="sphere">
+            <point name="center" value="0,0,3"/>
+            <float name="radius" value="3"/>
+            <bsdf type="diffuse">
+                <texture type="checkerboard_color" name="albedo">
+                    <vector name="scale" value="0.1,0.2"/>
+                    <color name="value1" value="0.8,0.8,0.8"/>
+                    <color name="value2" value="0.2,0.2,0.2"/>
+                </texture>
+            </bsdf>
+        </mesh>
+
+        <emitter type="point">
+            <point name="position" value="3,7,10"/>
+            <color name="power" value="2000,2000,2000"/>
+        </emitter>
+
+    </scene>
+
+    <scene>
+        <sampler type="independent" />
+
+        <integrator type="direct" />
+
+        <camera type="perspective">
+            <transform name="toWorld">
+                <lookat target="0,2,4" origin="10,10,10" up="0,0,1"/>
+            </transform>
+
+            <float name="fov" value="1"/>
+
+            <integer name="width" value="1"/>
+            <integer name="height" value="1"/>
+        </camera>
+
+        <mesh type="sphere">
+            <point name="center" value="0,0,3"/>
+            <float name="radius" value="3"/>
+            <bsdf type="diffuse">
+                <texture type="checkerboard_color" name="albedo">
+                    <vector name="scale" value="0.1,0.2"/>
+                    <color name="value1" value="0.8,0.8,0.8"/>
+                    <color name="value2" value="0.2,0.2,0.2"/>
+                </texture>
+            </bsdf>
+        </mesh>
+
+        <emitter type="point">
+            <point name="position" value="3,7,10"/>
+            <color name="power" value="2000,2000,2000"/>
+        </emitter>
+
+    </scene>
+
+</test>
