@@ -1,0 +1,74 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+
+<test type="ttest">
+	<string name="references" value="0.072169, 0.072169"/>
+	
+	<!-- Test 1: outer intersections -->
+	<scene>
+		<!-- Independent sample generator, user-selected samples per pixel -->
+		<sampler type="independent">
+			<integer name="sampleCount" value="4"/>
+		</sampler>
+
+		<!-- Use a direct illumination integrator -->
+		<integrator type="normals" />
+
+		<!-- Render the scene as viewed by a perspective camera -->
+		<camera type="perspective">
+			<transform name="toWorld">
+				<lookat target="0,0,1" origin="0,0,2" up="0,0,1"/>
+			</transform>
+
+			<!-- Field of view: 40 degrees -->
+			<float name="fov" value="40"/>
+
+			<!-- 1 x 1 pixels -->
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<!-- Create an analytic sphere -->
+		<mesh type="sphere">
+			<point name="center" value="0,0,0"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+	</scene>
+	
+	<!-- Test 2: inner intersections -->
+	<scene>
+		<!-- Independent sample generator, user-selected samples per pixel -->
+		<sampler type="independent">
+			<integer name="sampleCount" value="4"/>
+		</sampler>
+
+		<!-- Use a direct illumination integrator -->
+		<integrator type="normals" />
+
+		<!-- Render the scene as viewed by a perspective camera -->
+		<camera type="perspective">
+			<transform name="toWorld">
+				<lookat target="0,0,1" origin="0,0,0" up="0,0,1"/>
+			</transform>
+
+			<!-- Field of view: 40 degrees -->
+			<float name="fov" value="40"/>
+
+			<!-- 1 x 1 pixels -->
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<!-- Create an analytic sphere -->
+		<mesh type="sphere">
+			<point name="center" value="0,0,0"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+	</scene>
+</test>
