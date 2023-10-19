@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<test type="ttest">
+	<string name="references" 
+		value="0.0322143, 0.0510219, 0.0478679, 0.130445, 0.12629, 0.208308"/>
+
+	<!-- Test 1: 1 point light (red), ems integrator -->
+	<scene>
+		<integrator type="direct_ems"/>
+
+		<camera type="perspective">
+		        <transform name="toWorld">
+			        <lookat target="0,0,0" origin="5,5,3" up="0,0,1"/>
+			</transform>
+			<float name="fov" value="40"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,1"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+
+		<emitter type="point">
+			<point name="position" value = "-5,-5,5"/>
+			<color name="power" value="500,250,250"/>
+		</emitter>
+
+		<mesh type="obj">
+			<string name="filename" value="../../pa1/plane.obj"/>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+
+			<transform name="toWorld">
+				<scale value="10,1,10"/>
+				<rotate axis="1,0,0" angle="90"/>
+			</transform>
+
+		</mesh>
+	</scene>
+
+	<!-- Test 2: 1 point light (green), ems integrator -->
+	<scene>
+		<integrator type="direct_ems"/>
+
+		<camera type="perspective">
+		        <transform name="toWorld">
+			        <lookat target="0,0,0" origin="5,5,3" up="0,0,1"/>
+			</transform>
+			<float name="fov" value="40"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,1"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+
+		<emitter type="point">
+			<point name="position" value = "-6,-3,5"/>
+			<color name="power" value="250,500,250"/>
+		</emitter>
+
+		<mesh type="obj">
+			<string name="filename" value="../../pa1/plane.obj"/>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+
+			<transform name="toWorld">
+				<scale value="10,1,10"/>
+				<rotate axis="1,0,0" angle="90"/>
+			</transform>
+
+		</mesh>
+	</scene>
+
+	<!-- Test 3: 1 point light (blue), ems integrator -->
+	<scene>
+		<integrator type="direct_ems"/>
+
+		<camera type="perspective">
+		        <transform name="toWorld">
+			        <lookat target="0,0,0" origin="5,5,3" up="0,0,1"/>
+			</transform>
+			<float name="fov" value="40"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,1"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+
+		<emitter type="point">
+			<point name="position" value = "-3,-3,5"/>
+			<color name="power" value="250,250,500"/>
+		</emitter>
+
+		<mesh type="obj">
+			<string name="filename" value="../../pa1/plane.obj"/>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+
+			<transform name="toWorld">
+				<scale value="10,1,10"/>
+				<rotate axis="1,0,0" angle="90"/>
+			</transform>
+
+		</mesh>
+	</scene>
+
+	<!-- Test 4: 3 point lights, ems integrator -->
+	<scene>
+		<integrator type="direct_ems"/>
+
+		<camera type="perspective">
+		        <transform name="toWorld">
+			        <lookat target="0,0,0" origin="5,5,3" up="0,0,1"/>
+			</transform>
+			<float name="fov" value="40"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,1"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+
+		<emitter type="point">
+			<point name="position" value = "-5,-5,5"/>
+			<color name="power" value="500,250,250"/>
+		</emitter>
+
+		<emitter type="point">
+			<point name="position" value = "-6,-3,5"/>
+			<color name="power" value="250,500,250"/>
+		</emitter>
+
+		<emitter type="point">
+			<point name="position" value = "-3,-3,5"/>
+			<color name="power" value="250,250,500"/>
+		</emitter>
+
+		<mesh type="obj">
+			<string name="filename" value="../../pa1/plane.obj"/>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+
+			<transform name="toWorld">
+				<scale value="10,1,10"/>
+				<rotate axis="1,0,0" angle="90"/>
+			</transform>
+
+		</mesh>
+	</scene>
+
+	<!-- Test 5: 1 point light + 1 area light, ems integrator -->
+	<scene>
+		<integrator type="direct_ems"/>
+
+		<camera type="perspective">
+		        <transform name="toWorld">
+			        <lookat target="0,0,0" origin="5,5,3" up="0,0,1"/>
+			</transform>
+			<float name="fov" value="40"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,1"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+
+		<emitter type="point">
+			<point name="position" value = "-6,-3,5"/>
+			<color name="power" value="250,500,250"/>
+		</emitter>
+
+		<mesh type="obj">
+			<string name="filename" value="../../pa1/plane.obj"/>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+
+			<emitter type="area">
+				<color name="radiance" value="0.1, 0.1, 0.1"/>
+			</emitter>
+
+			<transform name="toWorld">
+				<scale value="10,1,10"/>
+				<rotate axis="1,0,0" angle="90"/>
+			</transform>
+
+		</mesh>
+	</scene>
+
+	<!-- Test 6: 3 point lights + 1 area light, ems integrator -->
+	<scene>
+		<integrator type="direct_ems"/>
+
+		<camera type="perspective">
+		        <transform name="toWorld">
+			        <lookat target="0,0,0" origin="5,5,3" up="0,0,1"/>
+			</transform>
+			<float name="fov" value="40"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,1"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+
+		<emitter type="point">
+			<point name="position" value = "-5,-5,5"/>
+			<color name="power" value="500,250,250"/>
+		</emitter>
+
+		<emitter type="point">
+			<point name="position" value = "-6,-3,5"/>
+			<color name="power" value="250,500,250"/>
+		</emitter>
+
+		<emitter type="point">
+			<point name="position" value = "-3,-3,5"/>
+			<color name="power" value="250,250,500"/>
+		</emitter>
+
+		<mesh type="obj">
+			<string name="filename" value="../../pa1/plane.obj"/>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+
+			<emitter type="area">
+				<color name="radiance" value="0.1, 0.1, 0.1"/>
+			</emitter>
+
+			<transform name="toWorld">
+				<scale value="10,1,10"/>
+				<rotate axis="1,0,0" angle="90"/>
+			</transform>
+
+		</mesh>
+	</scene>
+</test>
