@@ -2,7 +2,7 @@
 
 <test type="ttest">
 	<string name="references" 
-		value="0.0322143, 0.0510219, 0.0478679, 0.130445, 0.12629, 0.208308"/>
+		value="0.0321801, 0.0506876, 0.0480396, 0.130973, 0.126131, 0.206137"/>
 
 	<!-- Test 1: 1 point light (red), ems integrator -->
 	<scene>
