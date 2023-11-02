@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<test type="ttest">
+	<string name="angles"     value="       0,       15,       30,       45,       60,       75,        105,        120,        135,        150,        165,        180"/>
+	<string name="references" value="0.46682, 0.466949, 0.467764, 0.472558, 0.494208, 0.585048, 1, 1, 1, 2.18016, 2.19835, 2.19888,
+									 2.76161, 2.75988, 2.6774, 1, 1, 1, 0.530681, 0.424875, 0.39772, 0.39127, 0.390249, 0.390068"/>
+
+	<bsdf type="dielectric">
+		<float name="intIOR" value="1.5"/>
+		<float name="extIOR" value="1.000277"/>
+	</bsdf>
+
+	<bsdf type="dielectric">
+		<float name="intIOR" value="1.000277"/>
+		<float name="extIOR" value="1.7"/>
+	</bsdf>
+</test>
