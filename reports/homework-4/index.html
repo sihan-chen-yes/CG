@@ -1,0 +1,144 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+**Homework 4 - Global Illumination**
+
+Student Name:
+
+Legi Number:
+
+(Note: please read the [supplementary](#supplementary) section first before working on this report.)
+
+# Part 1: Dielectric BSDF
+**Time spent on this task:**
+
+**Describe your implementation of `Dielectric` class.**
+
+...
+
+# Part 2: Path Tracing
+
+## BSDF Sampling
+**Time spent on this task:**
+
+**Describe your implementation of `path_mats`.**
+
+...
+
+## Multiple Importance Sampling
+**Time spent on this task:**
+
+**Describe your implementation of `path_mis`.**
+
+...
+
+## Validation
+**Comparison: CGL Triangle**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_mats" class="img-responsive">
+    <img src="images/mine.png" alt="Mine_mis" class="img-responsive">
+    <img src="images/ref_cgltri_path_mats_512spp.png" alt="Reference_mats" class="img-responsive">
+    <img src="images/ref_cgltri_path_mis_512spp.png" alt="Reference_mis" class="img-responsive">
+</div>
+
+**Comparison: Cornell Box**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_mats" class="img-responsive">
+    <img src="images/mine.png" alt="Mine_mis" class="img-responsive">
+    <img src="images/ref_cbox_path_mats_512spp.png" alt="Reference_mats" class="img-responsive">
+    <img src="images/ref_cbox_path_mis_512spp.png" alt="Reference_mis" class="img-responsive">
+</div>
+
+**Comparison: Table**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_mats" class="img-responsive">
+    <img src="images/mine.png" alt="Mine_mis" class="img-responsive">
+    <img src="images/ref_table_path_mats_512spp.png" alt="Reference_mats" class="img-responsive">
+    <img src="images/ref_table_path_mis_512spp.png" alt="Reference_mis" class="img-responsive">
+</div>
+
+# Part 3: Photon Mapping
+**Time spent on this task:**
+
+## Photon Emission from Shape Area Lights
+**Describe your implementation of `AreaEmitter::samplePhoton(...)`.**
+
+...
+
+## Photon Tracing and Storage
+**Describe your implementation of `PhotonMapper::preprocess(...)`.**
+
+...
+
+## Rendering/Radiance Estimation
+**Describe your implementation of `PhotonMapper::Li(...)`.**
+
+...
+
+## Validation
+**Comparison: CGL Triangle**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_pmap" class="img-responsive">
+    <img src="images/ref_cgltri_pmap_8spp_10Mp.png" alt="Reference_pmap" class="img-responsive">
+</div>
+
+**Comparison: Cornell Box**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_pmap" class="img-responsive">
+    <img src="images/ref_cbox_pmap_32spp_10Mp.png" alt="Reference_pmap" class="img-responsive">
+</div>
+
+**Comparison: Table**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_pmap" class="img-responsive">
+    <img src="images/ref_table_pmap_256spp_5Mp.png" alt="Reference_pmap" class="img-responsive">
+</div>
+
+**Comparison: Clock**
+<div class="twentytwenty-container">
+    <img src="images/mine.png" alt="Mine_pmap" class="img-responsive">
+    <img src="images/ref_clocks_pmap_64spp_10Mp.png" alt="Reference_pmap" class="img-responsive">
+</div>
+
+
+# Feedback
+**Use this section to provide feedback about this assignment (each task, the handout, Nori, etc.). We appreciate your opinions to help improve future homeworks and projects.**
+
+...
+
+
+# Supplementary
+* For each task, please note down the time you spent working through it and use at least a few sentences to describe your implementation. If applicable, also report the problems you encounter (e.g. whether or how it's solved, what is the difficult part).
+
+* Please let us know to what extent your code is working (e.g. you only managed to work through part of this assignment, or your solution doesn't operate as expected in some corner cases). We encourage you to share your thinking process, and points will be granted based on your description even if the code is not 100% functioning.
+
+* Nori generates both EXR and PNG format output. Please use PNG for image comparison in the report.
+
+* This report template uses [Markdeep](https://casual-effects.com/markdeep/), which supports Markdown syntax in HTML file. For example usage, please refer to the [official demo document](https://casual-effects.com/markdeep/features.md.html).
+
+* LaTeX is also supported for typing mathematical formulas:
+$$
+L_o(\mathbf{x}, \omega_o) = \int_{\Omega} L_i(\mathbf{x},\omega_i)\, f(\mathbf{x}, \omega_i, \omega_o)\, |\cos\theta_i|\, \mathrm{d}\omega_i
+$$
+
+
+
+<!-- Bootstrap core CSS and JavaScript -->
+
+<link href="../resources/offcanvas.css" rel="stylesheet">
+<link href="../resources/twentytwenty.css" rel="stylesheet" type="text/css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="../resources/bootstrap.min.js"></script>
+<script src="../resources/jquery.event.move.js"></script>
+<script src="../resources/jquery.twentytwenty.js"></script>
+
+<script>
+$(window).load(function(){$(".twentytwenty-container").twentytwenty({default_offset_pct: 0.5});});
+</script>
+
+<!-- Markdeep: -->
+<script>var markdeepOptions = {onLoad: function() {$(".twentytwenty-container").twentytwenty({default_offset_pct: 0.5, move_slider_on_hover: true});},tocStyle:'none'};</script>
+<script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js?" charset="utf-8"></script>
+<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
