@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<scene>
+	<integrator type="path_mats"/>
+
+	<camera type="perspective">
+		<float name="fov" value="80"/>
+		<transform name="toWorld">
+			<scale value="1,1,1"/>
+			<lookat target="0, 0, 0" origin="2.0, 0.0, 0.0" up="0, 0, 1"/>
+		</transform>
+
+		<integer name="height" value="600"/>
+		<integer name="width" value="800"/>
+	</camera>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="512"/>
+	</sampler>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/wall_1.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.0 0.30054 0.64448"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/wall_2.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.77582 0.0 0.06848"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/wall_3.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.39157 0.62396 0.0"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/floors.obj"/>
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.9 0.9 0.9"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/mirrors.obj"/>
+
+		<bsdf type="mirror"/>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="0. 0.75 -0.66000" />
+		<float name="radius" value="0.3263" />
+
+		<bsdf type="diffuse">
+            <texture type="checkerboard_color" name="albedo">
+								<vector name="scale" value="0.1,0.2"/>
+                <color name="value1" value="0.8,0.8,0.8"/>
+                <color name="value2" value="0.20 0.20 0.20"/>
+            </texture>
+        </bsdf>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="0.0 -0.75 -0.6600" />
+		<float name="radius" value="0.3263" />
+
+		<bsdf type="mirror"/>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="3.0 0.0 1.0" />
+		<float name="radius" value="0.2" />
+		<emitter type="area">
+			<color name="radiance" value="0.0 0.0 25.0"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="-1.5 2.598 1.0" />
+		<float name="radius" value="0.2" />
+		<emitter type="area">
+			<color name="radiance" value="0.0 25.0 0.0"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="-1.5 -2.598 1.0" />
+		<float name="radius" value="0.2" />
+		<emitter type="area">
+			<color name="radiance" value="25.0 0.0 0.0"/>
+		</emitter>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/light.obj"/>
+
+		<emitter type="area">
+			<color name="radiance" value="1.5 1.5 1.5"/>
+		</emitter>
+	</mesh>
+</scene>
