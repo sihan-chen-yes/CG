@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Mirror tube
+
+	This test has the camera located at the entrance of a long tube covered with
+	mirrors. By shooting rays at steep incident angles inside the tube, the ray 
+	needs to bounce enough times to reach the light at the end of the tube. Thus,
+	it tests whether the Russian roulette termination is properly implemented.
+
+	The following tests this for both the path_mats tracer and the path_mis
+	tracer.
+-->
+
+<test type="ttest">
+	<string name="references" 
+		value="1, 1"/>
+
+	<integer name="sampleCount" value="10000"/>
+
+	<scene>
+		<integrator type="path_mats"/>
+
+		<camera type="perspective">
+			<transform name="toWorld">
+				<scale value="1,1,1"/>
+				<lookat target="0.5, 0, -1" origin="0.0, 0.0, 0.0" up="0, 0, 1"/>
+			</transform>
+
+			<float name="fov" value="1e-6"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="obj">
+			<string name="filename" value="tube.obj"/>
+
+			<bsdf type="mirror"/>
+		</mesh>
+
+		<mesh type="obj">
+			<string name="filename" value="light.obj"/>
+
+			<emitter type="area">
+				<color name="radiance" value="1.0 1.0 1.0"/>
+			</emitter>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="0, 0, 0"/>
+			</bsdf>
+		</mesh>
+	</scene>
+
+	<scene>
+		<integrator type="path_mis"/>
+
+		<camera type="perspective">
+			<transform name="toWorld">
+				<scale value="1,1,1"/>
+				<lookat target="0.5, 0, -1" origin="0.0, 0.0, 0.0" up="0, 0, 1"/>
+			</transform>
+
+			<float name="fov" value="1e-6"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="obj">
+			<string name="filename" value="tube.obj"/>
+
+			<bsdf type="mirror"/>
+		</mesh>
+
+		<mesh type="obj">
+			<string name="filename" value="light.obj"/>
+
+			<emitter type="area">
+				<color name="radiance" value="1.0 1.0 1.0"/>
+			</emitter>
+
+			<bsdf type="diffuse">
+				<color name="albedo" value="0, 0, 0"/>
+			</bsdf>
+		</mesh>
+	</scene>
+</test>
