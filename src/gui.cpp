@@ -106,7 +106,6 @@ NoriCanvas::NoriCanvas(nanogui::Widget* parent, const ImageBlock& block) : nanog
 void NoriCanvas::draw_contents() {
     // Reload the partially rendered image onto the GPU
     m_block.lock();
-    const Vector2i& size = m_block.getSize();
     m_shader->set_uniform("scale", m_scale);
     m_texture->upload((uint8_t*)m_block.data());
     m_shader->set_texture("source", m_texture);
@@ -129,8 +128,8 @@ void NoriCanvas::update() {
         Texture::ComponentFormat::Float32,
         nanogui::Vector2i(size.x() + 2 * borderSize,
             size.y() + 2 * borderSize),
-        Texture::InterpolationMode::Nearest,
-        Texture::InterpolationMode::Nearest);
+        Texture::InterpolationMode::Bilinear,
+        Texture::InterpolationMode::Bilinear);
 }
 
 NoriScreen::NoriScreen(ImageBlock& block)
@@ -243,12 +242,15 @@ void NoriScreen::updateLayout() {
     {  
         nanogui::Vector2i contentWindow = m_size - contentOffset;
         nanogui::Vector2f blockSize(m_block.getSize().x(), m_block.getSize().y());
-        nanogui::Vector2f ratio = (blockSize / nanogui::Vector2f(contentWindow));
-        float maxRatio = std::max(ratio.x(), ratio.y());
-        nanogui::Vector2i canvasSize = blockSize / maxRatio;
+        nanogui::Vector2f ratio = nanogui::Vector2f(contentWindow) / blockSize;
+        float minRatio = std::min(ratio.x(), ratio.y());
+        
+        // 1% margins
+        nanogui::Vector2i canvasSize = blockSize * minRatio * 0.98f;
+        nanogui::Vector2i canvasPosition = (contentWindow - canvasSize) / 2 + contentOffset;
 
         m_render_canvas->set_fixed_size(canvasSize);
-        m_render_canvas->set_position({ ((contentWindow - canvasSize) / 2 + contentOffset).x(), PANEL_HEIGHT });
+        m_render_canvas->set_position(canvasPosition);
     }
 
     perform_layout();
@@ -295,6 +297,23 @@ bool NoriScreen::keyboard_event(int key, int scancode, int action, int modifiers
     return nanogui::Screen::keyboard_event(key, scancode, action, modifiers);
 }
 
+void NoriScreen::adjustWindow(Vector2i blockSize) {
+
+    const nanogui::Vector2i contentOffset(0, PANEL_HEIGHT);
+    const nanogui::Vector2f contentWindow = m_size - contentOffset;
+
+    // Heuristic - keep the total area them same
+    float nPixels = contentWindow.x() * contentWindow.y();
+    float ratio = std::sqrt(nPixels / ((float)blockSize.x() * blockSize.y()));
+
+    // Do not make smaller than the panel
+    ratio = std::max(ratio, panel->size().x() / (float)blockSize.x());
+
+    nanogui::Vector2i newSize(blockSize.x() * ratio + 1, blockSize.y() * ratio + PANEL_HEIGHT);
+    set_size(newSize);
+
+}
+
 void NoriScreen::openXML(const std::string& filename) {
 
     if(m_renderThread.isBusy()) {
@@ -311,6 +330,7 @@ void NoriScreen::openXML(const std::string& filename) {
         m_render_canvas->update();
         m_block.unlock();
 
+        adjustWindow(bsize);
         requestLayoutUpdate();
 
     } catch (const std::exception &e) {
@@ -334,6 +354,7 @@ void NoriScreen::openEXR(const std::string& filename) {
     m_render_canvas->update();
     m_block.unlock();
 
+    adjustWindow(bsize);
     requestLayoutUpdate();
 }
 

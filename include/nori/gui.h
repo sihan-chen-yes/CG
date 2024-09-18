@@ -58,6 +58,8 @@ public:
         m_requiresLayoutUpdate = true;
     }
 
+    void adjustWindow(Vector2i blockSize);
+
     void openXML(const std::string& filename);
     void openEXR(const std::string& filename);
 
