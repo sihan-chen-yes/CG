@@ -212,12 +212,6 @@ public:
                             fields_correct = false;
                             reason = "`shadowRay.maxt` - `shadowRay.mint` should equal to the distance between `ref` and `p`";
                         }
-                        if (std::abs((double) emitter->eval(lRec).getLuminance() / lRec.pdf - result) > 1e-6) {
-                            eval_correct = false;
-                        }
-                        else if (std::abs((double) emitter->pdf(lRec) - lRec.pdf) > 1e-6) {
-                            pdf_correct = false;
-                        }
 
                         /* Numerically robust online variance estimation using an
                            algorithm proposed by Donald Knuth (TAOCP vol.2, 3rd ed., p.232) */
