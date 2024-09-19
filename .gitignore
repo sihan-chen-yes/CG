@@ -4,11 +4,16 @@
 /warptest
 /ext_build
 /.vs
+.idea/
+.vscode/
+hooks/
+lfs/
+*build*/
 /out
 CMakeCache.txt
 CMakeFiles
 Makefile
 *.cmake
-.idea
 chi*test*.m
+chi2test*.py
 scenes/pa*/**/*.exr

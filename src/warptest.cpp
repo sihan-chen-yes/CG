@@ -210,7 +210,7 @@ struct WarpTest {
         }
 
         /* Write the test input data to disk for debugging */
-        hypothesis::chi2_dump(yres, xres, obsFrequencies.get(), expFrequencies.get(), "chitest.m");
+        hypothesis::chi2_dump(yres, xres, obsFrequencies.get(), expFrequencies.get(), "chi2test.py");
 
         /* Perform the Chi^2 test */
         const int minExpFrequency = 5;

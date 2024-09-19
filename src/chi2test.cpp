@@ -185,7 +185,7 @@ public:
 
                 /* Write the test input data to disk for debugging */
                 hypothesis::chi2_dump(m_cosThetaResolution, m_phiResolution, obsFrequencies.get(), expFrequencies.get(),
-                    tfm::format("chi2test_%i.m", total));
+                    tfm::format("chi2test_%i.py", total));
 
                 /* Perform the Chi^2 test */
                 std::pair<bool, std::string> result =
