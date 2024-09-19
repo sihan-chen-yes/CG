@@ -413,6 +413,10 @@ public:
         if (warpType == Beckmann || warpType == MicrofacetBRDF)
             parameterValue = std::exp(std::log(0.01f) * (1 - parameterValue) +
                                       std::log(1.f)   *  parameterValue);
+        if (warpType == Beckmann)
+            parameterValue = std::max(parameterValue, 0.03f);
+        if (warpType == UniformSphereCap)
+            parameterValue = std::min(parameterValue, 0.97f);
         return parameterValue;
     }
 
