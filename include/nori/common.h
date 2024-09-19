@@ -246,7 +246,8 @@ inline int mod(int a, int b) {
 /// Compute a direction for the given coordinates in spherical coordinates
 extern Vector3f sphericalDirection(float theta, float phi);
 
-/// Compute a direction for the given coordinates in spherical coordinates
+/// \brief Compute a direction for the given coordinates in spherical coordinates
+/// \returns A Point2f (x: theta, y: phi) in [0,Pi]x[0,2Pi]
 extern Point2f sphericalCoordinates(const Vector3f &dir);
 
 /**

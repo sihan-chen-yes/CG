@@ -136,7 +136,7 @@ public:
                     cout << "Testing (angle=" << angle << "): " << bsdf->toString() << endl;
                     ++total;
 
-                    BSDFQueryRecord bRec(sphericalDirection(degToRad(angle), 0));
+                    BSDFQueryRecord bRec(sphericalDirection(degToRad(angle), 0), Point2f());
 
                     cout << "Drawing " << m_sampleCount << " samples .. " << endl;
                     double mean=0, variance = 0;

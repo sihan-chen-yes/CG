@@ -87,6 +87,7 @@ set(NORI_SOURCE_FILES
   src/scene.cpp
   src/shape.cpp
   src/ttest.cpp
+  src/uvtexture.cpp
   src/warp.cpp
   src/microfacet.cpp
   src/photon.cpp
@@ -95,6 +96,7 @@ set(NORI_SOURCE_FILES
   src/photonmapper.cpp
   src/sphere.cpp
   src/arealight.cpp
+  src/material.cpp
   src/av.cpp
   src/direct.cpp
   src/direct_ems.cpp

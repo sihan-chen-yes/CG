@@ -121,7 +121,7 @@ public:
 
                 /* Generate many samples from the BSDF and create
                    a histogram / contingency table */
-                BSDFQueryRecord bRec(wi);
+                BSDFQueryRecord bRec(wi, Point2f());
                 bool belowSurface = false;
                 for (int i=0; i<m_sampleCount; ++i) {
                     Point2f sample(random.nextFloat(), random.nextFloat());
@@ -170,7 +170,7 @@ public:
                                         (float) (sinTheta * sinPhi),
                                         (float) cosTheta);
 
-                            BSDFQueryRecord bRec(wi, wo, ESolidAngle);
+                            BSDFQueryRecord bRec(wi, wo, ESolidAngle, Point2f());
                             return bsdf->pdf(bRec);
                         };
 

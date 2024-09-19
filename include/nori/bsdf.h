@@ -40,21 +40,18 @@ struct BSDFQueryRecord {
     /// Measure associated with the sample
     EMeasure measure;
 
+    /// UV associated with the point
+    Point2f uv;
+
     /// Create a new record for sampling the BSDF
-    BSDFQueryRecord(const Vector3f &wi)
-        : wi(wi), measure(EUnknownMeasure) { }
+    BSDFQueryRecord(const Vector3f &wi, const Point2f &uv)
+        : wi(wi), measure(EUnknownMeasure), uv(uv) { }
 
     /// Create a new record for querying the BSDF
     BSDFQueryRecord(const Vector3f &wi,
-            const Vector3f &wo, EMeasure measure)
-        : wi(wi), wo(wo), measure(measure) { }
+            const Vector3f &wo, EMeasure measure, const Point2f& uv)
+        : wi(wi), wo(wo), measure(measure), uv(uv) { }
 
-
-    /// Additional information possibly needed by the BSDF
-    /// UV associated with the point
-    Point2f uv;
-    /// Point associated with the point
-    Point3f p;
 };
 
 /**
