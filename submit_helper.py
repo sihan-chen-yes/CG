@@ -1,4 +1,5 @@
 import subprocess
+import argparse
 from os import path
 import sys
 import re
@@ -27,6 +28,42 @@ def run_command(command):
         raise
 
 
+def check_repo_size():
+    commits = run_command(["git", "rev-list", '--since="6 month ago"', "HEAD"])
+    commits = commits.split("\n")
+
+    threshold = 1 * (1024**2)  # 1 MB
+    exceeding_commit = None
+
+    for commit_hash in commits:
+        files = run_command(["git", "ls-tree", "-r", "-l", commit_hash])
+        files = re.findall(
+            r"^\d+\s+blob\s+\S+\s+(\d+)\s+(.*)$", files, flags=re.MULTILINE
+        )
+
+        for size, filename in files:
+            if int(size) > threshold:
+                cerr(
+                    f"File `{filename}` at commit `{commit_hash}` is exceeding 1MB blob size limit"
+                )
+                exceeding_commit = commit_hash
+
+    if exceeding_commit is not None:
+        raise RuntimeError(
+            _colored_str(
+                f"""
+There are files in the git tree that exceed the limit of 1MB.
+Make sure to use GIT LFS for any object files.
+In order to fix it, you need to rewrite the git history starting 
+commit {exceeding_commit}. See the Nori page for more information.
+If you believe that this error message is wrong or you run into difficulties
+fixing the issue, please contact the TA team.
+""",
+                success=False,
+            )
+        )
+
+
 def check_print():
     # 1. Repo checks
     # Check if the current directory is a git repository
@@ -44,20 +81,20 @@ def check_print():
     working_remote_url = None
     for remote in remotes:
         url = run_command(["git", "remote", "get-url", remote])
-        if "COURSE-CG23/" in url.upper():
+        if "COURSE-CG" in url.upper():
             if working_remote is not None:
-                cerr("Error: More than one working remote repo with namespace COURSE-CG23 is found.")
+                cerr("Error: More than one working remote repo with namespace COURSE-CG* is found.")
                 return
             working_remote = remote
             working_remote_url = url.lower()
     
     if working_remote is None:
-        cerr("Error: No working remote repo with namespace COURSE-CG23 is found.")
+        cerr("Error: No working remote repo with namespace COURSE-CG* is found.")
         return
     
-    matches = re.search(r"course-cg23/([\w\d]+)\.git", working_remote_url)
+    matches = re.search(r"(course-cg\d+/[\w\d]+)\.git", working_remote_url)
     if matches:
-        user_name = matches.group(1)
+        url_extension = matches.group(1)
     else:
         cerr(f"Error: Cannot parse the ETH username from the working remote {working_remote_url}.")
         return
@@ -74,7 +111,7 @@ def check_print():
     unstaged_changes = run_command(["git", "diff", "--name-only"]).strip()
     num_unstaged_changes = len([file for file in unstaged_changes.split('\n') if file.strip()])
     if num_unstaged_changes > 0:
-        print(f"Warning: you still have {num_unstaged_changes} unstaged changes. Make sure you commit them before submitting.")
+        print(f"Warning: you still have {num_unstaged_changes} unstaged changes. Make sure they do not contain anything you want to submit.")
 
     staged_changes = run_command(["git", "diff", "--cached", "--name-only"]).strip()
     num_staged_changes = len([file for file in staged_changes.split('\n') if file.strip()])
@@ -94,11 +131,20 @@ def check_print():
         # Print the hash of the working_remote's current commit
         print(_colored_str(f"Your branch is up to date with {working_remote}.", True))
         print(f"Commit hash for the submission on Moodle: {local_head}")
-        url = f'https://gitlab.inf.ethz.ch/course-cg23/{user_name}/-/commit/{local_head}'
+        url = f'https://gitlab.inf.ethz.ch/{url_extension}/-/commit/{local_head}'
         print(f"URL: {url}")
     else:
         cerr(f"You have not pushed your latest commit to {working_remote} yet. Please push all your changes before submitting.")
 
 
 if __name__ == "__main__":
-    check_print()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--no-remote-check", action="store_false", dest="remote_check")
+    parser.add_argument("--no-size-check", action="store_false", dest="size_check")
+    args = parser.parse_args()
+
+    if args.remote_check:
+        check_print()
+
+    if args.size_check:
+        check_repo_size()
