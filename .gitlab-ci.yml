@@ -8,7 +8,7 @@
 # -------------------------------------------------------------------------------
 
 default:
-  image: registry.ethz.ch/course-cg/nori-docker:latest
+  image: registry.ethz.ch/course-cg/nori-docker:2024
 
 variables:
   BUILD_DIR: "build"
