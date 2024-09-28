@@ -9,7 +9,39 @@
 -->
 
 <test type="ttest">
-	<string name="references" value="0.132254,0.125814,0.279456,0.651606"/>
+	<string name="references" value="0.127884,0.132254,0.125814,0.362340,0.181265"/>
+
+    <scene>
+        <integrator type="material" />
+
+        <camera type="perspective">
+            <transform name="toWorld">
+                <lookat target="2,8,0" origin="50,50,50" up="0,1,0"/>
+            </transform>
+
+            <float name="fov" value="1"/>
+
+            <integer name="width" value="1"/>
+            <integer name="height" value="1"/>
+        </camera>
+
+        <mesh type="obj">
+            <string name="filename" value="plane.obj"/>
+
+            <bsdf type="diffuse">
+                <texture type="checkerboard_color" name="albedo">
+                    <point name="delta" value="0.3,0.3"/>
+                    <vector name="scale" value="0.1,0.2"/>
+                    <color name="value1" value="0.8,0.2,0.4"/>
+                    <color name="value2" value="0.2,0.55,0.1"/>
+                </texture>
+            </bsdf>
+
+            <transform name="toWorld">
+                <scale value="100,1,100"/>
+            </transform>
+        </mesh>
+    </scene>
 
     <scene>
         <sampler type="independent" />

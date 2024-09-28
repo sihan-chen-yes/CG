@@ -2,7 +2,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <test type="ttest">
-	<string name="references" value="0.072169, 0.072169"/>
+	<string name="references" value="0.072169, 0.072169, 0.011486"/>
 	
 	<!-- Test 1: outer intersections -->
 	<scene>
@@ -68,6 +68,30 @@
 			<float name="radius" value="1"/>
 			<bsdf type="diffuse">
 				<color name="albedo" value="1,1,1"/>
+			</bsdf>
+		</mesh>
+	</scene>
+
+	<!-- Test 2: sphere uv test -->
+	<scene>
+		<integrator type="material" />
+
+		<camera type="perspective">
+			<transform name="toWorld">
+				<lookat target="0,0,1" origin="0,0,2" up="0,0,1"/>
+			</transform>
+
+			<float name="fov" value="1"/>
+
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0,0,0"/>
+			<float name="radius" value="1"/>
+			<bsdf type="diffuse">
+				<texture name="albedo" type="uvtexture"/>
 			</bsdf>
 		</mesh>
 	</scene>
