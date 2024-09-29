@@ -4,18 +4,23 @@
 
 **Homework 1 - Getting Started**
 
-Student Name:
+Student Name:Sihan Chen
 
-Student ID Number:
+Student ID Number:23-943-079
 
 (Note: please read the [supplementary](#supplementary) section first before working on this report.)
 
 # Part 1: Normal Integrator
-**Time spent on this task:**
+**Time spent on this task:** 10min
 
 **Describe your implementation of Normal Integrator.**
+Given scene and ray, detect the intersections. If not intersect, set the shading color as black, other wise use the
+shading normals as shading color.
+Because the range is between -1 to 1. Just simply use absolute value of shading normals(from 0 to 1).
 
-...
+**Problem:**
+I used the implementation from introduction, but this method map two normals to one shading color.
+It should directly map $([-1,1] + 1) \times 0.5$ to $[0, 1]$
 
 **Shading Normal Comparison: Ajax**
 <div class="twentytwenty-container">
@@ -28,18 +33,23 @@ Student ID Number:
 # Part 2: Non-Physical Integrators
 
 ## Average Visibility Integrator
-**Time spent on this task:**
+**Time spent on this task:** 30min
 
 **Describe your implementation of this integrator.**
-
-...
+Like the normal integrator, first detect the intersection of primary ray, if intersects, then return 0(not visible),
+otherwise return 1(visible), then sample a new direction at the intersections using uniform hemisphere sampling.
+Then shoot the secondary ray, detect the intersections as well, do the same as well. Remember using the
+low threshold(Epsilon not 0) of rays when constructing rays!
 
 ## Material Preview Integrator
-**Time spent on this task:**
+**Time spent on this task:** 40min
 
 **Describe your implementation of this integrator.**
+First detect the intersections(if not return 0), then transform ray direction from world frame to
+local frame(should flip direction according to convention). Then build bsdf query record with incident and fixed
+outgoing ray $(0,0,1)$, remember using `EMeasure::ESolidAngle`. Finally, get bsdf function
+from mesh, plug in bsdf record to evaluate corresponding values and return.
 
-...
 
 ## Validation
 
@@ -63,11 +73,14 @@ Student ID Number:
 
 
 # Part 3: Analytic Sphere Shape
-**Time spent on this task:**
+**Time spent on this task:** 90min
 
 **Describe your implementation of Sphere and two functions.**
-
-...
+1.Sphere intersection: plugin ray equation into the sphere equation, then solve quadratic equation for roots.
+Consider the determinant(3 situations) and roots(root should satisfy 3 conditions,
+check each one iteratively from the smaller one until find answer).
+2.Set hit information: Find intersection point first, set the normal(geo and sh are same for sphere),
+turn the sphere coordinates(relative to sphere center!) into UV coordinate(should normalize to [0, 1] range).
 
 **Sphere Analytic vs Mesh Comparison**
 <div class="twentytwenty-container">
@@ -85,11 +98,25 @@ Student ID Number:
 
 
 # Part 4: Direct Illumination Integrator
-**Time spent on this task:**
+**Time spent on this task:** 90min
 
 **Describe your implementation of Direct Illumination Integrator.**
 
-...
+1.PointLight:
+According to the formula, return $L_i$ in `sample` function, also fill in the fields of
+`EmitterQueryRecord`, including `p`, `w_i`, `pdf`, `shadowRay`, remember to use `Epsilon` to handle numerical problems.
+
+$$L_i = \frac{I}{d^2}$$
+
+2.Direct illumination:
+First detect intersections, if not, return 0 directly.
+Then iterate emitters, use shadow rays(from sample function) to detect if there are intersections between ref point and light source. If not,
+queried `L_i` from each light sources. Construct bsdf value as before(use local frames!),
+then do an integration(according to the formula) to get the outgoing radience to camera.
+
+$$
+L_o(\mathbf{x}, \omega_o) = \int_{\Omega} L_i(\mathbf{x},\omega_i)\, f(\mathbf{x}, \omega_i, \omega_o)\, |\cos\theta_i|\, \mathrm{d}\omega_i
+$$
 
 **Direct Illumination Comparison: Sponza**
 <div class="twentytwenty-container">
@@ -100,11 +127,14 @@ Student ID Number:
 
 
 # Part 5: Texture Mapping
-**Time spent on this task:**
+**Time spent on this task:** 20min
 
 **Describe your implementation of texture mapping.**
-
-...
+Essentially moving a checkerboard pattern in the range of $[0, 1]^2$ cube.
+First, use the current UV coordinates to scale to get new UV indices according to the scale factors.
+Second, move the origin in the new UV space.
+Third, observe the pattern, list the indices, then find odd and even indices sum(floor rounding)
+corresponds to `v1` and `v2` respectively
 
 **Checkerboard Comparison: Mesh**
 
@@ -126,8 +156,8 @@ Student ID Number:
 # Feedback
 **Use this section to provide feedback about this assignment (each task, the handout, Nori, etc.). We appreciate your opinions to help improve future homeworks and projects.**
 
-...
-
+Suggest listing the key functions(interface and functions to be implemented) and variables to be used in each task,
+and give the main use for each function with comments like shape modelling and geometry processing course.
 
 # Supplementary
 * For each task, please note down the time you spent working through it and use at least a few sentences to describe your implementation. If applicable, also report the problems you encounter (e.g. whether or how it's solved, what is the difficult part).

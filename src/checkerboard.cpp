@@ -29,7 +29,18 @@ public:
     virtual std::string toString() const override;
 
     virtual T eval(const Point2f & uv) override {
-        /* to be implemented */
+        Point2f normalized_uv;
+        normalized_uv.x() = uv.x() / m_scale.x() - m_delta.x();
+        normalized_uv.y() = uv.y() / m_scale.y() - m_delta.y();
+
+        int cell_x = floor(normalized_uv.x());
+        int cell_y = floor(normalized_uv.y());
+
+        // odd number
+        if ((cell_x + cell_y) % 2 != 0) {
+            return m_value2;
+        }
+        // even number
 	    return m_value1;
     }
 
