@@ -4,97 +4,120 @@
 
 **Homework 2 - Sampling and Warping**
 
-Student Name:
+Student Name:Sihan Chen
 
-Student ID Number:
+Student ID Number:23-943-079
 
 (Note: please read the [supplementary](#supplementary) section first before working on this report.)
 
 # Square to Uniform Disk
-**Time spent on this task:**
+**Time spent on this task:** 30min
 
 **Describe your implementation of `Warp::squareToUniformDisk` and the associated PDF.**
 
-...
+Transform $p(x,y)$ to $p(\theta, \phi)$, calculate the CDF and then inverse to get the transformation formula which
+would be applied on uniform sample, then draw sample from the unit square, finally use the transformation to get
+uniform samples on the unit disk.
+First check if sample is inside the disk, then pdf is obviously $\frac{1}{Area}, Area = \pi \times 1^2$,
+assuming unit disk.
 
 **Warping Visualization:**
 
-<p style="text-align:center;"><img src="images/warp-template.png" alt="Uniform Disk Warp"/></p>
+<p style="text-align:center;"><img src="images/uniform_disk.png" alt="Uniform Disk Warp"/></p>
 
 **$\chi^2$ Hypothesis Test Outcome:**
 
-<p style="text-align:center;"><img src="images/chi2-template.png" alt="Uniform Disk Chi2 Test"/></p>
+<p style="text-align:center;"><img src="images/uniform_disk_test.png" alt="Uniform Disk Chi2 Test"/></p>
 
 
 # Square to Uniform Spherical Cap
-**Time spent on this task:**
+**Time spent on this task:** 30min
 
 **Describe your implementation of `Warp::squareToUniformSphericalCap` and the associated PDF.**
 
-...
+According to Archimedes' Hat-Box Theorem, and use $cos\theta$ to modify the formula, to get the transformation.
+$$
+w_z = 1 - \xi_1 \times (1 - \cos\theta)
+\\
+r = \sqrt{1 - w_z^2}
+\\
+\phi = 2 \times \pi \times \xi_2
+\\
+w_x = r \times \cos\phi
+\\
+w_y = r \times \sin(\phi)
+\\
+p(\vec{\omega}) = \frac{1}{2 \times \pi \times (1 - \cos\theta)}
+$$
+Also need to check the validity of sample(on the spherical cap).
 
 **Warping Visualization:**
 
-<p style="text-align:center;"><img src="images/warp-template.png" alt="Uniform Spherical Cap Warp"/></p>
+<p style="text-align:center;"><img src="images/spherical_cap.png" alt="Uniform Spherical Cap Warp"/></p>
 
 **$\chi^2$ Hypothesis Test Outcome:**
 
-<p style="text-align:center;"><img src="images/chi2-template.png" alt="Uniform Spherical Cap Chi2 Test"/></p>
+<p style="text-align:center;"><img src="images/spherical_cap_test.png" alt="Uniform Spherical Cap Chi2 Test"/></p>
 
 
 # Square to Uniform Sphere
-**Time spent on this task:**
+**Time spent on this task:** 1min
 
 **Describe your implementation of `Warp::squareToUniformSphere` and the associated PDF.**
 
-...
+Just set $\cos\theta$ to $-1$, and use the previous method to draw sample and calculate pdf.
 
 **Warping Visualization:**
 
-<p style="text-align:center;"><img src="images/warp-template.png" alt="Uniform Sphere Warp"/></p>
+<p style="text-align:center;"><img src="images/sphere.png" alt="Uniform Sphere Warp"/></p>
 
 **$\chi^2$ Hypothesis Test Outcome:**
 
-<p style="text-align:center;"><img src="images/chi2-template.png" alt="Uniform Sphere Chi2 Test"/></p>
+<p style="text-align:center;"><img src="images/sphere_test.png" alt="Uniform Sphere Chi2 Test"/></p>
 
 
 # Square to Uniform Hemisphere
-**Time spent on this task:**
+**Time spent on this task:** 1min
 
 **Describe your implementation of `Warp::squareToUniformHemisphere` and the associated PDF.**
 
-...
+Just set $\cos\theta$ to $0$, and use the previous method to draw sample and calculate pdf.
 
 **Warping Visualization:**
 
-<p style="text-align:center;"><img src="images/warp-template.png" alt="Uniform Hemisphere Warp"/></p>
+<p style="text-align:center;"><img src="images/hemi_sphere.png" alt="Uniform Hemisphere Warp"/></p>
 
 **$\chi^2$ Hypothesis Test Outcome:**
 
-<p style="text-align:center;"><img src="images/chi2-template.png" alt="Uniform Hemisphere Chi2 Test"/></p>
+<p style="text-align:center;"><img src="images/hemi_sphere_test.png" alt="Uniform Hemisphere Chi2 Test"/></p>
 
 
 # Square to Cosine Hemisphere
-**Time spent on this task:**
+**Time spent on this task:** 60min
 
 **Describe your implementation of `Warp::squareToCosineHemisphere` and the associated PDF.**
 
-...
+Using Malley's method simply map the uniform square to uniform disk, then project onto the hemisphere, we can calculate
+the pdf after two transformation, which happens to be the pdf of cos weighted distribution:
+$$
+p(\vec{\omega}) = \frac{\cos\theta}{\pi}
+$$
+So just simply do two transformations to draw samples, and return the pdf if valid.
 
 **Warping Visualization:**
 
-<p style="text-align:center;"><img src="images/warp-template.png" alt="Cosine Hemisphere Warp"/></p>
+<p style="text-align:center;"><img src="images/cos_hemi.png" alt="Cosine Hemisphere Warp"/></p>
 
 **$\chi^2$ Hypothesis Test Outcome:**
 
-<p style="text-align:center;"><img src="images/chi2-template.png" alt="Cosine Hemisphere Chi2 Test"/></p>
+<p style="text-align:center;"><img src="images/cos_hemi_test.png" alt="Cosine Hemisphere Chi2 Test"/></p>
 
 
 # Square to Beckmann
 
 (Please use the provided LaTeX template to answer the questions in this section. For LaTeX math symbols and formulas, referring to this [cheatsheet](http://tug.ctan.org/info/undergradmath/undergradmath.pdf) is recommended.)
 
-**Time spent on this task:**
+**Time spent on this task:** 60min
 
 **Show your derivation of $\int_0^{2\pi}\int_0^{\frac{\pi}{2}}p(\theta, \phi)~d\theta d\phi = 1$ for Beckmann distribution**: 
 
@@ -102,10 +125,16 @@ Student ID Number:
     \begin{split}
     \bullet ~ P(\theta_0, \phi_0) & = \int_0^{\phi_0}\int_0^{\theta_0}p(\theta, \phi)~d\theta d\phi \\
                         & = \int_0^{\phi_0}\int_0^{\theta_0}\frac{e^{\frac{-\tan^2\theta}{\alpha^2}}}{\pi \alpha^2 \cos^4\theta} \cos\theta \sin\theta ~d\theta d\phi \\
-                        & = ... \\
-                        & = ... \Bigg|_{...}^{...} \\
-                        & = ... \\
-    \bullet ~ P(\frac{\pi}{2}, 2\pi) & = ...\\
+                        & = \int_0^{\phi_0}d\phi \int_0^{\theta_0}\frac{e^{\frac{-\tan^2\theta}{\alpha^2}}}{\pi \alpha^2 \cos^4\theta} \cos\theta \sin\theta ~d\theta \\
+                        & = \frac{\phi_0}{\pi} \int_1^{\cos\theta_0} \frac{e^{-\frac{1 - x^2}{\alpha^2x^2}}}{\alpha^2 x^4} x \sqrt{1 - x^2} \frac{dx}{-\sqrt{1 - x^2}} \\
+                        & = \frac{\phi_0}{\pi} \int_1^{\cos\theta_0} - \frac{e^{-\frac{1 - x^2}{\alpha^2x^2}}}{\alpha^2 x^3} dx \\
+                        & = -\frac{\phi_0}{2\pi} \int_1^{\cos\theta_0} e^{-\frac{1 - x^2}{\alpha^2x^2}} d({-\frac{1 - x^2}{\alpha^2x^2}}) \\
+                        & = -\frac{\phi_0}{2\pi} e^{-\frac{1 - x^2}{\alpha^2x^2}} \Bigg|_{1}^{\cos \theta_0} \\
+                        & = -\frac{\phi_0}{2\pi} (e^{-\frac{\tan \theta^2}{\alpha^2}} - 1)\\
+
+    using ~ x = \cos\theta, dx = -\sin\theta d\theta \\
+
+    \bullet ~ P(\frac{\pi}{2}, 2\pi) & = -\frac{2 \pi}{2\pi} (e^{-\infty} - 1)\\
                                & = 1
     \end{split}
 \end{equation}
@@ -114,30 +143,47 @@ Student ID Number:
 \begin{equation}
     \begin{split}
     & \bullet ~ p(\theta, \phi) = \frac{e^{\frac{-\tan^2\theta}{\alpha^2}}}{\pi \alpha^2 \cos^4\theta} \cos\theta \sin\theta \\
-    & \bullet ~ ... \\
-    & \bullet ~ \phi = ... \\
-    & \bullet ~ \theta = ... \\
+
+    & \bullet ~ p(\phi) = \int_0^{\frac{\pi}{2}}p(\theta, \phi)~d\theta \\
+                      & = -\frac{1}{2\pi} e^{-\frac{1 - x^2}{\alpha^2x^2}} \Bigg|_{1}^{\cos \frac{\pi}{2}}\\
+                      & = \frac{1}{2\pi}\\
+
+    & \bullet ~ P(\phi) = \int_0^{\phi} p(\phi) ~d\phi \\
+                      & = \frac{\phi}{2 \pi} \\
+
+    & \bullet ~ p(\theta) = \int_0^{2 \pi}p(\theta, \phi)~d\phi \\
+                      & = 2\pi p(\theta, \phi) \\
+
+    & \bullet ~ P(\theta) = \int_0^{\theta}2\pi p(\theta, \phi)~d\theta \\
+                      & = -\frac{2 \pi}{2 \pi} e^{-\frac{1 - x^2}{\alpha^2x^2}} \Bigg|_{1}^{\cos \theta}\\
+                      & = 1 - e^{-\frac{\tan \theta^2}{\alpha^2}} \\
+    & \bullet ~ \phi = 2\pi\xi_2 \\
+    & \bullet ~ \theta = \arctan \alpha \sqrt{-\log(1-\xi_1)} \\
     & \bullet ~ Sampled ~ Point: \\
-    & ~~~~ x = ... \\
-    & ~~~~ y = ... \\
-    & ~~~~ z = ...
+    & ~~~~ x = \sin \theta \cos \phi \\
+    & ~~~~ y = \sin \theta \sin \phi \\
+    & ~~~~ z = \cos \theta
 
     \end{split}
 \end{equation}
 
+Then the pdf of a valid sample is:
+$$
+p(\vec{\omega})=\frac{p(\theta, \phi)}{\sin \theta}
+$$
 **Warping Visualization:**
 
-<p style="text-align:center;"><img src="images/warp-template.png" alt="Beckmann Warp"/></p>
+<p style="text-align:center;"><img src="images/beckmann.png" alt="Beckmann Warp"/></p>
 
 **$\chi^2$ Hypothesis Test Outcome:**
 
-<p style="text-align:center;"><img src="images/chi2-template.png" alt="Beckmann Chi2 Test"/></p>
+<p style="text-align:center;"><img src="images/beckmann_test.png" alt="Beckmann Chi2 Test"/></p>
 
 
 # Feedback
 **Use this section to provide feedback about this assignment (each task, the handout, Nori, etc.). We appreciate your opinions to help improve future homeworks and projects.**
 
-...
+I think cos weighted hemisphere sampling should illustrate as $p(\vec{\omega}) = \frac{\cos(\theta)}{\pi}$, illustrated as $p(\theta) = \frac{\cos(\theta)}{\pi}$ is a little bit confusing.
 
 
 # Supplementary
