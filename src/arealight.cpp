@@ -39,22 +39,45 @@ public:
     virtual Color3f eval(const EmitterQueryRecord & lRec) const override {
         if(!m_shape)
             throw NoriException("There is no shape attached to this Area light!");
-
-        throw NoriException("To implement...");
+        // reject intersection at back
+        if (lRec.n.dot(-lRec.wi) <= 0) {
+            return Color3f(0.0f);
+        }
+        return m_radiance;
     }
 
     virtual Color3f sample(EmitterQueryRecord & lRec, const Point2f & sample) const override {
         if(!m_shape)
             throw NoriException("There is no shape attached to this Area light!");
-
-        throw NoriException("To implement...");
+        ShapeQueryRecord sRec(lRec.ref);
+        // set p n pdf inside
+        m_shape->sampleSurface(sRec, sample);
+        // fill in properties
+        lRec.p = sRec.p;
+        lRec.n = sRec.n;
+        // remember to normalize
+        lRec.wi = (lRec.p - lRec.ref).normalized();
+        lRec.pdf = pdf(lRec);
+        lRec.shadowRay = Ray3f(lRec.ref, lRec.wi, Epsilon, (lRec.p - lRec.ref).norm() - Epsilon);
+        if (lRec.pdf < Epsilon) {
+            return Color3f(0.0f);
+        }
+        return eval(lRec) / lRec.pdf;
     }
 
     virtual float pdf(const EmitterQueryRecord &lRec) const override {
         if(!m_shape)
             throw NoriException("There is no shape attached to this Area light!");
-
-        throw NoriException("To implement...");
+        if (lRec.n.dot(-lRec.wi) <= 0) {
+            return 0.0f;
+        }
+        ShapeQueryRecord sRec(lRec.ref, lRec.p);
+        float p_area = m_shape->pdfSurface(sRec);
+        // careful with cos_theta = 0
+        float cos_theta = lRec.n.dot(-lRec.wi);
+        float d_square = (lRec.p - lRec.ref).squaredNorm();
+        // solid angle
+        return d_square * p_area / cos_theta;
     }
 
 

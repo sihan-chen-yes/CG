@@ -4,34 +4,46 @@
 
 **Homework 3 - Monte Carlo Ray Tracing**
 
-Student Name:
+Student Name:Sihan Chen
 
-Student ID Number:
+Student ID Number:23-943-079
 
-Did you attend the exercise handout? Yes/Watched the recording/No _(please update)_
+Did you attend the exercise handout? Yes
 
 (Note: please read the [supplementary](#supplementary) section first before working on this report.)
 
 # Part 1: Light Sampling
 
 ## Integrator Implementation
-**Time spent on this task:**
+**Time spent on this task:** 60min
 
 **Describe your implementation of `direct_ems`.**
 
-...
+First do scene hit detection. Then consider the hit point, if it is emitter itself, then add self emission into outgoing
+radiance. Then instead of iterate all the emitters, just uniformly sample an emitter(according to provided code). Then
+sample this single emitter to get light source point, finally use MC to do integration, $p_{em}(w_i^k)$ is included in
+radiance(from sample method) already. Use `bRec` to query the bsdf value, and consider the uniform sampling strategy on
+emitters, $p_{em}(w_i^k)$ should multiply $\frac{1}{emitter \, cnt}$, which is the same as multiply the number of emitters.
 
+Difficulty: didn't consider the scene hit point is emitter itself, which leads dark of light source.
 ## Shape Area Light
-**Time spent on this task:**
+**Time spent on this task:** 60min
 
 **Describe your implementation of `AreaEmitter::eval(...)`.**
 
-...
+Because the area emitter emits radiance uniformly in all directions from each points of the mesh. So just return the
+radiance simply if intersections are in the front(same side with normal), otherwise return 0.
 
 **Describe your implementation of `AreaEmitter::pdf(...)` and `AreaEmitter::sample(...)`.**
 
-...
+pdf: it's easier to do uniform area sampling directly(using `sRec`, filling in the properties before using), and then
+transform the pdf in area unit to pdf in solid angle unit, with formula $p_w = \frac{d^2}{cos\theta} p_y$.
 
+sample: construct `sRec` to evaluate the value and the pdf, then check the pdf value, if it's 0, then return 0,
+otherwise return the division between them.
+
+Difficulty: corner case handling. If `wi` and `n` is perpendicular, should return 0 as pdf and value, we could include
+this situation as back intersections.
 ## Validation
 **Comparison: sphere/sphere_pointlights_ems**
 <div class="twentytwenty-container">
@@ -78,22 +90,33 @@ Did you attend the exercise handout? Yes/Watched the recording/No _(please updat
 # Part 2: BRDF Sampling
 
 ## Integrator Implementation
-**Time spent on this task:**
+**Time spent on this task:** 90min
 
 **Describe your implementation of `direct_mats`.**
+Completely same as samping emitters at first if the scene hit point is emitter itself, directly query and add into the
+outgoing radiance, then sample the bsdf to get `bRec`(direction is contained), use it to construct the `eRec` to
+evaluate the radiance value if hit with emitter, then do MC integration finally.
 
-...
+Difficulty: not only $p_{mat}(w_i^k)$ but also cosine term is included, and `bRec` is constructed with local frame while
+`eRec` is contructed with world frame. Hope shadow ray to intersect with scene to get radiance! And the convention of
+`wi` and `wo` is different when construction.
 
 ## Microfacet BRDF
-**Time spent on this task:**
+**Time spent on this task:** 90min
 
 **Describe your implementation of `Microfacet::eval(...)`.**
-
-...
+Return 0 if intersects at back or if the measure is not `ESolidAngle` just like `diffuse.cpp`, calculate the half way
+vector `wh`, and return the brdf value obtained from formula(combination of diffuse and specular components brdf).
 
 **Describe your implementation of `Microfacet::sample(...)`.**
+Return 0 if intersects at back, otherwise use two strategies to sample brdf. The first is via specular component,
+sample `wh` with Beckmann distribution to construct `bRec` if random seed is less than `ks`(coeff `ks` corresponds with
+the pdf of this strategy), the second is via diffuse component, sample `wo` with cosine weighted distribution if
+random seed is bigger than `ks`. Then use the `bRec` to query the linear blending of two pdfs coming from respective
+strategies. Then return the division(remember to check the queried pdf).
 
-...
+Difficulty: remember to add cosine term when returning, and use the random seed repeatedly,
+and stretch back to [0, 1] before using.
 
 ## Validation
 **Comparison: sphere/sphere_mats**
@@ -122,11 +145,19 @@ Did you attend the exercise handout? Yes/Watched the recording/No _(please updat
 
 # Part 3: Multiple Importance Sampling
 ## Integrator Implementation
-**Time spent on this task:**
+**Time spent on this task:** 120min
 
 **Describe your implementation of `direct_mis`.**
 
-...
+Almost just combination of `ems` and `mats`, first consider the self emission from emitter as before. And then do
+emitter sampling and get the pdf(need to multiply the uniform probability of happened to sample that emitter), then
+do as `ems`, but need to evaluate $p_{mat}(w_{i,e}^k)$, use the two pdfs to calculate heuristic weight. Then the same
+for bsdf sampling as well, evaluate $p_{em}(w_{i, m}^k)$ and $p_{mat}(w_{i, m}^k)$ and calculate weight, finally use the
+weights to linear blending respective radiance to return.
+
+Difficulty:
+1. $p_{em}(w_{i}^k)$ need consider the probability of uniform sampling of light
+2. $p_{mat}(w_{i, m}^k)$ may be 0(for discrete measure, pdf is set to 0), then ignore weight(use weight 1) to keep the lambertian radiance, same for $p_{em}(w_{i, e}^k)$
 
 ## Validation
 **Comparison: odyssey_mis**

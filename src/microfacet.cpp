@@ -82,17 +82,61 @@ public:
 
     /// Evaluate the BRDF for the given pair of directions
     virtual Color3f eval(const BSDFQueryRecord &bRec) const override {
-    	throw NoriException("MicrofacetBRDF::eval(): not implemented!");
+        //return zero if the measure is wrong, or when queried for illumination on the backside
+        if (bRec.measure != ESolidAngle
+            || Frame::cosTheta(bRec.wi) <= 0
+            || Frame::cosTheta(bRec.wo) <= 0)
+            return Color3f(0.0f);
+
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
+        return m_kd * INV_PI +
+               m_ks * evalBeckmann(wh) * fresnel(wh.dot(bRec.wi), m_extIOR, m_intIOR) *
+               smithBeckmannG1(bRec.wi, wh) * smithBeckmannG1(bRec.wo, wh) /
+               (4 * Frame::cosTheta(bRec.wi) * Frame::cosTheta(bRec.wo));
     }
 
     /// Evaluate the sampling density of \ref sample() wrt. solid angles
     virtual float pdf(const BSDFQueryRecord &bRec) const override {
-    	throw NoriException("MicrofacetBRDF::pdf(): not implemented!");
+        //return zero if the measure is wrong, or when queried for illumination on the backside
+        if (bRec.measure != ESolidAngle
+            || Frame::cosTheta(bRec.wi) <= 0
+            || Frame::cosTheta(bRec.wo) <= 0)
+            return 0.0f;
+
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
+        return m_ks * evalBeckmann(wh) * Frame::cosTheta(wh) / (4 * wh.dot(bRec.wo)) +
+               (1 - m_ks) * Frame::cosTheta(bRec.wo) * INV_PI;
     }
 
     /// Sample the BRDF
     virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &_sample) const override {
-    	throw NoriException("MicrofacetBRDF::sample(): not implemented!");
+        //return zero if queried for illumination on the backside
+        if (Frame::cosTheta(bRec.wi) <= 0)
+            return Color3f(0.0f);
+
+        // fill in bRec properties
+        // sample half way direction
+        if (_sample.x() < m_ks) {
+            Point2f sample(_sample);
+            sample.x() /= m_ks;
+            Vector3f wh = Warp::squareToBeckmann(sample, m_alpha);
+            bRec.wo = 2 * (bRec.wi.dot(wh)) * wh - bRec.wi;
+        } else {
+            // sample outgoing direction via cosine weighted
+            Point2f sample(_sample);
+            sample.x() = (sample.x() - m_ks) / (1 - m_ks);
+            bRec.wo = Warp::squareToCosineHemisphere(sample);
+        }
+
+        bRec.eta = m_intIOR / m_extIOR;
+        bRec.measure = ESolidAngle;
+
+        float pdfValue = pdf(bRec);
+        // to avoid nan!
+        if (pdfValue < Epsilon) {
+            return Color3f(0.0f);
+        }
+        return Frame::cosTheta(bRec.wo) * eval(bRec) / pdfValue;
     }
 
     virtual std::string toString() const override {
