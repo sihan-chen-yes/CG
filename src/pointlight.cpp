@@ -21,20 +21,20 @@ public:
     }
 
     virtual Color3f eval(const EmitterQueryRecord & lRec) const override {
-        throw NoriException("To implement...");
+        float distanceSquared = (m_position - lRec.ref).squaredNorm();
+        // radiance Li
+        return m_power / (4 * M_PI * distanceSquared);
     }
 
     virtual Color3f sample(EmitterQueryRecord & lRec, const Point2f & sample) const override {
-        float distanceSquared = (m_position - lRec.ref).squaredNorm();
-
         // fill properties of query record before return
-        lRec.pdf = 1.0f;
         lRec.p = m_position;
         lRec.wi = (m_position - lRec.ref).normalized();
+        lRec.pdf = pdf(lRec);
         lRec.shadowRay = Ray3f(lRec.ref, lRec.wi, Epsilon, (lRec.p - lRec.ref).norm() - Epsilon);
 
-        // radience Li
-        return m_power / (4 * M_PI * distanceSquared);
+        // radiance Li
+        return eval(lRec) / lRec.pdf;
     }
 
     virtual float pdf(const EmitterQueryRecord &lRec) const override {

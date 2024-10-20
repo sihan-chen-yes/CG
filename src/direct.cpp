@@ -24,7 +24,7 @@ public:
         for (Emitter *emitter: emitters) {
             EmitterQueryRecord eRec(its.p);
 
-            // incident radience
+            // incident radiance
             // will fill in corresponding properties of eRec in sample function
             Color3f Li = emitter->sample(eRec, sampler->next2D());
 
@@ -37,7 +37,7 @@ public:
                 Lo += bsdf_value * Li * abs(its.shFrame.n.dot(eRec.wi));
             }
         }
-        return Lo; // outgoing radience Lo
+        return Lo; // outgoing radiance Lo
     }
 
     std::string toString() const {
