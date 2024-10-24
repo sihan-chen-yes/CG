@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Dielectric angle tests
+
+	These scenes consist of a single plane and a small sphere emitter and
+	only rely on a correct dielectric, direct_mats, and sphere implementation.
+	The emitter will only be hit if the outgoing vector of reflection or refraction is correct.
+
+	The first case tests total reflection, second tests refraction.
+	The remaining two are equivalent with flipped direction and IORs.
+-->
+
+<test type="ttest">
+	<string name="references" 
+		value="1.0, 0.47221, 1.0, 0.47221"/>
+
+	<scene>
+		<integrator type="direct_mats"/>
+
+		<camera type="perspective">
+		    <transform name="toWorld">
+			    <lookat target="0, 0, 0" origin="-1, 1, -1" up="0, 1, 0"/>
+			</transform>
+			<float name="fov" value="1e-6"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="1, 1, 1" />
+			<float name="radius" value="0.01" />
+			<emitter type="area">
+				<color name="radiance" value="1.0, 1.0, 1.0"/>
+			</emitter>
+		</mesh>
+
+		<!-- Hit the plane at 0,0,0 -->
+		<!-- Total internal refrlection from (3/2)^(1/2) > 1.23 -->
+		<mesh type="obj">
+			<string name="filename" value="plane.obj"/>
+			<bsdf type="dielectric">
+				<float name="intIOR" value="1"/>
+				<float name="extIOR" value="1.3"/>
+			</bsdf>
+		</mesh>
+	</scene>
+
+	<scene>
+		<integrator type="direct_mats"/>
+
+		<camera type="perspective">
+		    <transform name="toWorld">
+			    <lookat target="0, 0, 0" origin="-1, 1, -1" up="0, 1, 0"/>
+			</transform>
+			<float name="fov" value="1e-6"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<!-- It will get hit if IOR ratio is 2^(1/2) -->
+		<mesh type="sphere">
+			<point name="center" value="0.5, -1, 0.5" />
+			<float name="radius" value="0.01" />
+			<emitter type="area">
+				<color name="radiance" value="1.0, 1.0, 1.0"/>
+			</emitter>
+		</mesh>
+
+		<mesh type="obj">
+			<string name="filename" value="plane.obj"/>
+			<bsdf type="dielectric">
+				<float name="intIOR" value="1.414213562"/>
+				<float name="extIOR" value="1.0"/>
+			</bsdf>
+		</mesh>
+	</scene>
+
+	<!-- Swapped normals and IOR -->
+	<scene>
+		<integrator type="direct_mats"/>
+
+		<camera type="perspective">
+		    <transform name="toWorld">
+			    <lookat target="0, 0, 0" origin="-1, 1, -1" up="0, 1, 0"/>
+			</transform>
+			<float name="fov" value="1e-6"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="1, 1, 1" />
+			<float name="radius" value="0.01" />
+			<emitter type="area">
+				<color name="radiance" value="1.0, 1.0, 1.0"/>
+			</emitter>
+		</mesh>
+
+		<mesh type="obj">
+			<string name="filename" value="plane.obj"/>
+			<transform name="toWorld">
+				<rotate axis="1,0,0" angle="180"/>
+			</transform>
+			<bsdf type="dielectric">
+				<float name="intIOR" value="1.3"/>
+				<float name="extIOR" value="1"/>
+			</bsdf>
+		</mesh>
+	</scene>
+
+	<scene>
+		<integrator type="direct_mats"/>
+
+		<camera type="perspective">
+		    <transform name="toWorld">
+			    <lookat target="0, 0, 0" origin="-1, 1, -1" up="0, 1, 0"/>
+			</transform>
+			<float name="fov" value="1e-6"/>
+			<integer name="width" value="1"/>
+			<integer name="height" value="1"/>
+		</camera>
+
+		<mesh type="sphere">
+			<point name="center" value="0.5, -1, 0.5" />
+			<float name="radius" value="0.01" />
+			<emitter type="area">
+				<color name="radiance" value="1.0, 1.0, 1.0"/>
+			</emitter>
+		</mesh>
+
+		<mesh type="obj">
+			<string name="filename" value="plane.obj"/>
+			<transform name="toWorld">
+				<rotate axis="1,0,0" angle="180"/>
+			</transform>
+			<bsdf type="dielectric">
+				<float name="extIOR" value="1.414213562"/>
+				<float name="intIOR" value="1.0"/>
+			</bsdf>
+		</mesh>
+	</scene>
+</test>
