@@ -34,11 +34,11 @@ public:
         lRec.shadowRay = Ray3f(lRec.ref, lRec.wi, Epsilon, (lRec.p - lRec.ref).norm() - Epsilon);
 
         // radiance Li
-        return eval(lRec) / lRec.pdf;
+        return eval(lRec);
     }
 
     virtual float pdf(const EmitterQueryRecord &lRec) const override {
-        return 1.0f;
+        return 0.0f;
     }
 
 protected:

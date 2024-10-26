@@ -32,7 +32,7 @@ public:
             if (!scene->rayIntersect(eRec.shadowRay)) {
                 // no occlusion with emitter
                 // remember to local frame for wi and wo
-                BSDFQueryRecord bRec(its.shFrame.toLocal(eRec.wi), its.shFrame.toLocal(-ray.d), EMeasure::ESolidAngle, its.uv);
+                BSDFQueryRecord bRec(its.shFrame.toLocal(-ray.d), its.shFrame.toLocal(eRec.wi), EMeasure::ESolidAngle, its.uv);
                 Color3f bsdf_value = its.mesh->getBSDF()->eval(bRec);
                 Lo += bsdf_value * Li * abs(its.shFrame.n.dot(eRec.wi));
             }
