@@ -128,7 +128,7 @@ public:
             bRec.wo = Warp::squareToCosineHemisphere(sample);
         }
 
-        bRec.eta = m_intIOR / m_extIOR;
+        bRec.eta = m_extIOR / m_intIOR;
         bRec.measure = ESolidAngle;
 
         float pdfValue = pdf(bRec);

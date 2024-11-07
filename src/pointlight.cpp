@@ -21,23 +21,27 @@ public:
     }
 
     virtual Color3f eval(const EmitterQueryRecord & lRec) const override {
-        float distanceSquared = (m_position - lRec.ref).squaredNorm();
-        // radiance Li
-        return m_power / (4 * M_PI * distanceSquared);
+        // not directly sample from point light
+        // delta function set to 0
+        return Color3f(0.0f);
     }
 
     virtual Color3f sample(EmitterQueryRecord & lRec, const Point2f & sample) const override {
         // fill properties of query record before return
         lRec.p = m_position;
         lRec.wi = (m_position - lRec.ref).normalized();
-        lRec.pdf = pdf(lRec);
+        // always on the point light manually set pdf to 1
+        lRec.pdf = 1.0f;
         lRec.shadowRay = Ray3f(lRec.ref, lRec.wi, Epsilon, (lRec.p - lRec.ref).norm() - Epsilon);
 
+        float distanceSquared = (m_position - lRec.ref).squaredNorm();
         // radiance Li
-        return eval(lRec);
+        return m_power / (4 * M_PI * distanceSquared);
     }
 
     virtual float pdf(const EmitterQueryRecord &lRec) const override {
+        // not directly sample from point light
+        // delta function set to 0
         return 0.0f;
     }
 
