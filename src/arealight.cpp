@@ -82,7 +82,24 @@ public:
 
 
     virtual Color3f samplePhoton(Ray3f &ray, const Point2f &sample1, const Point2f &sample2) const override {
-        throw NoriException("To implement...");
+        ShapeQueryRecord sRec;
+
+        m_shape->sampleSurface(sRec, sample1);
+
+        // assuming uniform sampling on the surface
+        float area = 1 / sRec.pdf;
+
+        // total flux will divide the count later
+        Color3f phi = M_PI * area * m_radiance;
+
+        // in local coordinate framework
+        Vector3f direction = Warp::squareToCosineHemisphere(sample2);
+        ray.o = sRec.p;
+        ray.d = Frame(sRec.n).toWorld(direction);
+//        assert(ray.d.norm() == 1);
+        ray.mint = Epsilon;
+
+        return phi;
     }
 
 

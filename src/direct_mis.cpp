@@ -44,11 +44,16 @@ public:
             // remember to local frame for wi and wo
             BSDFQueryRecord bRec1(its1.shFrame.toLocal(-ray.d), its1.shFrame.toLocal(eRec1.wi), EMeasure::ESolidAngle, its1.uv);
             float pdfMats = its1.mesh->getBSDF()->pdf(bRec1);
-            float wEms = 1.0f;
-            // when pdfEms = 0, use default weight as 1
-            // otherwise use formula to calculate
-            if (pdfEms >= Epsilon) {
+            // failed emitter sampling
+            float wEms = 0.0f;
+            // Discrete emitter case: pdf eval => 0, eRec.pdf => 1
+            if (emitter->pdf(eRec1) < Epsilon && (eRec1.pdf - 1.0f) < Epsilon) {
+                wEms = 1.0f;
+            } else if (pdfEms >= Epsilon) {
+                // continuous cases
+                // successful emitter sampling
                 wEms = pdfEms / (pdfEms + pdfMats);
+                //otherwise failed emitter sampling in continuous cases: no contribution, wEms => 0
             }
             Color3f bsdfValue = its1.mesh->getBSDF()->eval(bRec1);
             // f(x) / uniform pdf => f(x) * cnt
@@ -77,11 +82,17 @@ public:
             eRec2.n = its2.shFrame.n;
             // uniform sampling on emitters first
             float pdfEms = its2.mesh->getEmitter()->pdf(eRec2) / emitterCount;
-            float wMats = 1.0f;
-            // when pdfMats = 0, use default weight as 1
-            // otherwise use formula to calculate
-            if (pdfMats >= Epsilon) {
+            // failed bsdf sampling
+            float wMats = 0.0f;
+            // special handling for Discrete bsdf
+            if (bRec2.measure == EDiscrete) {
+                wMats = 1.0f;
+            } else if (pdfMats >= Epsilon){
+                // continuous cases
+                // Solid angle measure
+                // successful bsdf sampling
                 wMats = pdfMats / (pdfEms + pdfMats);
+                //otherwise failed material sampling in continuous cases: no contribution, wMats => 0
             }
             // incident radiance
             Color3f Li = its2.mesh->getEmitter()->eval(eRec2);

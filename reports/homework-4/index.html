@@ -4,37 +4,68 @@
 
 **Homework 4 - Global Illumination**
 
-Student Name:
+Student Name:Sihan Chen
 
-Student ID Number:
+Student ID Number:23-943-079
 
-Did you attend the exercise handout? Yes/Watched the recording/No _(please update)_
+Did you attend the exercise handout? Yes/Watched the recording/No _Watched the recording_
 
 (Note: please read the [supplementary](#supplementary) section first before working on this report.)
 
 # Part 1: Dielectric BSDF
-**Time spent on this task:**
+**Time spent on this task:** 3hours
 
 **Describe your implementation of `Dielectric` class.**
-
-...
-
+Should consider the case transmit from interior or exterior, change normal direction and relative IOR correspondingly.
+Then compute the fresnel coefficient, and use it as event probability to choose between reflection and refraction.
+Remember to set needed properties of `bRec`. Use the coefficient to compute the bsdf value(including cos term and pdf,
+these to terms cancel with the raw bsdf value). Be careful with the pdf, need to consider the event probability as well inside.
 # Part 2: Path Tracing
 
 ## BSDF Sampling
-**Time spent on this task:**
+**Time spent on this task:** 3hours
 
 **Describe your implementation of `path_mats`.**
+Following the decomposition of $L_o$, we can accumulate the bsdf(with cos and pdf term weighted) as throughput, and
+evaluate the radiance from emitter(self-emission from next bounce), then accumulate the production of them. Use Russian
+Roulette to terminate the loop. And when evaluate the radiance from emitter, we could do bsdf sampling(if hit the emitter then non-zero radiance).
+We could also reuse the path for NEE instead of sample another one, in this situation, we just need to store the direction
+sampled when calculating the radiance, and also accumulate the throughput coefficient for next bounce use.
 
-...
+According to the slides, we could do Russian Roulette only after 3 bounces for less noise.
+
+Besides, actually there are two ways of writing the code, the difference is if including the first radiance evaluation
+into the loop code, like the difference of `while()` and `do {} while()`.
+Use the first one for easier understanding, and the second one for more compact code. But the pseudo code is written
+in both two ways, which is pretty confusing. (path tracing for the first one, photon tracing for the second one)
+
+I used `do{} while()` style format for compact code, following the photon tracing pseudo code.
 
 ## Multiple Importance Sampling
-**Time spent on this task:**
+**Time spent on this task:** 3hours
 
 **Describe your implementation of `path_mis`.**
+Almost the same as Mats path tracing, but use multi-importance sampling when evaluate the radiance. Calculate the
+`weight_ems` and `weight_mats` using `pdf_ems` and `pdf_mats`, then use the weight to control the contribution of each
+strategy. And also we could reuse the bsdf sampling path and only do Russian Roulette after 3 bounces.
 
-...
+Ensure the `pdf_ems` and `pdf_mats` are from the same intersection point.
 
+Careful with handling the corner case:
+
+For the `weight_ems`: if the `pdf_ems` from `eval()` is 0 and pdf from `lRec` is 1,
+then that's the discrete emitter case(like pointlight, although didn't show up in the scene of PA4), set `weight_ems` to 1.
+We can't only use `pdf_ems` from `eval()` equals 0 to directly do the branch(due to another case of failed sampling is also with `eval()` equaling 0.
+Excluding the discrete case, then detect if the pdf from `lRec` is non-zero, if no, that's failed sampling case, just set `weight_ems` as 0.
+
+For `weight_mats`: also first exclude discrete cases(set `weight_mats` to 1) using the measure type, then go check the pdf,
+0 means failed sampling, directly set `weight_mats` as 0.
+
+This method could handle every cases well as far as I know.
+
+I followed the pseudo code with `while()` style for easier understanding(special handling the first ray).
+
+Seems mine has more noise, and the color distribution is very similar.
 ## Validation
 **Comparison: CGL Triangle**
 <div class="twentytwenty-container">
@@ -60,23 +91,36 @@ Did you attend the exercise handout? Yes/Watched the recording/No _(please updat
     <img src="solution/table_path_mis.png" alt="Mine mis" class="img-responsive">
 </div>
 
+Got more noises near on the glass surface, also for photon mapping. Suppose it's due to the dielectrics material. After interact with this material($bsdf <= 1$),
+it got a bigger probability to terminate, which leads noise. If increase to 10 instead of 3(forcing bouncing), there are even less noise than ref.
 # Part 3: Photon Mapping
-**Time spent on this task:**
+**Time spent on this task:** 4 hours
 
 ## Photon Emission from Shape Area Lights
 **Describe your implementation of `AreaEmitter::samplePhoton(...)`.**
-
-...
+According to the formula, $\Phi_p=\frac{\Phi}{M}$ and $\Phi = \pi \times A \times L$, assuming the uniform sampling on
+the mesh surface, we could return flux per photon(return total photon in code). And remember to
+set the ray with origin and direction(cosine weighted direction sampling).
 
 ## Photon Tracing and Storage
 **Describe your implementation of `PhotonMapper::preprocess(...)`.**
 
-...
+Following the pseudo code, each time sampling an emitter randomly and generate the photon, remember to update the ray(update dRcp)
+after filling in the properties, and consider the pdf of emitter sampling into flux(radiance) as well. Then use bsdf sampling
+to bounce, and use Russian Roulette to terminate(after 3 bounces). If hit the surface with diffuse bsdf, then store the
+photon information including direction, flux and intersection point. Then build the KDTree(code given).
+
+Careful with the `m_photonCount` property, which is the size of the KDTree, not the emitted photon count. `phi_p` should
+come from the total flux and the emitted photon count.
 
 ## Rendering/Radiance Estimation
 **Describe your implementation of `PhotonMapper::Li(...)`.**
+Following the `do{} while()` style of path bsdf tracing. Apart from terminating according to Russian Roulette, we
+could terminate if hit a surface with diffuse bsdf(because we already stored the biased reflection radiance via photon).
+For photon radiance, query the KDTree to get all the photons in the radius, evaluate the bsdf value(without cosine and pdf term),
+and do production with photon irradiance, and average all production as reflection radiance.
 
-...
+If increase the number of emitted photons, the splotches will decrease.
 
 ## Validation
 **Comparison: CGL Triangle**
@@ -107,8 +151,7 @@ Did you attend the exercise handout? Yes/Watched the recording/No _(please updat
 # Feedback
 **Use this section to provide feedback about this assignment (each task, the handout, Nori, etc.). We appreciate your opinions to help improve future homeworks and projects.**
 
-...
-
+Pseudo code style should be unified, I guess the pseudo code in the slides are from two different TAs.
 
 # Supplementary
 * For each task, please note down the time you spent working through it and use at least a few sentences to describe your implementation. If applicable, also report the problems you encounter (e.g. whether or how it's solved, what is the difficult part).

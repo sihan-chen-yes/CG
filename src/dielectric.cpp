@@ -43,7 +43,47 @@ public:
     }
 
     virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &sample) const override {
-        throw NoriException("Unimplemented!");
+        Vector3f n = Vector3f(0.0f, 0.0f, 1.0f);
+        float cosThetaI, cosThetaT, sinThetaI, sinThetaT;
+        cosThetaI = Frame::cosTheta(bRec.wi);
+        // consider the incident direction
+        if (Frame::cosTheta(bRec.wi) < 0) {
+            n = -n;
+            cosThetaI = -cosThetaI;
+            //relative IOR: incident / outgoing
+            bRec.eta = m_intIOR / m_extIOR;
+        } else {
+            //relative IOR: incident / outgoing
+            bRec.eta = m_extIOR / m_intIOR;
+        }
+        sinThetaI = sqrt(1 - cosThetaI * cosThetaI);
+
+        // fill in other bRec properties
+        bRec.measure = EDiscrete;
+
+        float reflected_coeff = fresnel(Frame::cosTheta(bRec.wi), m_extIOR, m_intIOR);
+        float refracted_coeff = 1.0f - reflected_coeff;
+        if (sample.x() < reflected_coeff) {
+            //reflection event
+            bRec.wo = Vector3f(
+                    -bRec.wi.x(),
+                    -bRec.wi.y(),
+                    bRec.wi.z()
+            );
+            // don't forget the pdf of event happening!
+            return Color3f(reflected_coeff) / reflected_coeff;
+        } else {
+            //refraction event: fixed wo according to Snell's law
+            sinThetaT = bRec.eta * sinThetaI;
+            //total internal reflection is processed in fresnel calculation
+            cosThetaT = sqrt(1 - sinThetaT * sinThetaT);
+            Vector3f t = bRec.wi - bRec.wi.dot(n) * n;
+            // unit tangent vector
+            t.normalize();
+            bRec.wo = -cosThetaT * n - sinThetaT * t;
+            // don't forget the pdf of event happening!
+            return bRec.eta * bRec.eta * Color3f(refracted_coeff) / refracted_coeff;
+        }
     }
 
     virtual std::string toString() const override {
