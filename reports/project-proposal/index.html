@@ -4,70 +4,182 @@
 
 **Project Proposal**
 
-Student Name/-s:
+Student Name: Sihan Chen
 
 # Motivational Image
 
-_Include and describe your motivational image, how it conforms to this year's
-theme and how the selected features will help to achieve that_
+<div style="text-align: center;">
+    <img src="../resources/whole.jpeg" alt="Motivational image" class="img-responsive">
+    <p>Rennala, Queen of the Full Moon</p>
+</div>
+## Theme Align
 
-<img src="../resources/nori.png" alt="Motivational image" class="img-responsive">
+This is the boss room of <a href="https://eldenring.wiki.fextralife.com/Rennala+Queen+of+the+Full+Moon" target="_blank">Rennala</a>
+from <a href="https://en.wikipedia.org/wiki/Elden_Ring" target="_blank">Elden Ring</a>(Game of The Year in 2022),
+the first time I came to the boss, the game CG and scene impressed me a lot. Galaxy, stars, full moon, water,
+magic, queen, all the things above are unified into one scene with cold atmosphere, reflecting the loneliness of Rennala,
+Queen of the Full Moon, after being abandoned by the king, Radagon of the Golden Order. I found the scene conforms with this year's theme,
+not only in terms of art design but also the metaphor of the story in the game.
+To make more people appreciate the charm of The Ninth Art, I decided to use this image(one frame in the CG) as the motivational image.
+Below are more detailed illustration of the correlation:
+
+**1. Blending of the Natural Things**
+
+The most obvious water horizon split the whole image into two parts: sky and water, it fuses the sky and ground.
+
+**2. Fusion of Dynamic and Static State**
+
+The scene shifts between stillness (the water surface, fog) and movement (floating magical particles, gentle ripples), creating tension and balance.
+
+**3. Transition Between Light and Shadow**
+
+The scene juxtaposes the radiant, warm glow of the full moon against the cold, dark vastness of the surrounding night sky.
+Rennala herself embodies a silhouette illuminated by the light, placing her at the crossroads of light and shadow, highlighting her position "in between" these two extremes.
+
+**4. Blurring the Line Between Reality and Illusion**
+
+Reflective Water Surface: The mirror-like water surface creates a duality, where the line between the real world and its reflection becomes indistinguishable. The viewer is placed in a space that feels both grounded and ethereal, existing "in between" reality and fantasy.
+The gentle ripples on the water suggest that while the reflection is a near-perfect illusion, it's still not entirely real, emphasizing a liminal state.
+
+**5. The Mystical and the Natural Coexisting**
+
+The full moon and the magical aura of the scene create an intersection between the natural world (the moon, water, mist) and the supernatural (magic particles, glowing sigils, and mystical energy).
+This blend of natural and otherworldly elements enhances the sense of being in a space where two realms collide. Also the horizon of the water corresponds with the queen's magical particles.
+
+**6. Thematic Duality in Character**
+
+Rennla resides in <a href="https://eldenring.fandom.com/wiki/Lands_Between" target="_blank">The Lands **Between**</a>, once a powerful queen and now a sorrowful, isolated figure, caught between her glorious past and her melancholic present.
+It represents both queen's emotional and status duality.
+
+
 
 # Selected Features
 
-Please fill out the tables while following the given structure as much as possible. Please remove this text, "2.1 Example", and "2.3 Student #2" (if you do not work in a group)
+## Student #1
 
-## Example
+Student Name: Sihan Chen
 
-Student Name: John Doe
-
-nethz: jodoe
+nethz: sihchen
 
 ID      | Short Name                |Points | Features (if required) & Comments
 --------|---------------------------|-------|------------------------------------
-5.1 | Advanced Camera Effects | 5 | depth of field
-5.1 | Advanced Camera Effects | 5 | lens distortion
-5.3 | Images as Textures | 5 | 
-5.9 | Simple Extra BSDF | 5 | rough conductor
-5.9 | Simple Extra BSDF | 5 | thin dielectric
-5.19 | Rendering using the Euler Cluster | 5 | 
-15.3 | Environment Map Emitter | 15 | 
-15.5 | Disney BSDF | 15 | roughness, metallic, specular, specularTint, clearcoat
+5.3 | Images as Textures | 5 |
+5.8 | Bump Mapping or Normal Mapping | 5 |
+5.20 | Modeling Meshes | 5 |
+15.4 | Homogeneous Participating Media | 15 |
+15.5 | Disney BSDF | 15 | roughness, metallic, subsurface, specular, clearcoat
+15.10 | Moderate Denoising 2 | 15 |
 Total || 60 |
 
-## Student #1
 
-Student Name: _TODO_
-
-nethz: _TODO_
-
-ID      | Short Name                |Points | Features (if required) & Comments
---------|---------------------------|-------|----------------------------------
-.. | .. | .. | ..
-Total || .. |
+## Feature Showcases
+I select several most important features for rendering the image from my opinion:
 
 
-_Describe how you plan to validate them and, if needed, provide some additional information here_
+**5.3 Images as Textures, 5.8 Bump Mapping or Normal Mapping**
+
+There are complex textures on the mesh, I need to map texture onto the mesh to describe the complex pattern on the clothes. And for the complex geometry of the crown and stick,
+I need Bump Mapping to support more fine-grained geometry(Hope I can find these assets from the sources directory of the game).
+
+<img src="../resources/Rennala1.jpeg" alt="Scene detailed image1" style="display: block; margin: 0 auto; width: 300px; height: 600px;">
+
+**15.5 Disney BSDF**
+
+For rendering, I need different bsdf to model the material respectively. I choose roughness, specular and metallic to model basic conductor (e.g., crown and stick) and dielectric (e.g., water) material, and use subsurface to make
+skin looks more real, and also use clearcoat to improve highlight.
+
+<img src="../resources/Rennala2.png" alt="Scene detailed image2" style="display: block; margin: 0 auto;">
 
 
-## Student #2
+**5.20 Modeling Meshes**
 
-Student Name: _TODO_
 
-nethz: _TODO_
+These assets are all from the game, I need to get each mesh and texture(queen, moon, water, stars) and put them together, even with some modifications.
 
-ID      | Short Name                |Points | Features (if required) & Comments
---------|---------------------------|-------|----------------------------------
-.. | .. | .. | ..
-Total || .. |
+<img src="../resources/whole.jpeg" alt="Motivational image" class="img-responsive">
 
-_Describe how you plan to validate them and, if needed, provide some additional information here_
+**15.4 Homogeneous Participating Media**
+
+Because there are moon light shining through the fog and water in the scene, and light from the magician stick, I need to model participating media. But it seems homogeneous one is enough
+due to there are no obvious varying in the media(almost uniform).
+
+Below are two images describing only the scene:
+
+<img src="../resources/moon-water.png" alt="Scene detailed image1" class="img-responsive">
+<img src="../resources/moon-water2.png" alt="Scene detailed image2" class="img-responsive">
+
+**15.10 Moderate Denoising 2**
+
+Because the scene is very complex, so I need some improved sampling strategy, I'll first try adaptive sampling to improve the efficiency and quality.
+Denoising as post-process is also necessary for rendering a perfect image, especially such a complex image.
+
+## Validation Proposal
+Here are the approximate validation framework below, still need some more fine-grained steps to validate each function in every whole feature.
+All features will be tested first on a simple scene, and then on the final scene. Comparison mainly includes results before and after the new implemented feature
+from Nori, and results from Nori and from Mitsuba as well.
+
+**5.3 Images as Textures**
+
+1. First prepare some textures(especially some <a href="https://www.artstation.com/blogs/zeeshannasir/peYz/reference-uv-map-grids" target="_blank">easy-to-recognize textures</a>), and some simple geometry shapes like sphere, cube, and also complex mesh. Then attach the textures to them in Blender, make sure that can work.
+
+2. Implement the texture related code in Nori, test the textures on simple geometry and then complex mesh in Nori(comparison between textured and untextured one). And compare the rendered results with those from Mitsuba.
+
+3. Test the texture function in the final scene, also compare with Mitsuba.
+
+**5.8  Bump Mapping or Normal Mapping**
+
+Very similar validation pipeline as image as texture feature:
+
+1. Explore in Blender
+
+2. Use apply normal mapping on the mesh, compare the rendering results from previous one without normal mapping.
+And also compare the normal mapping results made by Nori with Mitsuba.
+
+3. Test the normal mapping on the queen's 3D character model in the final scene, also compare with Mitsuba.
+
+**5.20 Modeling Meshes**
+
+1. Use unpacking tool to get the assets from the game(including texture and mesh), if that doesn't work, then I need to search similar assets online.
+
+2. Build the scene in Blender with some modifications, export related files, make sure Nori could load them successfully(it seems there's a <a href="https://www.artstation.com/blogs/zeeshannasir/peYz/reference-uv-map-grids" target="_blank">plugin</a> to change to Nori form)
+directly.
+
+3. Record all the steps in details because there are not much to validate.
+
+**15.4 Homogeneous Participating Media** <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">ref</a>
+
+1. Compare the results between surface path tracing and volume path tracing(VPT) from Nori (deliberately build some scenes with homogeneous participating media) also compare the latter with Mitsuba, make sure VPT works.
+
+2. Media coefficient validation: change the coefficient values(extinction, in-scattering) to render different situations of homogeneous participating media, and compare with Mitsuba, make sure the coefficient setting works.
+
+3. Phase function validation: implement several phase functions(isotropic, Henyey-Greenstein), tuning them(e.g., g in Henyey-Greenstein) to render different results, and compare with Mitsuba, make sure phase function works.
+
+4. Compare the results for the final scene from Nori with Mitsuba.
+
+**15.5 Disney BSDF** <a href="https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf" target="_blank">ref</a>
+
+1. Tune the specified parameters to different values while keep others constant respectively, render each material using Nori and Mitsuba with same light source, and compared the results.
+
+2. Warp Test: do warp test on the new evolved distribution sampling(e.g., GTR1, GTR2) following the validation pipeline in PA2.
+
+3. Compare the results for the final scene with Mitsuba.
+
+**15.10 Moderate Denoising 2**
+
+1. Simple Denoising, NL-means using Pixel Variance Estimates: Do as post-process, compare the image before denoising and after, there should be an improvement in terms of noise.
+
+2. Adaptive Sampling: Using adaptive sampling, the image rendering should converge more quickly. Compare the converge rate with and without adaptive sampling. Also compare with Mitsuba's results enabling adaptive sampling.
+Using the results from adaptive sampling, previous simple denoising should work better due to the more uniform noise, compare previous denoised image with current one.
+
+3. Also could try these skills on more complex scene(e.g., the final scene).
+
 
 # Feedback
 **Use this section to provide feedback on the feature selection process, especially the feature selection tool if you used it.**
 
-...
-
+1. Hoping to get some suggestions about the feature choice for rendering the image, including some extra necessary features(not graded) to get better quality(I think maybe I still need env map).
+2. Also looking forward to knowing the potential difficulties that I'll probably meet.
+3. Not sure whether using the assets online and putting them together in Blender could get the points from Mesh Modelling.
 
 # Supplementary
 * This report template uses [Markdeep](https://casual-effects.com/markdeep/), which supports Markdown syntax in HTML file. For example usage, please refer to the [official demo document](https://casual-effects.com/markdeep/features.md.html).
