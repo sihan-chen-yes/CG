@@ -12,7 +12,7 @@ Student Name: Sihan Chen
     <img src="../resources/whole.jpeg" alt="Motivational image" class="img-responsive">
     <p>Rennala, Queen of the Full Moon</p>
 </div>
-## Theme Align
+## Thematic Alignment
 
 This is the boss room of <a href="https://eldenring.wiki.fextralife.com/Rennala+Queen+of+the+Full+Moon" target="_blank">Rennala</a>
 from <a href="https://en.wikipedia.org/wiki/Elden_Ring" target="_blank">Elden Ring</a>(Game of The Year in 2022),
@@ -66,9 +66,9 @@ ID      | Short Name                |Points | Features (if required) & Comments
 5.3 | Images as Textures | 5 |
 5.8 | Bump Mapping or Normal Mapping | 5 |
 5.20 | Modeling Meshes | 5 |
+15.3 | Environment Map Emitter | 15 |
 15.4 | Homogeneous Participating Media | 15 |
 15.5 | Disney BSDF | 15 | roughness, metallic, subsurface, specular, clearcoat
-15.10 | Moderate Denoising 2 | 15 |
 Total || 60 |
 
 
@@ -108,10 +108,11 @@ Below are two images describing only the scene:
 <img src="../resources/moon-water.png" alt="Scene detailed image1" class="img-responsive">
 <img src="../resources/moon-water2.png" alt="Scene detailed image2" class="img-responsive">
 
-**15.10 Moderate Denoising 2**
+**15.3 Environment Map Emitter**
 
-Because the scene is very complex, so I need some improved sampling strategy, I'll first try adaptive sampling to improve the efficiency and quality.
-Denoising as post-process is also necessary for rendering a perfect image, especially such a complex image.
+The background is full of stars and galaxy, using env map could provide the background visual effect and complex consistent environment
+lighting at the same time with perfect HDRI map, making the foreground rendering (e.g., water reflection, character lighting)
+more realistic. With env map, I don't need to put light sources near the stars/galaxy and adjust them manually one by one.
 
 ## Validation Proposal
 Here are the approximate validation framework below, still need some more fine-grained steps to validate each function in every whole feature.
@@ -132,8 +133,7 @@ Very similar validation pipeline as image as texture feature:
 
 1. Explore in Blender
 
-2. Use apply normal mapping on the mesh, compare the rendering results from previous one without normal mapping.
-And also compare the normal mapping results made by Nori with Mitsuba.
+2. Use apply normal mapping on the mesh, compare the rendering results from previous one without normal mapping. And also compare the normal mapping results made by Nori with Mitsuba.
 
 3. Test the normal mapping on the queen's 3D character model in the final scene, also compare with Mitsuba.
 
@@ -141,10 +141,17 @@ And also compare the normal mapping results made by Nori with Mitsuba.
 
 1. Use unpacking tool to get the assets from the game(including texture and mesh), if that doesn't work, then I need to search similar assets online.
 
-2. Build the scene in Blender with some modifications, export related files, make sure Nori could load them successfully(it seems there's a <a href="https://www.artstation.com/blogs/zeeshannasir/peYz/reference-uv-map-grids" target="_blank">plugin</a> to change to Nori form)
-directly.
+2. Build the scene in Blender with some modifications, export related files, make sure Nori could load them successfully(it seems there's a <a href="https://www.artstation.com/blogs/zeeshannasir/peYz/reference-uv-map-grids" target="_blank">plugin</a> to change to Nori form) directly.
 
 3. Record all the steps in details because there are not much to validate.
+
+**15.3 Environment Map Emitter** <a href="https://pbr-book.org/4ed/Light_Sources/Infinite_Area_Lights" target="_blank">ref</a>
+
+1. Rendering different material spheres (e.g., mirror, dielectrics, diffuse objects) with/without environment map (set light source manually), compare the visual difference, make sure env map heps. Also using the same setting in Mitsuba, compare the results with those from Nori.
+
+2. Warp test: validate the sampling in environment map emitters (especially after using importance sampling) following the validation pipeline in PA2. And visualize env map sampling, there should be more samples near strong radiance texel if sampling proportional to radiance.
+
+3. Check the results on the final scene rendering and compare with Mitsuba.
 
 **15.4 Homogeneous Participating Media** <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">ref</a>
 
@@ -164,22 +171,8 @@ directly.
 
 3. Compare the results for the final scene with Mitsuba.
 
-**15.10 Moderate Denoising 2**
-
-1. Simple Denoising, NL-means using Pixel Variance Estimates: Do as post-process, compare the image before denoising and after, there should be an improvement in terms of noise.
-
-2. Adaptive Sampling: Using adaptive sampling, the image rendering should converge more quickly. Compare the converge rate with and without adaptive sampling. Also compare with Mitsuba's results enabling adaptive sampling.
-Using the results from adaptive sampling, previous simple denoising should work better due to the more uniform noise, compare previous denoised image with current one.
-
-3. Also could try these skills on more complex scene(e.g., the final scene).
-
-
 # Feedback
 **Use this section to provide feedback on the feature selection process, especially the feature selection tool if you used it.**
-
-1. Hoping to get some suggestions about the feature choice for rendering the image, including some extra necessary features(not graded) to get better quality(I think maybe I still need env map).
-2. Also looking forward to knowing the potential difficulties that I'll probably meet.
-3. Not sure whether using the assets online and putting them together in Blender could get the points from Mesh Modelling.
 
 # Supplementary
 * This report template uses [Markdeep](https://casual-effects.com/markdeep/), which supports Markdown syntax in HTML file. For example usage, please refer to the [official demo document](https://casual-effects.com/markdeep/features.md.html).
