@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="39.597755335771296"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,3.0,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<emitter type="point">
+		<point name="position" value="4.076245,1.005454,5.903862"/>
+		<color name="power" value="1000.000000,1000.000000,1000.000000"/>
+	</emitter>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Plane_Material.001.obj"/>
+
+		<bsdf type="diffuse" name="Material.001" >
+			<texture type="image_texture" name="albedo">
+				<vector name="scale" value="0.5,1"/>
+				<string name="filename" value="textures/checkerboard.jpg"/>
+				<string name="interpolation" value="Linear"/>
+				<string name="extension" value="REPEAT"/>
+				<string name="projection" value="FLAT"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+</scene>

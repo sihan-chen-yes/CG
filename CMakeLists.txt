@@ -106,6 +106,8 @@ set(NORI_SOURCE_FILES
   src/path_mats.cpp
   src/path_mis.cpp
   src/pointlight.cpp
+
+        src/map/texture_map.cpp
 )
 
 add_executable(nori ${NORI_SOURCE_FILES})

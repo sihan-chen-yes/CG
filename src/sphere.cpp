@@ -48,13 +48,15 @@ public:
         float delta_square = pow(b, 2) - 4 * a * c;
         float t_min = ray.mint;
         float t_max = ray.maxt;
+        // no intersections
+        bool intersect = false;
         if (delta_square == 0) {
             //only one intersection
             float t1 = -b / (2 * a);
             //should in [mint, maxt] and bigger than 0
             if (t1 >= 0 && t1 >= t_min && t1 <= t_max) {
                 t = t1;
-                return true;
+                intersect = true;
             }
         } else if (delta_square > 0) {
             // two intersections t1 < t2
@@ -63,16 +65,38 @@ public:
             // check smaller one first
             if (t1 >= 0 && t1 >= t_min && t1 <= t_max) {
                 t = t1;
-                return true;
-            }
-            // check bigger one then
-            if (t2 >= 0 && t2 >= t_min && t2 <= t_max) {
+                intersect = true;
+            } else if (t2 >= 0 && t2 >= t_min && t2 <= t_max) {
+                // check bigger one then
                 t = t2;
-                return true;
+                intersect = true;
             }
         }
-        // no intersections
-        return false;
+
+        if (intersect) {
+            // set UV
+            Point3f p = ray.o + ray.d * t;
+            // map sphere coordinate to uv coordinate
+            Vector3f rel_p = (p - getCentroid(index));
+            // x = rsin(theta)cos(phi), y = rsin(theta)sin(phi) z = rcos(theta)
+            //[0, pi] need to handle the precision
+            float theta = acos(std::clamp(rel_p.z() / m_radius, -1.0f, 1.0f));
+            //[-pi, pi]
+            float phi = atan2(rel_p.y(), rel_p.x());
+
+            // map to [0, 1]
+            u = phi / (2 * M_PI);
+            v = 1 - theta / M_PI;
+
+            // check UV
+//            if (!std::isfinite(u) || std::isnan(u)) {
+//                cout << "U out of range: " << u << endl;
+//            }
+//            if (!std::isfinite(v) || std::isnan(v)) {
+//                cout << "V out of range: " << v << endl;
+//            }
+        }
+        return intersect;
     }
 
     virtual void setHitInformation(uint32_t index, const Ray3f &ray, Intersection & its) const override {
@@ -86,26 +110,15 @@ public:
 
         Vector3f normal = (p - getCentroid(index)).normalized();
 
-        // map sphere coordinate to uv coordinate
-        Vector3f rel_p = (p - getCentroid(index));
-        // x = rsin(theta)cos(phi), y = rsin(theta)sin(phi) z = rcos(theta)
-        //[0, pi]
-        float theta = acos(rel_p.z() / m_radius);
-        //from [-pi, pi] to [0, 2pi]
-        float phi = atan2(rel_p.y(), rel_p.x());
-        if (phi < 0) {
-            phi += 2 * M_PI;
-        }
-
         // fill its properties
         // intersection point
         its.p = p;
         // same geo and sh frame for sphere
         its.geoFrame = Frame(normal);
         its.shFrame = Frame(normal);
-        // map to [0, 1]
-        its.uv.x() = phi / (2 * M_PI);
-        its.uv.y() = theta / M_PI;
+
+        its.uv.x() = u;
+        its.uv.y() = v;
     }
 
     virtual void sampleSurface(ShapeQueryRecord & sRec, const Point2f & sample) const override {

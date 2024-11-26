@@ -4,7 +4,128 @@
 
 **Report**
 
-**Prepare your project report. Feel free to completely replace this file!**
+# Images as Textures
+
+Given an image, we can attach the image onto object, making it looks more realistic without increasing the geometry complexity of mesh.
+Specifically, for arbitrary point in 3D space, we could map it into a 2D space point, and query the color of that 2D point from the given image.
+The most important thing is to understand the mapping from UV space to XY image space, because UV space is continuous but XY space is discrete (only integer indices has pixel value).
+$$
+    x = \frac{u}{\frac{1}{width}}=u \times width \\
+    y = \frac{v}{\frac{1}{height}}=u \times height
+$$
+
+To make XY space become continuous, we could use bilinear interpolation with the values in the four corners, like:
+```cpp
+// integer part
+int x_int = int(std::floor(x));
+int y_int = int(std::floor(y));
+
+float x_frac = x - float(x_int);
+float y_frac = y - float(y_int);
+
+T interpolated_value =
+    (1 - x_frac) * (1 - y_frac) * v00 +
+    x_frac * (1 - y_frac) * v10 +
+    (1 - x_frac) * y_frac * v01 +
+    x_frac * y_frac * v11;
+```
+
+Also need to consider the normalization of given uv input (maybe negative, maybe out of range), and need to align the frame
+convention (e.g., origin, axis) with the output format of Blender using the checkerboard pattern image on a plane:
+```cpp
+// map UV in any range to [0, 1]
+Point2f normalized_uv;
+normalized_uv.x() = uv.x() - std::floor(uv.x());
+normalized_uv.y() = uv.y() - std::floor(uv.y());
+// flip V to align convention
+// UV coord set origin at left bottom
+// image coord set origin at left top
+normalized_uv.y() = 1.0f - normalized_uv.y();
+
+//change to image space
+// swap x and y
+float y = normalized_uv.x() / m_scale.x() * (m_width - 1);
+float x = normalized_uv.y() / m_scale.y() * (m_height - 1);
+```
+<div class="twentytwenty-container">
+    <img src="ref/texture/scene_floor_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/texture/scene_floor_nori.png" alt="Mine" class="img-responsive">
+</div>
+
+The scale property could make the image applied on mesh after scaling, like using`(0.5, 1)` would make u direction to densify as 2 times of the original one:
+<div class="twentytwenty-container">
+    <img src="solution/texture/scene_floor_nori_scale.png" alt="(0.5,1)" class="img-responsive">
+    <img src="solution/texture/scene_floor_nori.png" alt="(1,1)" class="img-responsive">
+</div>
+
+This feature support `jpg`, `png` and `exr` formats. For `jpg` and `png` formats, I use `stbi` tiny library to process the data, careful with the layout (RGBA, row major).
+
+```cpp
+std::cout << "Processing jpg/png file: " << filename << std::endl;
+// using stbi library
+// 1.RGBA/RGB 2.column first order lay out
+int channels;
+unsigned char* data = stbi_load(filename.c_str(), &m_width, &m_height, &channels, 3);
+if (!data) {
+    std::cerr << "Failed to load jpg/png image: " << filename << std::endl;
+    return false;
+}
+m_texture.reserve(m_width * m_height);
+for (int x = 0; x < m_width; ++x) {
+    for (int y = 0; y < m_height; ++y) {
+        //careful with channels!
+        float R = data[channels * (y * m_width + x)] / 255.0f;
+        float G = data[channels * (y * m_width + x) + 1] / 255.0f;
+        float B = data[channels * (y * m_width + x) + 2] / 255.0f;
+        m_texture.push_back(Color3f(R, G, B));
+    }
+}
+//release mem
+stbi_image_free(data);
+```
+
+For `exr` format, I use `bitmap` which is already implemented.
+```cpp
+std::cout << "Processing EXR file: " << filename << std::endl;
+// using bit map
+Bitmap bitmap(filename);
+m_height = bitmap.rows();
+m_width = bitmap.cols();
+for (int x = 0; x < m_width; ++x) {
+    for (int y = 0; y < m_height; ++y) {
+        m_texture.push_back(bitmap(y, x));
+    }
+}
+```
+What need to be careful about is the notion of `sRGB` and `linearRGB`, when we do calculating (e.g., integration)
+we use `linearRGB`, but the color of image is stored as `sRGB`, so a transformation (gamma correction) after reading the image is necessary.
+<div class="twentytwenty-container">
+    <img src="solution/texture/scene_sphere_nori.png" alt="toLinear" class="img-responsive">
+    <img src="solution/texture/scene_sphere_nori_sRGB.png" alt="sRGB" class="img-responsive">
+</div>
+
+
+## Validation
+I used the plugin of Blender to export xml format of Mitsuba and Nori respectively. Then I used Mitsuba and Nori to render the same scene, using path tracing with mis (default parameters, spp is 32) and diffuse bsdf.
+<div class="twentytwenty-container">
+    <img src="ref/texture/scene_sphere_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/texture/scene_sphere_nori.png" alt="Mine" class="img-responsive">
+</div>
+
+We could find the results are almost the same. The minor shadow difference is due to the implementation of path tracer. I suppose it's some different parameters like `max_depth` causing this.
+
+
+
+# Normal Mapping
+
+# Mesh Modelling
+
+# Environment Map
+
+# Homogeneous Participating Media
+
+# Disney BSDF
+
 
 <!-- Bootstrap core CSS and JavaScript -->
 
