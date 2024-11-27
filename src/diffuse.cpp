@@ -28,15 +28,18 @@ NORI_NAMESPACE_BEGIN
  */
 class Diffuse : public BSDF {
 public:
-    Diffuse(const PropertyList &propList) : m_albedo(nullptr) {
+    Diffuse(const PropertyList &propList) : m_albedo(nullptr), m_normalmap(nullptr) {
+        // diffuse bsdf
         if(propList.has("albedo")) {
             PropertyList l;
             l.setColor("value", propList.getColor("albedo"));
             m_albedo = static_cast<Texture<Color3f> *>(NoriObjectFactory::createInstance("constant_color", l));
         }
     }
+
     virtual ~Diffuse() {
         delete m_albedo;
+        delete m_normalmap;
     }
 
     /// Add texture for the albedo
@@ -47,6 +50,11 @@ public:
                     if (m_albedo)
                         throw NoriException("There is already an albedo defined!");
                     m_albedo = static_cast<Texture<Color3f> *>(obj);
+                } else if (obj->getIdName() == "normalmap") {
+                    if (m_normalmap) {
+//                        throw NoriException("There is already a normalmap defined!");
+                    }
+                    m_normalmap = static_cast<Texture<Normal3f> *>(obj);
                 }
                 else {
                     throw NoriException("The name of this texture does not match any field!");
@@ -123,13 +131,20 @@ public:
         return true;
     }
 
+    bool getNormalMap(Texture<Normal3f> * &normal_map) const {
+        normal_map = m_normalmap;
+        return m_normalmap != nullptr;
+    }
+
     /// Return a human-readable summary
     virtual std::string toString() const override {
         return tfm::format(
             "Diffuse[\n"
             "  albedo = %s\n"
+            "  normalmap = %s\n"
             "]",
-            m_albedo ? indent(m_albedo->toString()) : std::string("null")
+            m_albedo ? indent(m_albedo->toString()) : std::string("null"),
+            m_normalmap ? indent(m_albedo->toString()) : std::string("null")
         );
     }
 
@@ -137,6 +152,7 @@ public:
 
 private:
     Texture<Color3f> * m_albedo;
+    Texture<Normal3f> * m_normalmap;
 };
 
 NORI_REGISTER_CLASS(Diffuse, "diffuse");

@@ -20,6 +20,7 @@
 #define __NORI_BSDF_H
 
 #include <nori/object.h>
+#include "texture.h"
 
 NORI_NAMESPACE_BEGIN
 
@@ -115,6 +116,8 @@ public:
      * or not to store photons on a surface
      */
     virtual bool isDiffuse() const { return false; }
+
+    virtual bool getNormalMap(Texture<Normal3f> * &normal_map) const { return false; }
 };
 
 NORI_NAMESPACE_END

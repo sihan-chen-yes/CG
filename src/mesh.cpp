@@ -143,6 +143,7 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
     its.geoFrame = Frame((p1-p0).cross(p2-p0).normalized());
 
     if (m_N.size() > 0) {
+        // TODO TBN map
         /* Compute the shading frame. Note that for simplicity,
            the current implementation doesn't attempt to provide
            tangents that are continuous across the surface. That
@@ -155,6 +156,14 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
                  bary.z() * m_N.col(idx2)).normalized());
     } else {
         its.shFrame = its.geoFrame;
+    }
+
+    Texture<Normal3f> *normal_map;
+    if (its.mesh->getBSDF()->getNormalMap(normal_map)) {
+        // using normal map to reformulate shFrame
+        Normal3f local_n = normal_map->eval(its.uv).normalized();
+        Normal3f world_n = its.shFrame.toWorld(local_n).normalized();
+        its.shFrame = Frame(world_n);
     }
 }
 

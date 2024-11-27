@@ -2,10 +2,10 @@
 <scene>
 	<integrator type="path_mis"/>
 	<sampler type="independent">
-		<integer name="sampleCount" value="&lt;_PropertyDeferred, &lt;built-in function IntProperty&gt;, {'name': 'Numbers of camera rays', 'description': 'Number of camera ray', 'default': 32}&gt;"/>
+		<integer name="sampleCount" value="32"/>
 	</sampler>
 	<camera type="perspective">
-		<float name="fov" value="39.99999883637168"/>
+		<float name="fov" value="39.597755335771296"/>
 		<float name="nearClip" value="0.10000000149011612"/>
 		<float name="farClip" value="100.0"/>
 		<integer name="width" value="1920"/>
@@ -21,13 +21,13 @@
 	</emitter>
 	<mesh type="obj">
 		<string name="filename" value="meshes/Plane_Material.001.obj"/>
-		<bsdf type="disney" name="Material.001">
-			<texture type="image_texture" name="baseColor">
-				<string name="filename" value="//textures/checkerboard.jpg"/>
-				<string name="interpolation" value="Linear"/>
-				<string name="extension" value="REPEAT"/>
-				<string name="projection" value="FLAT"/>
+
+		<bsdf type="diffuse" name="Material.001" >
+
+			<texture type="image_normal" name="normalmap">
+				<string name="filename" value="textures/normal_map_example.png"/>
 			</texture>
+
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>

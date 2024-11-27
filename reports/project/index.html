@@ -5,6 +5,10 @@
 **Report**
 
 # Images as Textures
+**modified files:**
+
+- `src/map/texture_map.cpp`
+
 
 Given an image, we can attach the image onto object, making it looks more realistic without increasing the geometry complexity of mesh.
 Specifically, for arbitrary point in 3D space, we could map it into a 2D space point, and query the color of that 2D point from the given image.
@@ -70,14 +74,14 @@ if (!data) {
     std::cerr << "Failed to load jpg/png image: " << filename << std::endl;
     return false;
 }
-m_texture.reserve(m_width * m_height);
+m_normal.reserve(m_width * m_height);
 for (int x = 0; x < m_width; ++x) {
     for (int y = 0; y < m_height; ++y) {
         //careful with channels!
         float R = data[channels * (y * m_width + x)] / 255.0f;
         float G = data[channels * (y * m_width + x) + 1] / 255.0f;
         float B = data[channels * (y * m_width + x) + 2] / 255.0f;
-        m_texture.push_back(Color3f(R, G, B));
+        m_normal.push_back(Color3f(R, G, B));
     }
 }
 //release mem
@@ -93,7 +97,7 @@ m_height = bitmap.rows();
 m_width = bitmap.cols();
 for (int x = 0; x < m_width; ++x) {
     for (int y = 0; y < m_height; ++y) {
-        m_texture.push_back(bitmap(y, x));
+        m_normal.push_back(bitmap(y, x));
     }
 }
 ```
@@ -114,9 +118,10 @@ I used the plugin of Blender to export xml format of Mitsuba and Nori respective
 
 We could find the results are almost the same. The minor shadow difference is due to the implementation of path tracer. I suppose it's some different parameters like `max_depth` causing this.
 
-
-
 # Normal Mapping
+**modified files:**
+
+- `src/map/normal_map.cpp`
 
 # Mesh Modelling
 

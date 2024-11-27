@@ -108,6 +108,7 @@ set(NORI_SOURCE_FILES
   src/pointlight.cpp
 
         src/map/texture_map.cpp
+        src/map/normal_map.cpp
 )
 
 add_executable(nori ${NORI_SOURCE_FILES})
