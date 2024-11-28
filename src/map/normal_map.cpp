@@ -114,7 +114,7 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
     }
     std::string extension = filename.substr(pos + 1);
 
-    // TODO
+    // assuming [0, 1]
     if (extension == "exr") {
         std::cout << "Processing EXR file: " << filename << std::endl;
         // using bit map
@@ -123,6 +123,7 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
         m_width = bitmap.cols();
         float max = -INFINITY;
         float min = INFINITY;
+        // find max and min
         for (int x = 0; x < m_width; ++x) {
             for (int y = 0; y < m_height; ++y) {
                 Color3f rgb = bitmap(y, x);
@@ -134,13 +135,25 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
                 if (rgb.minCoeff() < min) {
                     min = rgb.minCoeff();
                 }
-
-                // nori has left hand side frame
-                Normal3f n = 2 * Normal3f(rgb.x(), rgb.y(), rgb.z()) - Normal3f(1.0f);
-                m_normal.push_back(n.normalized());
             }
         }
         std::cout << "image range: [" << min << ", " << max << "]" << std::endl;
+
+        for (int x = 0; x < m_width; ++x) {
+            for (int y = 0; y < m_height; ++y) {
+                Color3f rgb = bitmap(y, x);
+
+                // normalization to [0, 1]
+                Color3f normalized_rgb = (rgb - min) / (max - min);
+                assert(normalized_rgb.x() <= 1.0f && normalized_rgb.x() >= 0.0f);
+                assert(normalized_rgb.y() <= 1.0f && normalized_rgb.y() >= 0.0f);
+                assert(normalized_rgb.z() <= 1.0f && normalized_rgb.z() >= 0.0f);
+
+                // map [0, 1] to [-1, 1]
+                Normal3f n = 2 * Normal3f(normalized_rgb.x(), normalized_rgb.y(), normalized_rgb.z()) - Normal3f(1.0f);
+                m_normal.push_back(n.normalized());
+            }
+        }
     } else if (extension == "png" || extension == "jpg" || extension == "jpeg") {
         std::cout << "Processing jpg/png file: " << filename << std::endl;
         // using stbi library
@@ -177,8 +190,6 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
         stbi_image_free(data);
 
         std::cout << "image range: [" << min << ", " << max << "]" << std::endl;
-//        assert(max <= 1.0f);
-//        assert(min >= 0.0f);
     } else {
         std::cerr << "Unsupported file format: " << filename << std::endl;
         return false;
