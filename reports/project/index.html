@@ -3,6 +3,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 **Report**
+Comparison pipeline:
+1. Establish scene in blender.
+2. Export Nori.xml and Mitsuba.xml respectively
+3. Check the xml files with necessary manual adjustment
+4. Align the ply and obj file, ensure they are the same
+5. Rendering with both ones and compare the images
 
 # Images as Textures
 **modified files:**
@@ -121,7 +127,199 @@ We could find the results are almost the same. The minor shadow difference is du
 # Normal Mapping
 **modified files:**
 
+- `include/nori/bsdf.h`
+
+- `include/nori/mesh.h`
+
 - `src/map/normal_map.cpp`
+
+- `src/diffuse.cpp`
+
+- `src/obj.cpp`
+
+- `src/mesh.cpp`
+
+
+
+
+Like image texture, we could use normal mapping to render more realistic pictures without modifying the real detailed geometry
+(just adjusting the shading normal of the hitting point using the queried normal). Almost the same as image texture
+(e.g., repeat wrap mode, bilinear interpolation,  map scaling), we could implement the normal version of image texture. What important is the range of normal, we should first
+transform the rgb range (maybe out of range for EXR image) into `[0, 1]` using
+$$ v' = \frac{v - min(img)}{max(img) - min(img)}$$
+then transfer the range from `[0, 1]` into `[-1, 1]`:
+$$ n = 2 \times v' - 1$$
+
+```cpp
+Color3f normalized_rgb = (rgb - min) / (max - min);
+```
+
+And also because the normal should be stored into the normal map directly (without gamma correction), so we don't need to map the value back as well when using:
+```cpp
+    T getPixel(int x, int y) {
+        return m_normal[y * m_width + x];
+    }
+```
+First change bsdf.h interface to allow us query the normal:
+
+```cpp
+virtual bool getNormalMap(Texture<Normal3f> * &normal_map) const { return false; }
+```
+
+For diffuse.cpp, add normalmap object as child:
+```cpp
+    if (obj->getIdName() == "normalmap") {
+        if (m_normalmap) {
+            throw NoriException("There is already a normalmap defined!");
+        }
+        m_normalmap = static_cast<Texture<Normal3f> *>(obj);
+    }
+```
+
+To equip with consistent tangent across the surface, we could use UV coords to compute a shading frame instead of just using geometry frame (not consistent in UV space),
+        we compute the TBN matrix when loading object in `obj.cpp`:
+```cpp
+    void compute_pervertex_TBN() {
+        // column first for Eigen
+        // Initialize m_T and m_B to have the same size as m_V (3, N)
+        m_T.resize(3, m_V.cols());
+        m_B.resize(3, m_V.cols());
+
+        // Iterate over each face to compute tangents and bitangents
+        for (int i = 0; i < m_F.cols(); ++i) {
+            // Get vertex indices for the current face
+            int idx0 = m_F(0, i);
+            int idx1 = m_F(1, i);
+            int idx2 = m_F(2, i);
+
+            // Get positions and UVs for the current face
+            Vector3f p0 = m_V.col(idx0);
+            Vector3f p1 = m_V.col(idx1);
+            Vector3f p2 = m_V.col(idx2);
+
+            Vector2f uv0 = m_UV.col(idx0);
+            Vector2f uv1 = m_UV.col(idx1);
+            Vector2f uv2 = m_UV.col(idx2);
+
+            // Compute edges and delta UVs
+            Vector3f edge1 = p1 - p0;
+            Vector3f edge2 = p2 - p0;
+            Vector2f deltaUV1 = uv1 - uv0;
+            Vector2f deltaUV2 = uv2 - uv0;
+
+            // Compute tangent and bitangent for this face
+            float r = 1.0f / (deltaUV1.x() * deltaUV2.y() - deltaUV1.y() * deltaUV2.x());
+            Vector3f T = r * (deltaUV2.y() * edge1 - deltaUV1.y() * edge2);
+            Vector3f B = r * (-deltaUV2.x() * edge1 + deltaUV1.x() * edge2);
+
+            // Accumulate the results to the vertices
+            m_T.col(idx0) += T;
+            m_T.col(idx1) += T;
+            m_T.col(idx2) += T;
+
+            m_B.col(idx0) += B;
+            m_B.col(idx1) += B;
+            m_B.col(idx2) += B;
+        }
+
+        // Normalize accumulated tangents and bitangents
+        for (int i = 0; i < m_V.cols(); ++i) {
+            m_T.col(i).normalize();
+            m_B.col(i).normalize();
+        }
+
+        for (int i = 0; i < m_V.cols(); ++i) {
+            Vector3f N = m_N.col(i).normalized(); // Per-vertex normal
+            Vector3f T = m_T.col(i);
+            Vector3f B = m_B.col(i);
+
+            // Re-orthogonalize tangent and compute corrected bitangent
+            T = (T - N.dot(T) * N).normalized();
+            B = N.cross(T).normalized();
+
+            // Store back the orthogonalized results
+            m_T.col(i) = T;
+            m_B.col(i) = B;
+        }
+    }
+```
+In `mesh.cpp`, at the hit points we need to adjust the normal, and now we have TBN matrix:
+
+```cpp
+    if (m_N.size() > 0) {
+        Vector3f t = (bary.x() * m_T.col(idx0) +
+        bary.y() * m_T.col(idx1) +
+        bary.z() * m_T.col(idx2)).normalized();
+
+        Vector3f b = (bary.x() * m_B.col(idx0) +
+        bary.y() * m_B.col(idx1) +
+        bary.z() * m_B.col(idx2)).normalized();
+
+        Vector3f n = (bary.x() * m_N.col(idx0) +
+        bary.y() * m_N.col(idx1) +
+        bary.z() * m_N.col(idx2)).normalized();
+
+        its.shFrame = Frame(t, b, n);
+
+    } else {
+        its.shFrame = its.geoFrame;
+    }
+
+    Texture<Normal3f> *normal_map;
+    if (its.mesh->getBSDF()->getNormalMap(normal_map)) {
+        // using normal map to reformulate shFrame
+        Normal3f local_n = normal_map->eval(its.uv).normalized();
+        Normal3f world_n = its.shFrame.toWorld(local_n).normalized();
+        its.shFrame = Frame(world_n);
+        // TBN already under global
+        Vector3f s = its.shFrame.s;
+        s = (s - world_n.dot(s) * world_n).normalized();
+        Vector3f t = world_n.cross(s);
+        its.shFrame = Frame(s, t, world_n);
+    }
+```
+
+
+## Validation
+First, I use a plane on the ground, and place the point light on the left. We could find normal map makes the rendering more realistic even with the same original flat plane.
+<div class="twentytwenty-container">
+    <img src="solution/normal/floor_wo_normal_nori.png" alt="wo normal map" class="img-responsive">
+    <img src="solution/normal/floor_normal_nori.png" alt="w normal map" class="img-responsive">
+</div>
+
+To make sure the convention is the same, I also change the place of light to the top, and compared the results with Mitsuba,
+            the light instensity is slightly different, please just ignore that (maybe use env map later to validate again TODO):
+<div class="twentytwenty-container">
+    <img src="ref/normal/floor_normal_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/normal/floor_normal_nori.png" alt="Mine" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="ref/normal/floor_normal_2_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/normal/floor_normal_2_nori.png" alt="Mine" class="img-responsive">
+</div>
+
+Then I tested more complicated materials on sphere:
+
+For to using TBN map:
+<div class="twentytwenty-container">
+    <img src="ref/normal/sphere_normal_mitsuba.png" alt="Mitsuba, w normal map" class="img-responsive">
+    <img src="solution/normal/sphere_normal_wo_TBN_nori.png" alt="Mine, w normal map" class="img-responsive">
+    <img src="ref/normal/sphere_wo_normal_mitsuba.png" alt="Mitsuba, wo normal map" class="img-responsive">
+    <img src="solution/normal/sphere_wo_normal_nori.png" alt="Mine, wo normal map" class="img-responsive">
+</div>
+After applying the TBN map:
+<div class="twentytwenty-container">
+    <img src="ref/normal/sphere_normal_mitsuba.png" alt="Mitsuba, w normal map" class="img-responsive">
+    <img src="solution/normal/sphere_normal_nori.png" alt="Mine, w normal map" class="img-responsive">
+    <img src="ref/normal/sphere_wo_normal_mitsuba.png" alt="Mitsuba, wo normal map" class="img-responsive">
+    <img src="solution/normal/sphere_wo_normal_nori.png" alt="Mine, wo normal map" class="img-responsive">
+</div>
+
+We could conclude these:
+1. For image texture, TBN doesn't influence a lot, due to not transforming the normal from local to global with shading frame.
+2. For plane, even without TBN map, normal map could work well with inherent consistent tangent across the surface.
+3. For more complex mesh(e.g., sphere), with TBN map, we could get more consistent and realistic reflection.
 
 # Mesh Modelling
 
