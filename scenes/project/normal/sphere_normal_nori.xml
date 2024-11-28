@@ -28,6 +28,9 @@
 				<string name="extension" value="REPEAT"/>
 				<string name="projection" value="FLAT"/>
 			</texture>
+			<texture type="image_normal" name="normalmap">
+				<string name="filename" value="textures/brick_wall_10_nor_gl_4k.exr"/>
+			</texture>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
 			<float name="specular" value="0.000000"/>
@@ -48,6 +51,10 @@
 				<string name="interpolation" value="Linear"/>
 				<string name="extension" value="REPEAT"/>
 				<string name="projection" value="FLAT"/>
+			</texture>
+			<texture type="image_normal" name="normalmap">
+				<string name="filename" value="textures/brick_wall_10_nor_gl_4k.exr"/>
+
 			</texture>
 			<float name="metallic" value="0.000000"/>
 			<float name="subsurface" value="0.000000"/>
