@@ -21,6 +21,7 @@
 #include <filesystem/resolver.h>
 #include <unordered_map>
 #include <fstream>
+#include <Eigen/Dense>
 
 NORI_NAMESPACE_BEGIN
 
@@ -40,7 +41,7 @@ public:
             throw NoriException("Unable to open OBJ file \"%s\"!", filename);
         Transform trafo = propList.getTransform("toWorld", Transform());
 
-        cout << "Loading \"" << filename << "\" .. ";
+        cout << "Loading \"" << filename << "\" .. \n";
         cout.flush();
         Timer timer;
 
@@ -131,6 +132,12 @@ public:
             throw NoriException("OBJ file \"%s\" contains no data! Make sure you have Git LFS installed", filename);
         }
 
+        // calculate TBN map
+        if (!texcoords.empty()) {
+            compute_pervertex_TBN();
+            cout << "per vertex TBN map constructed" << endl;
+        }
+
         m_name = filename.str();
         cout << "done. (V=" << m_V.cols() << ", F=" << m_F.cols() << ", took "
             << timer.elapsedString() << " and "
@@ -176,6 +183,70 @@ protected:
             return hash;
         }
     };
+
+    void compute_pervertex_TBN() {
+        // column first for Eigen
+        // Initialize m_T and m_B to have the same size as m_V (3, N)
+        m_T.resize(3, m_V.cols());
+        m_B.resize(3, m_V.cols());
+
+        // Iterate over each face to compute tangents and bitangents
+        for (int i = 0; i < m_F.cols(); ++i) {
+            // Get vertex indices for the current face
+            int idx0 = m_F(0, i);
+            int idx1 = m_F(1, i);
+            int idx2 = m_F(2, i);
+
+            // Get positions and UVs for the current face
+            Vector3f p0 = m_V.col(idx0);
+            Vector3f p1 = m_V.col(idx1);
+            Vector3f p2 = m_V.col(idx2);
+
+            Vector2f uv0 = m_UV.col(idx0);
+            Vector2f uv1 = m_UV.col(idx1);
+            Vector2f uv2 = m_UV.col(idx2);
+
+            // Compute edges and delta UVs
+            Vector3f edge1 = p1 - p0;
+            Vector3f edge2 = p2 - p0;
+            Vector2f deltaUV1 = uv1 - uv0;
+            Vector2f deltaUV2 = uv2 - uv0;
+
+            // Compute tangent and bitangent for this face
+            float r = 1.0f / (deltaUV1.x() * deltaUV2.y() - deltaUV1.y() * deltaUV2.x());
+            Vector3f T = r * (deltaUV2.y() * edge1 - deltaUV1.y() * edge2);
+            Vector3f B = r * (-deltaUV2.x() * edge1 + deltaUV1.x() * edge2);
+
+            // Accumulate the results to the vertices
+            m_T.col(idx0) += T;
+            m_T.col(idx1) += T;
+            m_T.col(idx2) += T;
+
+            m_B.col(idx0) += B;
+            m_B.col(idx1) += B;
+            m_B.col(idx2) += B;
+        }
+
+        // Normalize accumulated tangents and bitangents
+        for (int i = 0; i < m_V.cols(); ++i) {
+            m_T.col(i).normalize();
+            m_B.col(i).normalize();
+        }
+
+        for (int i = 0; i < m_V.cols(); ++i) {
+            Vector3f N = m_N.col(i).normalized(); // Per-vertex normal
+            Vector3f T = m_T.col(i);
+            Vector3f B = m_B.col(i);
+
+            // Re-orthogonalize tangent and compute corrected bitangent
+            T = (T - N.dot(T) * N).normalized();
+            B = N.cross(T).normalized();
+
+            // Store back the orthogonalized results
+            m_T.col(i) = T;
+            m_B.col(i) = B;
+        }
+    }
 };
 
 NORI_REGISTER_CLASS(WavefrontOBJ, "obj");

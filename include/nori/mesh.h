@@ -122,6 +122,9 @@ protected:
     MatrixXf      m_UV;                  ///< Vertex texture coordinates
     MatrixXu      m_F;                   ///< Faces
 
+    MatrixXf      m_T;                   ///< Vertex Tangents
+    MatrixXf      m_B;                   ///< Vertex Bitangents
+
     DiscretePDF m_pdf;
 };
 

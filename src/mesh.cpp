@@ -143,17 +143,25 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
     its.geoFrame = Frame((p1-p0).cross(p2-p0).normalized());
 
     if (m_N.size() > 0) {
-        // TODO TBN map
         /* Compute the shading frame. Note that for simplicity,
            the current implementation doesn't attempt to provide
            tangents that are continuous across the surface. That
            means that this code will need to be modified to be able
            use anisotropic BRDFs, which need tangent continuity */
+        Vector3f t = (bary.x() * m_T.col(idx0) +
+                      bary.y() * m_T.col(idx1) +
+                      bary.z() * m_T.col(idx2)).normalized();
 
-        its.shFrame = Frame(
-                (bary.x() * m_N.col(idx0) +
-                 bary.y() * m_N.col(idx1) +
-                 bary.z() * m_N.col(idx2)).normalized());
+        Vector3f b = (bary.x() * m_B.col(idx0) +
+                      bary.y() * m_B.col(idx1) +
+                      bary.z() * m_B.col(idx2)).normalized();
+
+        Vector3f n = (bary.x() * m_N.col(idx0) +
+                      bary.y() * m_N.col(idx1) +
+                      bary.z() * m_N.col(idx2)).normalized();
+
+        its.shFrame = Frame(t, b, n);
+
     } else {
         its.shFrame = its.geoFrame;
     }
@@ -164,6 +172,11 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
         Normal3f local_n = normal_map->eval(its.uv).normalized();
         Normal3f world_n = its.shFrame.toWorld(local_n).normalized();
         its.shFrame = Frame(world_n);
+        // TBN already under global
+        Vector3f s = its.shFrame.s;
+        s = (s - world_n.dot(s) * world_n).normalized();
+        Vector3f t = world_n.cross(s);
+        its.shFrame = Frame(s, t, world_n);
     }
 }
 
