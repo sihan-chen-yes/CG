@@ -12,15 +12,15 @@
 		<integer name="height" value="1080"/>
 		<transform name="toWorld">
 			<scale value="1.000000 1.000000 -1.000000"/>
-			<matrix value="1.0,1.5665563339557965e-16,2.121982439598941e-16,-3.5156594813690327e-16,1.5665564663046945e-16,0.29448574781417847,-0.9556558728218079,-3.0022330284118652,-2.121982307250043e-16,0.9556558728218079,0.29448574781417847,1.4166879653930664,0.0,0.0,0.0,1.0"/>
+			<matrix value="1.0,-1.5207686445029852e-16,-1.5562670012290249e-16,0.0,-1.0661606354067839e-16,0.28103286027908325,-0.9596981406211853,-4.0167236328125,1.89684094986985e-16,0.9596981406211853,0.28103286027908325,2.0729422569274902,0.0,0.0,0.0,1.0"/>
 		</transform>
 	</camera>
 	<emitter type="point">
-		<point name="position" value="-0.004731,-2.957069,5.000000"/>
+		<point name="position" value="0.002995,-3.990685,2.080570"/>
 		<color name="power" value="1000.000000,1000.000000,1000.000000"/>
 	</emitter>
 	<mesh type="obj">
-		<string name="filename" value="meshes/Plane_Material.001.obj"/>
+		<string name="filename" value="meshes/Sphere_Material.001.obj"/>
 		<bsdf type="diffuse" name="Material.001">
 			<texture type="image_texture" name="albedo">
 				<string name="filename" value="textures/brick_wall_10_diff_4k.jpg"/>
@@ -41,10 +41,10 @@
 		</bsdf>
 	</mesh>
 	<mesh type="obj">
-		<string name="filename" value="meshes/Sphere_Material.obj"/>
-		<bsdf type="diffuse" name="Material">
+		<string name="filename" value="meshes/Plane_Material.002.obj"/>
+		<bsdf type="diffuse" name="Material.002">
 			<texture type="image_texture" name="albedo">
-				<string name="filename" value="textures/brick_wall_10_diff_4k.jpg"/>
+				<string name="filename" value="textures/concrete_pavement_diff_4k.jpg"/>
 				<string name="interpolation" value="Linear"/>
 				<string name="extension" value="REPEAT"/>
 				<string name="projection" value="FLAT"/>

@@ -52,14 +52,14 @@ float y = normalized_uv.x() / m_scale.x() * (m_width - 1);
 float x = normalized_uv.y() / m_scale.y() * (m_height - 1);
 ```
 <div class="twentytwenty-container">
-    <img src="ref/texture/scene_floor_mitsuba.png" alt="Mitsuba" class="img-responsive">
-    <img src="solution/texture/scene_floor_nori.png" alt="Mine" class="img-responsive">
+    <img src="ref/texture/floor_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/texture/floor_nori.png" alt="Mine" class="img-responsive">
 </div>
 
 The scale property could make the image applied on mesh after scaling, like using`(0.5, 1)` would make u direction to densify as 2 times of the original one:
 <div class="twentytwenty-container">
-    <img src="solution/texture/scene_floor_nori_scale.png" alt="(0.5,1)" class="img-responsive">
-    <img src="solution/texture/scene_floor_nori.png" alt="(1,1)" class="img-responsive">
+    <img src="solution/texture/floor_scale_nori.png" alt="(0.5,1)" class="img-responsive">
+    <img src="solution/texture/floor_nori.png" alt="(1,1)" class="img-responsive">
 </div>
 
 This feature support `jpg`, `png` and `exr` formats. For `jpg` and `png` formats, I use `stbi` tiny library to process the data, careful with the layout (RGBA, row major).
@@ -104,16 +104,16 @@ for (int x = 0; x < m_width; ++x) {
 What need to be careful about is the notion of `sRGB` and `linearRGB`, when we do calculating (e.g., integration)
 we use `linearRGB`, but the color of image is stored as `sRGB`, so a transformation (gamma correction) after reading the image is necessary.
 <div class="twentytwenty-container">
-    <img src="solution/texture/scene_sphere_nori.png" alt="toLinear" class="img-responsive">
-    <img src="solution/texture/scene_sphere_nori_sRGB.png" alt="sRGB" class="img-responsive">
+    <img src="solution/texture/sphere_nori.png" alt="toLinear" class="img-responsive">
+    <img src="solution/texture/sphere_sRGB_nori.png" alt="sRGB" class="img-responsive">
 </div>
 
 
 ## Validation
 I used the plugin of Blender to export xml format of Mitsuba and Nori respectively. Then I used Mitsuba and Nori to render the same scene, using path tracing with mis (default parameters, spp is 32) and diffuse bsdf.
 <div class="twentytwenty-container">
-    <img src="ref/texture/scene_sphere_mitsuba.png" alt="Mitsuba" class="img-responsive">
-    <img src="solution/texture/scene_sphere_nori.png" alt="Mine" class="img-responsive">
+    <img src="ref/texture/sphere_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/texture/sphere_nori.png" alt="Mine" class="img-responsive">
 </div>
 
 We could find the results are almost the same. The minor shadow difference is due to the implementation of path tracer. I suppose it's some different parameters like `max_depth` causing this.
