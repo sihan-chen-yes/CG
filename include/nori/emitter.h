@@ -124,9 +124,17 @@ public:
      * */
     void setShape(Shape * shape) { m_shape = shape; }
 
+    /**
+     * \brief Return the type of object (i.e. Mesh/Emitter/etc.)
+     * provided by this instance
+     * */
+    virtual bool isEnvMapLight() const { return false; }
+
 protected:
     /// Pointer to the shape if the emitter is attached to a shape
     Shape * m_shape = nullptr;
+
+    EMeasure measure;
 
 };
 

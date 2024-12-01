@@ -125,10 +125,28 @@ public:
 
     // path reuse version
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
+        // search the env map light
+        Emitter *envMapLight = nullptr;
+        for (int i = 0; i < scene->getLights().size(); ++i) {
+            Emitter * light = scene->getLights().at(i);
+            if (light->isEnvMapLight()) {
+                envMapLight = light;
+                break;
+            }
+        }
+
         /* Find the surface that is visible in the requested direction */
         Intersection its, nextIts;
-        if (!scene->rayIntersect(ray, its))
-            return Color3f(0.0f); // No intersections, then return black
+        if (!scene->rayIntersect(ray, its)) {
+            // direct to camera
+            if (envMapLight != nullptr) {
+                EmitterQueryRecord eRec(ray.o);
+                eRec.wi = ray.d.normalized();
+                Color3f Li = envMapLight->eval(eRec);
+                return Li;
+            }
+            return Color3f(0.0f); // No intersections and no env map light, then return black
+        }
 
         //outgoing radiance
         Color3f Lo(0.0f);
@@ -141,6 +159,7 @@ public:
 
         Color3f t = Color3f(1.0f);
         Vector3f wi = -ray.d;
+        // exclude env map
         int emitterCount = scene->getLights().size();
         int bounces = 0;
 
@@ -183,7 +202,6 @@ public:
                     //otherwise failed emitter sampling in continuous cases: no contribution, wEms => 0
                 }
                 Color3f bsdfValue = its.mesh->getBSDF()->eval(bRec1);
-                // f(x) / uniform pdf => f(x) * cnt
                 Lo += t * wEms * bsdfValue * Li * its.shFrame.n.dot(eRec1.wi) * emitterCount;
             }
 
@@ -199,11 +217,33 @@ public:
             eRec2.shadowRay = Ray3f(its.p, eRec2.wi);
             eRec2.shadowRay.mint = Epsilon;
 
-            if (!scene->rayIntersect(eRec2.shadowRay, nextIts)) {
-                break;
-            }
             // update throughout
             t *= cosBsdfValue;
+
+            if (!scene->rayIntersect(eRec2.shadowRay, nextIts)) {
+                if (envMapLight != nullptr) {
+                    float pdfMats = its.mesh->getBSDF()->pdf(bRec2);
+
+                    // fill in properties of eRecMats
+                    // uniform sampling on emitters first
+                    float pdfEms = envMapLight->pdf(eRec2) / emitterCount;
+                    // failed bsdf sampling
+                    float wMats = 0.0f;
+                    // special handling for Discrete bsdf
+                    if (bRec2.measure == EDiscrete) {
+                        wMats = 1.0f;
+                    } else if (pdfMats >= Epsilon){
+                        // continuous cases
+                        // Solid angle measure
+                        // successful bsdf sampling
+                        wMats = pdfMats / (pdfEms + pdfMats);
+                        //otherwise failed material sampling in continuous cases: no contribution, wMats => 0
+                    }
+                    Color3f Li = envMapLight->eval(eRec2);
+                    Lo += t * wMats * Li;
+                }
+                break;
+            }
 
             // intersection with emitter
             if (nextIts.mesh->isEmitter()) {

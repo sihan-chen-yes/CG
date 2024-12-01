@@ -109,6 +109,8 @@ set(NORI_SOURCE_FILES
 
         src/map/texture_map.cpp
         src/map/normal_map.cpp
+
+        src/emitter/envmaplight.cpp
 )
 
 add_executable(nori ${NORI_SOURCE_FILES})

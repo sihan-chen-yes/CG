@@ -148,6 +148,16 @@ public:
 
     // path reuse version and optimized loop
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
+        // search the env map light
+        Emitter *envMapLight = nullptr;
+        for (int i = 0; i < scene->getLights().size(); ++i) {
+            Emitter * light = scene->getLights().at(i);
+            if (light->isEnvMapLight()) {
+                envMapLight = light;
+                break;
+            }
+        }
+
         //outgoing radiance
         Color3f Lo(0.0f);
 
@@ -157,6 +167,13 @@ public:
         Ray3f shadowRay = Ray3f(ray);
         while (true) {
             if (!scene->rayIntersect(shadowRay, its)) {
+                // direct to camera
+                if (envMapLight != nullptr) {
+                    EmitterQueryRecord eRec(ray.o);
+                    eRec.wi = ray.d.normalized();
+                    Color3f Li = envMapLight->eval(eRec);
+                    Lo += t * Li;
+                }
                 break;
             }
             // intersection with emitter
