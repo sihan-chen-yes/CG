@@ -21,7 +21,7 @@ Specifically, for arbitrary point in 3D space, we could map it into a 2D space p
 The most important thing is to understand the mapping from UV space to XY image space, because UV space is continuous but XY space is discrete (only integer indices has pixel value).
 $$
     x = \frac{u}{\frac{1}{width}}=u \times width \\
-    y = \frac{v}{\frac{1}{height}}=u \times height
+    y = \frac{v}{\frac{1}{height}}=v \times height
 $$
 
 To make XY space become continuous, we could use bilinear interpolation with the values in the four corners, like:
@@ -53,9 +53,8 @@ normalized_uv.y() = uv.y() - std::floor(uv.y());
 normalized_uv.y() = 1.0f - normalized_uv.y();
 
 //change to image space
-// swap x and y
-float y = normalized_uv.x() / m_scale.x() * (m_width - 1);
-float x = normalized_uv.y() / m_scale.y() * (m_height - 1);
+float x = normalized_uv.x() / m_scale.x() * (m_width - 1);
+float y = normalized_uv.y() / m_scale.y() * (m_height - 1);
 ```
 <div class="twentytwenty-container">
     <img src="ref/texture/floor_mitsuba.png" alt="Mitsuba" class="img-responsive">
@@ -81,8 +80,8 @@ if (!data) {
     return false;
 }
 m_normal.reserve(m_width * m_height);
-for (int x = 0; x < m_width; ++x) {
-    for (int y = 0; y < m_height; ++y) {
+for (int y = 0; y < m_height; ++y) {
+    for (int x = 0; x < m_width; ++x) {
         //careful with channels!
         float R = data[channels * (y * m_width + x)] / 255.0f;
         float G = data[channels * (y * m_width + x) + 1] / 255.0f;
@@ -101,8 +100,8 @@ std::cout << "Processing EXR file: " << filename << std::endl;
 Bitmap bitmap(filename);
 m_height = bitmap.rows();
 m_width = bitmap.cols();
-for (int x = 0; x < m_width; ++x) {
-    for (int y = 0; y < m_height; ++y) {
+for (int y = 0; y < m_height; ++y) {
+    for (int x = 0; x < m_width; ++x) {
         m_normal.push_back(bitmap(y, x));
     }
 }

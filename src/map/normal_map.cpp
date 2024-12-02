@@ -47,9 +47,8 @@ public:
         assert(!(normalized_uv.y() < 0.f && normalized_uv.y() > 1.0f));
 
         //change to image space
-        // swap x and y
-        float y = normalized_uv.x() / m_scale.x() * (m_width - 1);
-        float x = normalized_uv.y() / m_scale.y() * (m_height - 1);
+        float x = normalized_uv.x() / m_scale.x() * (m_width - 1);
+        float y = normalized_uv.y() / m_scale.y() * (m_height - 1);
 
         // integer part
         int x_int = int(std::floor(x));
@@ -124,8 +123,8 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
         float max = -INFINITY;
         float min = INFINITY;
         // find max and min
-        for (int x = 0; x < m_width; ++x) {
-            for (int y = 0; y < m_height; ++y) {
+        for (int y = 0; y < m_height; ++y) {
+            for (int x = 0; x < m_width; ++x) {
                 Color3f rgb = bitmap(y, x);
 
                 if (rgb.maxCoeff() > max) {
@@ -138,9 +137,8 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
             }
         }
         std::cout << "image range: [" << min << ", " << max << "]" << std::endl;
-
-        for (int x = 0; x < m_width; ++x) {
-            for (int y = 0; y < m_height; ++y) {
+        for (int y = 0; y < m_height; ++y) {
+            for (int x = 0; x < m_width; ++x) {
                 Color3f rgb = bitmap(y, x);
 
                 // normalization to [0, 1]
@@ -173,8 +171,8 @@ bool NormalMap<Normal3f>::readImage(std::string const filename) {
         m_normal.reserve(m_width * m_height);
         float max = -INFINITY;
         float min = INFINITY;
-        for (int x = 0; x < m_width; ++x) {
-            for (int y = 0; y < m_height; ++y) {
+        for (int y = 0; y < m_height; ++y) {
+            for (int x = 0; x < m_width; ++x) {
                 //careful with channels!
                 float R = data[channels * (y * m_width + x)] / 255.0f;
                 float G = data[channels * (y * m_width + x) + 1] / 255.0f;

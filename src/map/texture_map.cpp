@@ -48,9 +48,8 @@ public:
         assert(!(normalized_uv.y() < 0.f && normalized_uv.y() > 1.0f));
 
         //change to image space
-        // TODO swap x and y
-        float y = normalized_uv.x() / m_scale.x() * (m_width - 1);
-        float x = normalized_uv.y() / m_scale.y() * (m_height - 1);
+        float x = normalized_uv.x() / m_scale.x() * (m_width - 1);
+        float y = normalized_uv.y() / m_scale.y() * (m_height - 1);
 
         // integer part
         int x_int = int(std::floor(x));
@@ -121,8 +120,8 @@ bool TextureMap<Color3f>::readImage(std::string const filename) {
         Bitmap bitmap(filename);
         m_height = bitmap.rows();
         m_width = bitmap.cols();
-        for (int x = 0; x < m_width; ++x) {
-            for (int y = 0; y < m_height; ++y) {
+        for (int y = 0; y < m_height; ++y) {
+            for (int x = 0; x < m_width; ++x) {
                 m_texture.push_back(bitmap(y, x));
             }
         }
@@ -137,8 +136,8 @@ bool TextureMap<Color3f>::readImage(std::string const filename) {
             return false;
         }
         m_texture.reserve(m_width * m_height);
-        for (int x = 0; x < m_width; ++x) {
-            for (int y = 0; y < m_height; ++y) {
+        for (int y = 0; y < m_height; ++y) {
+            for (int x = 0; x < m_width; ++x) {
                 //careful with channels!
                 float R = data[channels * (y * m_width + x)] / 255.0f;
                 float G = data[channels * (y * m_width + x) + 1] / 255.0f;

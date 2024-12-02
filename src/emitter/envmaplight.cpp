@@ -256,8 +256,9 @@ protected:
             Bitmap bitmap(filename);
             m_height = bitmap.rows();
             m_width = bitmap.cols();
-            for (int x = 0; x < m_width; ++x) {
-                for (int y = 0; y < m_height; ++y) {
+            for (int y = 0; y < m_height; ++y) {
+                // mirror along width: change right hand frame to left hand frame(align with mitsuba)
+                for (int x = m_width - 1; x >= 0; --x) {
                     m_radiance.push_back(bitmap(y, x));
                 }
             }
