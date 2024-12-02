@@ -45,6 +45,10 @@ public:
         return 0.0f;
     }
 
+    virtual bool isDelta() const override {
+        return true;
+    }
+
 protected:
     Point3f m_position;
     Color3f m_power;

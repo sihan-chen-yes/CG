@@ -52,7 +52,7 @@ public:
                     m_albedo = static_cast<Texture<Color3f> *>(obj);
                 } else if (obj->getIdName() == "normalmap") {
                     if (m_normalmap) {
-//                        throw NoriException("There is already a normalmap defined!");
+                        throw NoriException("There is already a normalmap defined!");
                     }
                     m_normalmap = static_cast<Texture<Normal3f> *>(obj);
                 }

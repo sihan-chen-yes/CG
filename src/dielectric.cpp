@@ -71,18 +71,28 @@ public:
                     bRec.wi.z()
             );
             // don't forget the pdf of event happening!
-            return Color3f(reflected_coeff) / reflected_coeff;
+            return Color3f(1.0f);
+//            return Color3f(reflected_coeff) / reflected_coeff;
         } else {
             //refraction event: fixed wo according to Snell's law
-            sinThetaT = bRec.eta * sinThetaI;
-            //total internal reflection is processed in fresnel calculation
-            cosThetaT = sqrt(1 - sinThetaT * sinThetaT);
-            Vector3f t = bRec.wi - bRec.wi.dot(n) * n;
-            // unit tangent vector
-            t.normalize();
-            bRec.wo = -cosThetaT * n - sinThetaT * t;
-            // don't forget the pdf of event happening!
-            return bRec.eta * bRec.eta * Color3f(refracted_coeff) / refracted_coeff;
+            // bugs!
+//            sinThetaT = bRec.eta * sinThetaI;
+//            //total internal reflection is processed in fresnel calculation
+//            sinThetaT = std::clamp(sinThetaT, 0.0f, 1.0f);
+//            cosThetaT = sqrtf(1 - sinThetaT * sinThetaT);
+//            Vector3f t = bRec.wi - bRec.wi.dot(n) * n;
+//            if (t.squaredNorm() > 1e-6) {
+//                t.normalize();
+//            } else {
+//                t = Vector3f(0.0f);
+//            }
+//            // unit tangent vector
+//            bRec.wo = - cosThetaT * n - sinThetaT * t;
+
+            bRec.wo = -bRec.eta * (bRec.wi - (bRec.wi.dot(n)) * n) -
+                      n * sqrt(1 - bRec.eta * bRec.eta * (1 - bRec.wi.dot(n) * bRec.wi.dot(n)));
+            return  bRec.eta * bRec.eta * Color3f(1.0f);
+//            return bRec.eta * bRec.eta * Color3f(refracted_coeff) / refracted_coeff;
         }
     }
 

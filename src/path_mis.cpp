@@ -9,6 +9,7 @@ class PathMISIntegrator : public Integrator {
 public:
     PathMISIntegrator(const PropertyList &props) {
         // no properties
+        m_max_depth = props.getInteger("max_depth", 12);
     }
 
 //    Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
@@ -152,7 +153,6 @@ public:
         Color3f Lo(0.0f);
 
         if (its.mesh->isEmitter()) {
-            // not delta point light
             EmitterQueryRecord eRec(ray.o, its.p, its.shFrame.n);
             // Le self emission
             Lo += its.mesh->getEmitter()->eval(eRec);
@@ -161,10 +161,10 @@ public:
         Color3f t = Color3f(1.0f);
         Vector3f wi = -ray.d;
         // exclude env map
-        int emitterCount = scene->getLights().size() - 1;
+        int emitterCount = scene->getLights().size();
         int bounces = 0;
 
-        while (true) {
+        while (bounces < m_max_depth) {
             if (bounces > 3) {
                 float success = std::min(std::max(t.x(), std::max(t.y(), t.z())), 0.99f);
 
@@ -186,12 +186,7 @@ public:
             if (!scene->rayIntersect(eRec1.shadowRay)) {
                 // no occlusion with emitter
                 // uniform sampling on emitters first
-                float pdfEms;
-                if (emitter->isEnvMapLight()) {
-                    pdfEms = eRec1.pdf;
-                } else {
-                    pdfEms = eRec1.pdf / emitterCount;
-                }
+                float pdfEms = eRec1.pdf / emitterCount;
 
                 // remember to local frame for wi and wo
                 BSDFQueryRecord bRec1(its.shFrame.toLocal(wi), its.shFrame.toLocal(eRec1.wi), EMeasure::ESolidAngle, its.uv);
@@ -199,7 +194,7 @@ public:
                 // failed emitter sampling
                 float wEms = 0.0f;
                 // Discrete emitter case: pdf eval => 0, eRec.pdf => 1
-                if (emitter->pdf(eRec1) < Epsilon && (eRec1.pdf - 1.0f) < Epsilon) {
+                if (emitter->isDelta()) {
                     wEms = 1.0f;
                 } else if (pdfEms >= Epsilon) {
                     // continuous cases
@@ -208,11 +203,7 @@ public:
                     //otherwise failed emitter sampling in continuous cases: no contribution, wEms => 0
                 }
                 Color3f bsdfValue = its.mesh->getBSDF()->eval(bRec1);
-                if (emitter->isEnvMapLight()) {
-                    Lo += t * wEms * bsdfValue * Li * its.shFrame.n.dot(eRec1.wi);
-                } else {
-                    Lo += t * wEms * bsdfValue * Li * its.shFrame.n.dot(eRec1.wi) * emitterCount;
-                }
+                Lo += t * wEms * bsdfValue * Li * its.shFrame.n.dot(eRec1.wi) * emitterCount;
             }
 
             // Mats contribution
@@ -236,7 +227,7 @@ public:
 
                     // fill in properties of eRecMats
                     // uniform sampling on emitters first
-                    float pdfEms = envMapLight->pdf(eRec2);
+                    float pdfEms = envMapLight->pdf(eRec2) / emitterCount;
                     // failed bsdf sampling
                     float wMats = 0.0f;
                     // special handling for Discrete bsdf
@@ -264,12 +255,7 @@ public:
                 eRec2.p = nextIts.p;
                 eRec2.n = nextIts.shFrame.n;
                 // uniform sampling on emitters first
-                float pdfEms;
-                if (nextIts.mesh->getEmitter()->isEnvMapLight()) {
-                    pdfEms = nextIts.mesh->getEmitter()->pdf(eRec2);
-                } else {
-                    pdfEms = nextIts.mesh->getEmitter()->pdf(eRec2) / emitterCount;
-                }
+                float pdfEms = nextIts.mesh->getEmitter()->pdf(eRec2) / emitterCount;
                 // failed bsdf sampling
                 float wMats = 0.0f;
                 // special handling for Discrete bsdf
@@ -299,6 +285,9 @@ public:
         return tfm::format(
                 "PathMISIntegrator[]");
     }
+
+protected:
+    int m_max_depth;
 
 };
 
