@@ -135,7 +135,7 @@ public:
         int y = round(u * (m_height - 1));
         int x = round(v * (m_width - 1));
 
-        return m_radiance[y * m_width + x];
+        return m_radiance[y * m_width + x] * m_radiance_scale;
     }
 
     virtual Color3f sample(EmitterQueryRecord & lRec, const Point2f & sample) const override {

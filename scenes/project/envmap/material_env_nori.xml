@@ -16,7 +16,7 @@
 		</transform>
 	</camera>
 	<emitter type="envmap">
-		<string name="filename" value="textures/wells6.exr"/>
+		<string name="filename" value="textures/starry_night.exr"/>
 		<transform name="toWorld">
 			<rotate axis="1, 0, 0" angle="0" />
 			<rotate axis="0, 1, 0" angle="0" />
@@ -24,6 +24,7 @@
 		</transform>
 		<boolean name="val" value="True"/>
 		<integer name="samples" value="5000"/>
+		<float name="radiance_scale" value="0.1"/>
 	</emitter>
 
 	<emitter type="point">
