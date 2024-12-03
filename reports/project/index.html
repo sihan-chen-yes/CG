@@ -162,7 +162,7 @@ And also because the normal should be stored into the normal map directly (witho
 First change bsdf.h interface to allow us query the normal:
 
 ```cpp
-virtual bool getNormalMap(Texture<Normal3f> * &normal_map) const { return false; }
+virtual bool getNormalMap(Texture&ltNormal3f> * &normal_map) const { return false; }
 ```
 
 For diffuse.cpp, add normalmap object as child:
@@ -171,7 +171,7 @@ For diffuse.cpp, add normalmap object as child:
         if (m_normalmap) {
             throw NoriException("There is already a normalmap defined!");
         }
-        m_normalmap = static_cast<Texture<Normal3f> *>(obj);
+        m_normalmap = static_cast&ltTexture&ltNormal3f> *>(obj);
     }
 ```
 
@@ -264,7 +264,7 @@ In `mesh.cpp`, at the hit points we need to adjust the normal, and now we have T
         its.shFrame = its.geoFrame;
     }
 
-    Texture<Normal3f> *normal_map;
+    Texture&ltNormal3f> *normal_map;
     if (its.mesh->getBSDF()->getNormalMap(normal_map)) {
         // using normal map to reformulate shFrame
         Normal3f local_n = normal_map->eval(its.uv).normalized();
@@ -323,6 +323,241 @@ We could conclude these:
 # Mesh Modelling
 
 # Environment Map
+
+**modified files:**
+
+- `include/nori/emitter.h`
+
+- `src/emitter/envmaplight.cpp`
+
+- `src/path_mis.cpp`
+
+- `src/path_mats.cpp`
+
+Environment map is a method using an exr file to wrap the scene at indefinite distance, every pixel would be mapped into
+a single indefinite light source point according to its radiance. Using this method, we don't need to place many lights
+manually anymore and can get realistic and consistent lighting. Besides, we could also get background without pure black
+colors when not hitting light sources (in any direction we would finally hit a light source point with env map).
+
+We first implement envlight envmaplight relative files, in `emitter.h`, we need to judge if the emitter is envmaplight or not,
+and need a counter to validate importance sampling later.
+```cpp
+virtual bool isEnvMapLight() const { return false; }
+
+virtual void counter() {
+    m_counter++;
+}
+```
+
+Then in `envmaplight.cpp`, we handle env map like other lights, and extends `Emitter` class. The pipeline to handle env map is:
+1. read an exr file
+2. map the radiance(pixel value) into luminance, then to pdf, preprocess the discrete pdf (proportional to radiance) to make importance sampling available
+3. inverse transform sampling to get samples (importance sampling)
+
+we have the listed properties,
+```cpp
+std::vector&ltColor3f> m_radiance;
+std::vector&ltfloat> m_luminance;
+//1D discrete
+DiscretePDF m_marginal;
+//2D discrete
+std::vector&ltDiscretePDF> m_conditionals;
+
+// used for adjust env map
+Transform m_worldToLight;
+Transform m_lightToWorld;
+
+float m_radiance_scale;
+int m_width;
+int m_height;
+std::string m_file;
+//for IS validation
+// for red marking
+Bitmap *m_bitmap_val;
+// validation switch
+bool m_val;
+// samples of red pts
+int m_samples;
+```
+## read
+To align with Mitsuba, mirror along each rows:
+```cpp
+for (int y = 0; y < m_height; ++y) {
+    // mirror along width: change right hand frame to left hand frame(align with mitsuba)
+    for (int x = m_width - 1; x >= 0; --x) {
+        m_radiance.push_back(bitmap(y, x));
+        // for validation need to mirror back
+        if (m_val)
+            m_bitmap_val->coeffRef(y, x) = bitmap(y, m_width - 1 - x);
+    }
+}
+```
+
+## preprocess
+What really important is to take care there are actually to mapping, the first is from `uv` to `theta, phi`, the second
+is from `theta, phi` to `omega`, here what is stored is the pdf w.r.t `uv`, i.e.:
+$$p(u,v) \propto L(\theta, \phi) \times sin(\theta)$$
+Not the below cases, because using the below cases, you already omitted the resolution when using $\propto$ without notice,
+leading the pdf calculation to be wrong!
+$$p(\theta, \phi) \propto L(\theta, \phi) \times sin(\theta)$$
+```cpp
+// precompute m_radiance with sin(theta) term
+m_luminance.resize(m_radiance.size());
+for (int y = 0; y < m_height; ++y) {
+    // prevent sin(theta) equals 0.f
+    float sinTheta = abs(sin((y + 0.5f) * (M_PI / m_height)));
+    for (int x = 0; x < m_width; ++x) {
+        m_luminance[y * m_width + x] = m_radiance[y * m_width + x].getLuminance() * sinTheta;
+    }
+}
+
+// preprocess for sampling the env map light
+// calculate the CDF struct of marginal p(u)
+m_marginal = DiscretePDF (m_height);
+for (int y = 0; y < m_height; ++y) {
+    float rowSum = 0.0f;
+    for (int x = 0; x < m_width; ++x) {
+        rowSum += m_luminance[y * m_width + x]; // Sum of all radiance in row `y`
+    }
+    m_marginal.append(rowSum); // Append the row sum to the marginal PDF
+}
+m_marginal.normalize(); // Normalize the marginal PDF
+
+// calculate the CDF struct of conditional probability
+m_conditionals.resize(m_height);
+for (int y = 0; y < m_height; ++y) {
+    // p(v|u)
+    DiscretePDF conditional(m_width);
+    for (int x = 0; x < m_width; ++x) {
+        // p(v|u) = p(v, u) / p(u)
+        conditional.append(m_luminance[y * m_width + x]); // Append value for each column
+    }
+    conditional.normalize(); // Normalize the conditional PDF for row `y`
+    m_conditionals[y] = conditional; // Store the CDF struct
+}
+```
+## sampling
+For sampling, we could directly use the DiscretePDF which's provided already:
+```cpp
+// fill properties of query record before return
+// p is at infinite far place, ignore shadowRay and p
+// sample xi uniformly in [0, 1] then get u, v
+float xi1 = sample.x();
+float xi2 = sample.y();
+float p_u = 0.0f, p_v = 0.0f;
+// importance sampling
+// xy: corresponding grid index
+int y = m_marginal.sample(xi1, p_u);
+int x = m_conditionals[y].sample(xi2, p_v);
+// get corresponding uv domain values [0, 1]
+float u = float(y) / m_height;
+float v = float(x) / m_width;
+// map uv to theta phi domain
+float theta = u * M_PI;
+float phi = v * 2 * M_PI;
+Vector3f wi = sphericalDirection(theta, phi);
+lRec.wi = m_lightToWorld * wi;
+lRec.shadowRay = Ray3f(lRec.ref, lRec.wi, Epsilon, INFINITY);
+lRec.pdf = pdf(lRec);
+```
+For eval function, just return the corresponding grid value, I just use neareast neighbor:
+```cpp
+Vector3f w = (m_worldToLight * lRec.wi).normalized();
+
+Point2f res = sphericalCoordinates(w);
+float theta = res.x();
+float phi = res.y();
+float sinTheta = std::sin(theta);
+// 0 probability
+if (sinTheta < Epsilon) {
+    return 0.0f;
+}
+
+// u: theta [0, pi]
+// v: phi[0, 2 * pi]
+// uv in range [0, 1]
+float u = theta / M_PI;
+float v = phi / (2 * M_PI);
+// find the corresponding grid to return value
+int y = round(u * (m_height - 1));
+int x = round(v * (m_width - 1));
+
+return m_radiance[y * m_width + x];
+```
+For pdf calculation, we need to apply to jacobians due to two mapping, if we regard the stored pdf as $p(\theta, \phi)$,
+then the resolution is missing, causing resolution influencing final joint pdf (can't cancel out):
+$$
+    p(\omega) = \frac{p(\theta, \phi)}{sin(\theta)} = \frac{p(u, v)}{sin(\theta) \times 2 \pi ^2}
+$$
+```cpp
+Vector3f w = (m_worldToLight * lRec.wi).normalized();
+// u:theta v:phi
+Point2f res = sphericalCoordinates(w);
+float theta = res.x();
+float phi = res.y();
+float sinTheta = std::sin(theta);
+// 0 probability
+if (sinTheta < Epsilon) {
+    return 0.0f;
+}
+
+float u = theta / M_PI;
+float v = phi / (2 * M_PI);
+
+// map to corresponding grid
+int y = round(u * (m_height - 1));
+int x = round(v * (m_width - 1));
+
+//p(u)
+float p_u = m_marginal[y];
+//p(v|u)
+float p_v = m_conditionals.at(y)[x];
+
+// joint distribution for p(u, v)
+float p_joint = p_u * p_v;
+return p_joint * (m_width * m_height) / (sinTheta * 2 * M_PI * M_PI);
+```
+
+## Validation
+First I used a low resolution exr file (1000x500), we could find using nearest neighbor instead of interpolation,
+making the env map very blurry compared to Mitsuba.
+<div class="twentytwenty-container">
+    <img src="ref/envmap/wells6_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/envmap/wells6_env_nori.png" alt="Mine" class="img-responsive">
+</div>
+
+Then I used a high resolution exr file (8192x4096), this time, the results nearly the same, but Mitsuba seems got some
+black artifacts with unknown reasons.
+<div class="twentytwenty-container">
+    <img src="ref/envmap/starry_night_mitsuba.png" alt="Mitsuba" class="img-responsive">
+    <img src="solution/envmap/starry_night_nori.png" alt="Mine" class="img-responsive">
+</div>
+
+To make sure we really used importance sampling, we could place red marks on the place we sampled out, the results show we
+indeed sampled the points accroding to the radiance (we alaways got more samples from light):
+<div class="twentytwenty-container">
+    <img src="solution/envmap/IS_env_5000.png" alt="5000 samples" class="img-responsive">
+    <img src="solution/envmap/IS_env_200000.png" alt="200000 samples" class="img-responsive">
+</div>
+
+More validations on different materials (dielectrics, pure diffuse, textured diffuse, mirror) and object (analytical and mesh sphere),
+all the results match with Mitsuba:
+<div class="twentytwenty-container">
+    <img src="ref/envmap/material_ana_env_mitsuba.png" alt="Mitsuba, analytical sphere" class="img-responsive">
+    <img src="solution/envmap/material_ana_env_nori.png" alt="Mine, analytical sphere" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="ref/envmap/material_env_high_res_mitsuba.png" alt="Mitsuba, mesh sphere" class="img-responsive">
+    <img src="solution/envmap/material_env_high_res_nori.png" alt="Mine, mesh sphere" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="ref/envmap/material_env_low_res_mitsuba.png" alt="Mitsuba, low res exr" class="img-responsive">
+    <img src="solution/envmap/material_env_low_res_nori.png" alt="Mine, low res exr" class="img-responsive">
+</div>
+
+
 
 # Homogeneous Participating Media
 
