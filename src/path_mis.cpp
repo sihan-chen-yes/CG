@@ -182,6 +182,13 @@ public:
 
             Color3f Li = emitter->sample(eRec1, sampler->next2D());
 
+            /*
+             * for env map importance sampling validation
+             */
+            if (emitter->isEnvMapLight()) {
+                envMapLight->counter();
+            }
+
             // Ems contribution
             if (!scene->rayIntersect(eRec1.shadowRay)) {
                 // no occlusion with emitter

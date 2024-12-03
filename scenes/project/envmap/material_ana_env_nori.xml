@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis">
+		<integer name="max_depth" value="12"/>
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="90"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="1.0,-9.123184748850686e-17,-1.4668335568887716e-16,0.0,-1.4604008710499672e-16,0.007011367939412594,-0.9999754428863525,-1.5729954242706299,9.225805437388504e-17,0.9999754428863525,0.007011367939412594,2.0729422569274902,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<emitter type="envmap">
+		<string name="filename" value="textures/starry_night.exr"/>
+		<transform name="toWorld">
+			<rotate axis="1, 0, 0" angle="0" />
+			<rotate axis="0, 1, 0" angle="0" />
+			<rotate axis="0, 0, 1" angle="0" />
+		</transform>
+	</emitter>
+
+	<emitter type="point">
+		<point name="position" value="0.002995,-3.990685,2.080570"/>
+		<color name="power" value="1000.000000,1000.000000,1000.000000"/>
+	</emitter>
+
+<!--	analytical spheres-->
+	<mesh type="sphere">
+		<point name="center" value="-1 0 2" />
+		<float name="radius" value="0.3263" />
+
+		<bsdf type="dielectric">
+			<float name="extIOR" value="1"/>
+			<float name="intIOR" value="1.5"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="0 0 2" />
+		<float name="radius" value="0.3263" />
+
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.0 0.30054 0.64448"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="1 0 2" />
+		<float name="radius" value="0.3263" /><bsdf type="mirror"/>
+
+	</mesh>
+
+</scene>

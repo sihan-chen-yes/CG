@@ -11,6 +11,8 @@ public:
     EnvMapLight(const PropertyList & propList) {
         m_lightToWorld = propList.getTransform("toWorld", Transform());
         m_worldToLight = m_lightToWorld.getInverseMatrix();
+        m_val = propList.getBoolean("val", false);
+        m_samples = propList.getInteger("samples", 5000);
 
         filesystem::path texture_path =
                 getFileResolver()->resolve(propList.getString("filename"));
@@ -43,7 +45,7 @@ public:
         }
 
         // preprocess for sampling the env map light
-        // calculate the CDF struct of marginal p(theta)
+        // calculate the CDF struct of marginal p(u)
         m_marginal = DiscretePDF (m_height);
         for (int y = 0; y < m_height; ++y) {
             float rowSum = 0.0f;
@@ -60,7 +62,7 @@ public:
             // p(phi|theta)
             DiscretePDF conditional(m_width);
             for (int x = 0; x < m_width; ++x) {
-                // p(phi|theta) = p(phi, theta) / p(theta)
+                // p(v|u) = p(v, u) / p(u)
                 conditional.append(m_luminance[y * m_width + x]); // Append value for each column
             }
             conditional.normalize(); // Normalize the conditional PDF for row `y`
@@ -174,6 +176,19 @@ public:
 //        assert(test1 = test2);
 //        assert(test_p1 == test_p2);
 
+        if (m_val) {
+            /*
+             * red mark for sampled pts for importance sampling validation
+             */
+            Color3f red (1.0f, 0.0f, 0.0f);
+            m_bitmap_val->coeffRef(y, x) = red;
+
+            if (m_counter == m_samples) {
+                // may save multiple times
+                std::string filename = "./scenes/project/envmap/IS_env_" + std::to_string(m_samples);
+                m_bitmap_val->savePNG(filename);
+            }
+        }
         // radiance Li
         return eval(lRec) / lRec.pdf;
     }
@@ -231,10 +246,12 @@ public:
 protected:
     std::vector<Color3f> m_radiance;
     std::vector<float> m_luminance;
+    //1D discrete
     DiscretePDF m_marginal;
+    //2D discrete
     std::vector<DiscretePDF> m_conditionals;
 
-    // used for adjust convention
+    // used for adjust env map
     Transform m_worldToLight;
     Transform m_lightToWorld;
 
@@ -242,6 +259,13 @@ protected:
     int m_width;
     int m_height;
     std::string m_file;
+    //for IS validation
+    // for red marking
+    Bitmap *m_bitmap_val;
+    // validation switch
+    bool m_val;
+    // samples of red pts
+    int m_samples;
 
     bool readEnvMap(std::string const filename) {
         size_t pos = filename.find_last_of('.');
@@ -256,10 +280,18 @@ protected:
             Bitmap bitmap(filename);
             m_height = bitmap.rows();
             m_width = bitmap.cols();
+
+            // if validate importance sampling, start recording
+            if (m_val) {
+                m_bitmap_val = new Bitmap(Vector2i (m_width, m_height));
+            }
             for (int y = 0; y < m_height; ++y) {
                 // mirror along width: change right hand frame to left hand frame(align with mitsuba)
                 for (int x = m_width - 1; x >= 0; --x) {
                     m_radiance.push_back(bitmap(y, x));
+                    // for validation need to mirror back
+                    if (m_val)
+                        m_bitmap_val->coeffRef(y, x) = bitmap(y, m_width - 1 - x);
                 }
             }
         } else {
