@@ -49,6 +49,7 @@
 
 /* "Ray epsilon": relative error threshold for ray intersection computations */
 #define Epsilon 1e-4f
+#define SEpsilon 1e-9f
 
 /* A few useful constants */
 #undef M_PI
@@ -272,6 +273,17 @@ extern float fresnel(float cosThetaI, float extIOR, float intIOR);
  */
 extern filesystem::resolver *getFileResolver();
 
+/**
+ * \brief Return the if the vector is nan or not
+ *
+ */
+extern bool isNan(Vector3f w);
+
+/**
+ * \brief Return the if the vector is normalized or not
+ *
+ */
+extern bool isNormalized(Vector3f w);
 NORI_NAMESPACE_END
 
 #endif /* __NORI_COMMON_H */

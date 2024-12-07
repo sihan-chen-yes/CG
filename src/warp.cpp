@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include <nori/warp.h>
 #include <nori/vector.h>
 #include <nori/frame.h>
@@ -113,9 +112,11 @@ Vector3f Warp::squareToCosineHemisphere(const Point2f &sample) {
     Point2f disk_sample = squareToUniformDisk(sample);
     // project onto the hemisphere
     float r = disk_sample.norm();
+    clamp(r, 0.0f, 1.0f);
     v.z() = sqrt(1 - r * r);
     v.x() = disk_sample.x();
     v.y() = disk_sample.y();
+    assert(!isNan(v));
     return v;
 
 //    naive method
@@ -165,6 +166,76 @@ Vector3f Warp::squareToUniformTriangle(const Point2f &sample) {
     float su1 = sqrtf(sample.x());
     float u = 1.f - su1, v = sample.y() * su1;
     return Vector3f(u,v,1.f-u-v);
+}
+
+Vector3f Warp::squareToGTR2(const Point2f &sample, float alpha_x, float alpha_y) {
+    //sampling a half vector wh
+    float phi = 2 * M_PI * sample.x();
+
+    //following the Disney bsdf paper
+    float sinPhi = alpha_y * sin(phi);
+    float cosPhi = alpha_x * cos(phi);
+    float thanTheta = sqrtf(sample.y() / (1 - sample.y() + SEpsilon));
+    // tangent and bitangent and normal in local frame
+    Vector3f wh = thanTheta * (cosPhi * Vector3f(1.0f, 0, 0) + sinPhi * Vector3f(0, 1.0f, 0)) + Vector3f(0, 0, 1.0f);
+    wh.normalize();
+
+    assert(!isNan(wh));
+    if (isNan(wh)) {
+        cout << "Vector Nan in GTR2" << endl;
+    }
+    return wh;
+}
+
+float Warp::squareToGTR2Pdf(const Vector3f &m, float alpha_x, float alpha_y) {
+    // m is the half vector wh, already in local frame
+    assert(isNormalized(m));
+    float cosTheta = Frame::cosTheta(m);
+    if (cosTheta < 0) {
+        return 0.0f;
+    }
+    if (alpha_x <= 0.0f || alpha_y <= 0.0f) {
+        throw std::runtime_error("Invalid alpha values: alpha_x and alpha_y must be > 0.");
+    }
+    assert(alpha_y != 0.f && alpha_x != 0.f);
+    float x_normalized = (m.x() / alpha_x) * (m.x() / alpha_x);
+    float y_normalized = (m.y() / alpha_y) * (m.y() / alpha_y);
+    float z = m.z() * m.z();
+    return cosTheta * INV_PI / (alpha_x * alpha_y) / (x_normalized + y_normalized + z) / (x_normalized + y_normalized + z);
+}
+
+Vector3f Warp::squareToGTR1(const Point2f &sample, float alpha) {
+    //sampling a half vector wh
+    float phi = 2 * M_PI * sample.x();
+
+    //following the Disney bsdf paper
+    assert(alpha < 1.0f);
+    float cosTheta2 = (1 - pow(alpha, 2 - 2 * sample.y())) / (1 - alpha * alpha);
+    cosTheta2 = std::clamp(cosTheta2, 0.0f, 1.0f);
+
+    float cosTheta = sqrtf(cosTheta2);
+    float sinTheta = sqrtf(1 - cosTheta2);
+    Vector3f wh;
+    wh.x() = sinTheta * cos(phi);
+    wh.y() = sinTheta * sin(phi);
+    wh.z() = cosTheta;
+    wh.normalize();
+    assert(!isNan(wh));
+    if (isNan(wh)) {
+        cout << "Vector Nan in GTR1" << endl;
+    }
+    return wh;
+}
+
+float Warp::squareToGTR1Pdf(const Vector3f &m, float alpha) {
+    // m is the half vector wh, already in local frame
+    float cosTheta = Frame::cosTheta(m);
+    if (cosTheta < 0) {
+        return 0.0f;
+    }
+    float alpha_2 = alpha * alpha;
+    assert(alpha != 1.0f);
+    return cosTheta * (alpha_2 - 1) * INV_TWOPI / (log(alpha)) / (1 + (alpha_2 - 1) * cosTheta * cosTheta);
 }
 
 NORI_NAMESPACE_END

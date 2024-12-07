@@ -313,4 +313,18 @@ float fresnel(float cosThetaI, float extIOR, float intIOR) {
     return (Rs * Rs + Rp * Rp) / 2.0f;
 }
 
+bool isNan(const Vector3f w) {
+    if (std::isnan(w.x()) || std::isnan(w.y()) || std::isnan(w.z())) {
+        return true;
+    }
+    return false;
+}
+
+bool isNormalized(const Vector3f w) {
+    if (abs(w.norm() - 1.0f) < Epsilon) {
+        return true;
+    }
+    return false;
+}
+
 NORI_NAMESPACE_END

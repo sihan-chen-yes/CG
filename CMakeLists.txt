@@ -111,6 +111,8 @@ set(NORI_SOURCE_FILES
         src/map/normal_map.cpp
 
         src/emitter/envmaplight.cpp
+
+        src/bsdf/disney.cpp
 )
 
 add_executable(nori ${NORI_SOURCE_FILES})

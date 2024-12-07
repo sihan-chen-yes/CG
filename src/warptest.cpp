@@ -81,12 +81,14 @@ enum WarpType : int {
     CosineHemisphere,
     Beckmann,
     MicrofacetBRDF,
+    GTR1,
+    GTR2,
     WarpTypeCount
 };
 
 static const std::string kWarpTypeNames[WarpTypeCount] = {
     "square", "disk", "uniform_sphere", "uniform_sphere_cap", "uniform_hemisphere",
-    "cosine_hemisphere", "beckmann", "microfacet_brdf"
+    "cosine_hemisphere", "beckmann", "microfacet_brdf", "GTR1", "GTR2"
 };
 
 
@@ -96,6 +98,7 @@ struct WarpTest {
 
     WarpType warpType;
     float parameterValue;
+    float parameter2Value;
     BSDF *bsdf;
     BSDFQueryRecord bRec;
     int xres, yres, res;
@@ -103,10 +106,10 @@ struct WarpTest {
     // Observed and expected frequencies, initialized after calling run().
     std::unique_ptr<double[]> obsFrequencies, expFrequencies;
 
-    WarpTest(WarpType warpType_, float parameterValue_, BSDF *bsdf_ = nullptr,
+    WarpTest(WarpType warpType_, float parameterValue_, float parameter2Value_, BSDF *bsdf_ = nullptr,
              BSDFQueryRecord bRec_ = BSDFQueryRecord(nori::Vector3f(), Point2f()),
              int xres_ = kDefaultXres, int yres_ = kDefaultYres)
-        : warpType(warpType_), parameterValue(parameterValue_), bsdf(bsdf_),
+        : warpType(warpType_), parameterValue(parameterValue_), parameter2Value(parameter2Value_), bsdf(bsdf_),
           bRec(bRec_), xres(xres_), yres(yres_) {
 
         if (warpType != Square && warpType != Disk)
@@ -181,7 +184,13 @@ struct WarpTest {
                     br.wo = v;
                     br.measure = nori::ESolidAngle;
                     return bsdf->pdf(br);
-                } else {
+                }
+                else if (warpType == GTR1) {
+                    return Warp::squareToGTR1Pdf(v, parameterValue);
+                } else if (warpType == GTR2) {
+                    return Warp::squareToGTR2Pdf(v, parameterValue, parameter2Value);
+                }
+                else {
                     throw NoriException("Invalid warp type");
                 }
             }
@@ -248,6 +257,10 @@ struct WarpTest {
                     value == 0 ? 0.f : bsdf->eval(br)[0]
                 );
              }
+            case GTR1:
+                result << Warp::squareToGTR1(sample, parameterValue); break;
+            case GTR2:
+                result << Warp::squareToGTR2(sample, parameterValue, parameter2Value); break;
              default:
                 throw std::runtime_error("Unsupported warp type.");
         }
@@ -438,7 +451,7 @@ public:
         /* Generate the point positions */
         nori::MatrixXf positions, values;
         try {
-            WarpTest tester(warpType, parameterValue, m_brdf.get(), m_bRec);
+            WarpTest tester(warpType, parameterValue, parameter2Value, m_brdf.get(), m_bRec);
             tester.generatePoints(m_pointCount, pointType, positions, values);
         } catch (const NoriException &e) {
             m_warpTypeBox->set_selected_index(0);
@@ -485,7 +498,7 @@ public:
             positions.resize(3, m_lineCount);
             float coarseScale = 1.f / gridRes, fineScale = 1.f / fineGridRes;
 
-            WarpTest tester(warpType, parameterValue, m_brdf.get(), m_bRec);
+            WarpTest tester(warpType, parameterValue, parameter2Value, m_brdf.get(), m_bRec);
             for (int i=0; i<=gridRes; ++i) {
                 for (int j=0; j<=fineGridRes; ++j) {
                     auto pt = tester.warpPoint(Point2f(j * fineScale, i * coarseScale));
@@ -535,10 +548,10 @@ public:
         m_parameterBox->set_value(tfm::format("%.1g", parameterValue));
         m_parameter2Box->set_value(tfm::format("%.1g", parameter2Value));
         m_angleBox->set_value(tfm::format("%.1f", m_angleSlider->value() * 180-90));
-        m_parameterSlider->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap);
-        m_parameterBox->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap);
-        m_parameter2Slider->set_enabled(warpType == MicrofacetBRDF);
-        m_parameter2Box->set_enabled(warpType == MicrofacetBRDF);
+        m_parameterSlider->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap || warpType == GTR1 || warpType == GTR2);
+        m_parameterBox->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap || warpType == GTR1 || warpType == GTR2);
+        m_parameter2Slider->set_enabled(warpType == MicrofacetBRDF || warpType == GTR2);
+        m_parameter2Box->set_enabled(warpType == MicrofacetBRDF || warpType == GTR2);
         m_angleBox->set_enabled(warpType == MicrofacetBRDF);
         m_angleSlider->set_enabled(warpType == MicrofacetBRDF);
         m_brdfValueCheckBox->set_enabled(warpType == MicrofacetBRDF);
@@ -665,8 +678,8 @@ public:
         // Prepare and run test, passing parameters from UI.
         WarpType warpType = (WarpType) m_warpTypeBox->selected_index();
         float parameterValue = mapParameter(warpType, m_parameterSlider->value());
-
-        WarpTest tester(warpType, parameterValue, m_brdf.get(), m_bRec);
+        float parameter2Value = mapParameter(warpType, m_parameter2Slider->value());
+        WarpTest tester(warpType, parameterValue, parameter2Value, m_brdf.get(), m_bRec);
         m_testResult = tester.run();
 
         float maxValue = 0, minValue = std::numeric_limits<float>::infinity();
@@ -727,7 +740,7 @@ public:
 
         new Label(m_window, "Warping method", "sans-bold");
         m_warpTypeBox = new ComboBox(m_window, { "Square", "Disk", "Sphere", "Spherical cap", "Hemisphere (unif.)",
-                "Hemisphere (cos)", "Beckmann distr.", "Microfacet BRDF" });
+                "Hemisphere (cos)", "Beckmann distr.", "Microfacet BRDF", "GTR1 distr.", "GTR2 distr." });
         m_warpTypeBox->set_callback([&](int) { refresh(); });
 
         panel = new Widget(m_window);
@@ -997,7 +1010,7 @@ int main(int argc, char **argv) {
         "Testing warp %s, parameter value = %f%s",
          kWarpTypeNames[int(warpType)], paramValue, extra
     ) << std::endl;
-    WarpTest tester(warpType, paramValue, bsdf.get(), bRec);
+    WarpTest tester(warpType, paramValue, param2Value, bsdf.get(), bRec);
     auto res = tester.run();
     if (res.first)
         return 0;
