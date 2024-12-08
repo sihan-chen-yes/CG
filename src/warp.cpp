@@ -187,6 +187,7 @@ Vector3f Warp::squareToGTR2(const Point2f &sample, float alpha_x, float alpha_y)
     return wh;
 }
 
+//GTR2_aniso
 float Warp::squareToGTR2Pdf(const Vector3f &m, float alpha_x, float alpha_y) {
     // m is the half vector wh, already in local frame
     assert(isNormalized(m));

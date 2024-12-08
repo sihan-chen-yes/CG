@@ -1,0 +1,207 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="63.81728511374552"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="1.0,-9.123184748850686e-17,-1.4668335568887716e-16,0.0,-1.4604008710499672e-16,0.007011367939412594,-0.9999754428863525,-3.0,9.225805437388504e-17,0.9999754428863525,0.007011367939412594,2.5,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<emitter type="envmap">
+		<string name="filename" value="textures/starry_night.exr"/>
+		<transform name="toWorld">
+			<rotate axis="1, 0, 0" angle="0" />
+			<rotate axis="0, 1, 0" angle="0" />
+			<rotate axis="0, 0, 1" angle="90" />
+		</transform>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="0.000000,-3.000000,2.500000"/>
+		<color name="power" value="10.000000,10.000000,10.000000"/>
+	</emitter>
+
+	<mesh type="sphere">
+		<point name="center" value="-1.4, 0, 3" />
+		<float name="radius" value="0.25" />
+
+		<bsdf type="disney" name="roughness_0.1">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.100000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="-0.7, 0, 3" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.2">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.200000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="0, 0, 3" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.3">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.300000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="sphere">
+		<point name="center" value="0.7, 0, 3" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.4">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.400000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+	<mesh type="sphere">
+		<point name="center" value="1.4, 0, 3" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.5">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+	<mesh type="sphere">
+		<point name="center" value="-1.4, 0, 2" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.6">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.600000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+	<mesh type="sphere">
+		<point name="center" value="-0.7, 0, 2" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.7">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.700000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+	<mesh type="sphere">
+		<point name="center" value="0, 0, 2" />
+		<float name="radius" value="0.25" />
+
+		<bsdf type="disney" name="roughness_0.8">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.800000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+	<mesh type="sphere">
+		<point name="center" value="0.7, 0, 2" />
+		<float name="radius" value="0.25" />
+		<bsdf type="disney" name="roughness_0.9">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.900000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+	<mesh type="sphere">
+		<point name="center" value="1.4, 0, 2" />
+		<float name="radius" value="0.25" />
+
+		<bsdf type="disney" name="roughness_1.0">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.00"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.00"/>
+		</bsdf>
+	</mesh>
+</scene>

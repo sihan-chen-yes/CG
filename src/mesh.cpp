@@ -148,20 +148,22 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
            tangents that are continuous across the surface. That
            means that this code will need to be modified to be able
            use anisotropic BRDFs, which need tangent continuity */
-        Vector3f t = (bary.x() * m_T.col(idx0) +
-                      bary.y() * m_T.col(idx1) +
-                      bary.z() * m_T.col(idx2)).normalized();
-
-        Vector3f b = (bary.x() * m_B.col(idx0) +
-                      bary.y() * m_B.col(idx1) +
-                      bary.z() * m_B.col(idx2)).normalized();
-
         Vector3f n = (bary.x() * m_N.col(idx0) +
                       bary.y() * m_N.col(idx1) +
                       bary.z() * m_N.col(idx2)).normalized();
 
-        its.shFrame = Frame(t, b, n);
+        if (m_T.size() > 0 && m_B.size() > 0) {
+            Vector3f t = (bary.x() * m_T.col(idx0) +
+                          bary.y() * m_T.col(idx1) +
+                          bary.z() * m_T.col(idx2)).normalized();
 
+            Vector3f b = (bary.x() * m_B.col(idx0) +
+                          bary.y() * m_B.col(idx1) +
+                          bary.z() * m_B.col(idx2)).normalized();
+            its.shFrame = Frame(t, b, n);
+        } else {
+            its.shFrame = Frame(n);
+        }
     } else {
         its.shFrame = its.geoFrame;
     }

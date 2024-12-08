@@ -47,7 +47,7 @@ public:
         m_eta = 2.f / (1.f - sqrt(0.08f * m_specular)) - 1.f;
 
         m_aspect = sqrtf(1 - 0.9 * m_anisotropic);
-        m_alpha_min = 0.0001f;
+        m_alpha_min = 0.001f;
         m_alpha_x = std::max(m_alpha_min, m_roughness * m_roughness / m_aspect);
         m_alpha_y = std::max(m_alpha_min, m_roughness * m_roughness * m_aspect);
         m_alpha_g = (1.0f - m_clearcoatGloss) * 0.1 + m_clearcoatGloss * 0.001;
@@ -61,10 +61,6 @@ public:
         diffuseWeight = 1 - m_metallic;
         metalWeight = 1;
         clearcoatWeight = 0.25 * m_clearcoat;
-        sheenWeight = (1 - m_metallic) * m_sheen;
-
-        // not used
-//        glassWeight = (1 - m_metallic) * m_specularTransmission;
     }
 
     virtual void addChild(NoriObject *obj) override {
@@ -229,7 +225,7 @@ public:
         float h = (wh.x() / m_alpha_x) * (wh.x() / m_alpha_x) + (wh.y() / m_alpha_y) * (wh.y() / m_alpha_y) + wh.z() * wh.z();
         return 1.0f / (M_PI * m_alpha_x * m_alpha_y * h * h);
     }
-
+//
     float lambda_m(Vector3f w) const {
         float xSquare = w.x() * m_alpha_x * w.x() * m_alpha_x;
         float ySquare = w.y() * m_alpha_y * w.y() * m_alpha_y;
@@ -281,7 +277,7 @@ public:
         float alphaSquare = m_alpha_g * m_alpha_g;
         return (alphaSquare - 1) / (M_PI * log(alphaSquare) * (1 + (alphaSquare - 1) * wh.z() * wh.z()));
     }
-
+//
     float lambda_c(Vector3f w) const {
         float xSquare = w.x() * 0.25 * w.x() * 0.25;
         float ySquare = w.y() * 0.25 * w.y() * 0.25;
@@ -407,7 +403,7 @@ public:
         bRec.wo = 2 * (bRec.wi.dot(wh)) * wh - bRec.wi;
     }
 
-    float pdfMetal(const BSDFQueryRecord &bRec) const {
+    float pdfSpecular(const BSDFQueryRecord &bRec) const {
         if (bRec.measure != ESolidAngle
             || Frame::cosTheta(bRec.wi) <= 0
             || Frame::cosTheta(bRec.wo) <= 0)
@@ -418,9 +414,6 @@ public:
         float cosTheta_i = abs(Frame::cosTheta(bRec.wi));
         // transform pdf_h to pdf_wo
         return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) / (4 * abs(wh.dot(bRec.wo)));
-//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i) / 4 / abs(wh.dot(bRec.wo));
-//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i);
-//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * abs(wh.dot(bRec.wo)));
     }
 
     /*
@@ -442,7 +435,6 @@ public:
         Vector3f wh = (bRec.wi + bRec.wo).normalized();
         // transform pdf_h to pdf_wo
         return Warp::squareToGTR1Pdf(wh, m_alpha_g) / (4 * abs(wh.dot(bRec.wo)));
-//        return Warp::squareToGTR1Pdf(wh, m_alpha_g) * abs(Frame::cosTheta(wh)) / (4 * abs(wh.dot(bRec.wo))) / (4 * abs(wh.dot(bRec.wo)));
     }
 
     /*
@@ -450,27 +442,94 @@ public:
      */
 
 
+//    virtual Color3f eval(const BSDFQueryRecord &bRec) const override {
+//        if (bRec.measure != ESolidAngle
+//            || Frame::cosTheta(bRec.wi) <= 0
+//            || Frame::cosTheta(bRec.wo) <= 0)
+//            return Color3f(0.0f);
+//
+//        Color3f res = diffuseWeight * evalDiffuse(bRec)
+//               + metalWeight * evalMetal(bRec)
+//               + clearcoatWeight * evalClearcoat(bRec)
+//               + sheenWeight * evalSheen(bRec);
+//
+//        if (abs(res.x()) < SEpsilon) {
+//            res.x() = 0.f;
+//        }
+//        if (abs(res.y()) < SEpsilon) {
+//            res.y() = 0.f;
+//        }
+//        if (abs(res.z()) < SEpsilon) {
+//            res.z() = 0.f;
+//        }
+//        return res;
+//    }
+
+//    float smithG_GGX_aniso(Vector3f w, float alpha_x, float alpha_y) const {
+//        return 1 / (Frame::cosTheta(w) + sqrtf(w.x() * alpha_x * w.x() * alpha_x + w.y() * alpha_y * w.y() * alpha_y +
+//                                               Frame::cosTheta(w) * Frame::cosTheta(w)));
+//    }
+//
+//    float smith_GGX(Vector3f w, float alpha_g) const {
+//        float a = alpha_g * alpha_g;
+//        float b = Frame::cosTheta(w) * Frame::cosTheta(w);
+//        return 1 / (Frame::cosTheta(w) + sqrtf(a + b - a * b));
+//    }
+
+    float SchlickFresnel(float cosTheta) const {
+        float m = clamp(1 - cosTheta, 0.f, 1.f);
+        return pow(m, 5);
+    }
+
+    // disney studio version
     virtual Color3f eval(const BSDFQueryRecord &bRec) const override {
         if (bRec.measure != ESolidAngle
             || Frame::cosTheta(bRec.wi) <= 0
             || Frame::cosTheta(bRec.wo) <= 0)
             return Color3f(0.0f);
 
-        Color3f res = diffuseWeight * evalDiffuse(bRec)
-               + metalWeight * evalMetal(bRec)
-               + clearcoatWeight * evalClearcoat(bRec)
-               + sheenWeight * evalSheen(bRec);
+        float cosTheta_i = Frame::cosTheta(bRec.wi);
+        float cosTheta_o = Frame::cosTheta(bRec.wo);
+        Normal3f wh = (bRec.wi + bRec.wo).normalized();
+        Color3f baseColor = m_albedo->eval(bRec.uv);
+        Color3f Ctint(1.f);
+        if (baseColor.getLuminance() > 0) {
+            Ctint = baseColor / baseColor.getLuminance();
+        }
+        Color3f Cspec0 = m_metallic * baseColor + (1 - m_metallic) * m_specular * .08 * (m_specularTint * Ctint + (1 - m_specularTint));
+        Color3f Csheen = m_sheenTint * Ctint + (1 - m_sheenTint);
 
-        if (abs(res.x()) < SEpsilon) {
-            res.x() = 0.f;
-        }
-        if (abs(res.y()) < SEpsilon) {
-            res.y() = 0.f;
-        }
-        if (abs(res.z()) < SEpsilon) {
-            res.z() = 0.f;
-        }
-        return res;
+        // diffuse component
+        float wh_dot_wo = wh.dot(bRec.wo);
+        float FO = SchlickFresnel(cosTheta_o); // FL
+        float FI = SchlickFresnel(cosTheta_i); // FV
+        float Fd90 = 0.5f + 2 * m_roughness * wh_dot_wo * wh_dot_wo;
+        float Fd = lerp(FO, 1.f, Fd90) * lerp(FI, 1.f, Fd90);
+
+        // subsurface component
+        float Fss90 = m_roughness * wh_dot_wo * wh_dot_wo;
+        float Fss = lerp(FO, 1.f, Fss90) * lerp(FI, 1.f, Fss90);
+        float ss = 1.25 * (Fss * (1.f / (cosTheta_i + cosTheta_o) - 0.5) + 0.5);
+
+        // specular component
+        // include cosTheta_h already, need to cancel out
+        float Ds = Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) / Frame::cosTheta(wh);
+        float FH = SchlickFresnel(wh_dot_wo);
+        Color3f Fs = FH + (1 - FH) * Cspec0;
+//        float Gs = smithG_GGX_aniso(bRec.wi, m_alpha_x, m_alpha_y) * smithG_GGX_aniso(bRec.wo, m_alpha_x, m_alpha_y); // light ring outside
+        float Gs = G_m(bRec.wi, bRec.wo);
+//        Color3f Fsheen = FH * m_sheen * Csheen;
+
+        // clearcoat component
+        // include cosTheta_h already, need to cancel out
+        float Dr = Warp::squareToGTR1Pdf(wh, m_alpha_g) / Frame::cosTheta(wh);
+        float Fr = lerp(FH, 0.04, 1.0);
+//        float Gr = smith_GGX(bRec.wi, 0.25) * smith_GGX(bRec.wo, 0.25);// light ring outside
+        float Gr = G_c(bRec.wi, bRec.wo);
+
+        // normalize like microfacet
+        return (INV_PI * lerp(m_subsurface, Fd, ss) * baseColor) * (1 - m_metallic)
+               + (Gs * Fs * Ds) / (4.f * cosTheta_o) + 0.25 * m_clearcoat * Gr * Fr * Dr / (4.f * cosTheta_o);
     }
 
 
@@ -483,14 +542,14 @@ public:
         Vector3f weights(diffuseWeight, metalWeight, clearcoatWeight);
         weights.normalize();
         // blending pdf should in [0, 1]
-        return weights[0] * pdfDiffuse(bRec) + weights[1] * pdfMetal(bRec) + weights[2] * pdfClearcoat(bRec);
+        return weights[0] * pdfDiffuse(bRec) + weights[1] * pdfSpecular(bRec) + weights[2] * pdfClearcoat(bRec);
     }
 
     virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &_sample) const override {
         bRec.measure = ESolidAngle;
         if (Frame::cosTheta(bRec.wi) < 0) {
             //relative IOR: outgoing / incident
-            bRec.eta = -m_eta;
+            bRec.eta = 1.f / m_eta;
         } else {
             //relative IOR: outgoing / incident
             bRec.eta = m_eta;
@@ -499,19 +558,27 @@ public:
         Vector3f lobePdf(diffuseWeight, metalWeight, clearcoatWeight);
         lobePdf.normalize();
         // importance sampling
-        float xi = _sample.x();
-        Point2f sample = Point2f(_sample);
         // need to fill in the bRec.wo in each sample component
         // need to sample reuse(renomalize)
-        if (xi < lobePdf[0]) {
-            sample.x() /= lobePdf[0];
-            sampleDiffuse(bRec, sample);
-        } else if (xi < lobePdf[0] + lobePdf[1]) {
-            sample.x() = (sample.x() - lobePdf[0]) / lobePdf[1];
-            sampleMetal(bRec, sample);
+        // specular part
+        if (_sample.x() < lobePdf[1] + lobePdf[2]) {
+            Point2f sample(_sample);
+            sample.x() /= lobePdf[1] + lobePdf[2];
+            float pdf_clearcoat = lobePdf[2] / (lobePdf[1] + lobePdf[2]);
+            // clearcoat component
+            if (sample.x() < pdf_clearcoat) {
+                sample.x() /= pdf_clearcoat;
+                sampleClearcoat(bRec, sample);
+            } else {
+                // metal component
+                sample.x() = (sample.x() - pdf_clearcoat) / (1.f - pdf_clearcoat);
+                sampleMetal(bRec, sample);
+            }
         } else {
-            sample.x() = (sample.x() - (lobePdf[0] + lobePdf[1])) / lobePdf[2];
-            sampleClearcoat(bRec, sample);
+            // diffuse part
+            Point2f sample(_sample);
+            sample.x() = (sample.x() - (lobePdf[1] + lobePdf[2])) / (1.f - lobePdf[1] + lobePdf[2]);
+            sampleDiffuse(bRec, sample);
         }
 
         float pdfValue = pdf(bRec);
@@ -560,14 +627,13 @@ private:
     Texture<Normal3f> * m_normalmap = nullptr;
 
     // disney bsdf parameters
-    // TODO
     float m_metallic;
-    Texture<float> *m_metallic_map;
+    Texture<float> *m_metallic_map = nullptr;
     float m_subsurface;
     float m_specular;
     float m_specularTint;
     float m_roughness;
-    Texture<float> *m_roughtness_map;
+    Texture<float> *m_roughtness_map = nullptr;
     float m_anisotropic;
     float m_sheen;
     float m_sheenTint;
@@ -584,9 +650,6 @@ private:
     float diffuseWeight;
     float metalWeight;
     float clearcoatWeight;
-    // not used
-    float glassWeight;
-    float sheenWeight;
 };
 
 NORI_REGISTER_CLASS(Disney, "disney");
