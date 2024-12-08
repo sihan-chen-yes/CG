@@ -19,7 +19,6 @@
 #include <nori/bsdf.h>
 #include <nori/frame.h>
 #include <nori/warp.h>
-#include <nori/dpdf.h>
 
 NORI_NAMESPACE_BEGIN
 
@@ -36,15 +35,16 @@ public:
 
         m_metallic = propList.getFloat("metallic", 0.f);
         m_subsurface = propList.getFloat("subsurface", 0.f);
-        m_specular = propList.getFloat("specular", 0.f);
+        m_specular = propList.getFloat("specular", 0.5f);
         m_specularTint = propList.getFloat("specularTint", 0.f);
-        m_roughness = propList.getFloat("roughness", 0.f);
+        m_roughness = propList.getFloat("roughness", 0.5f);
         m_anisotropic = propList.getFloat("anisotropic", 0.f);
         m_sheen = propList.getFloat("sheen", 0.f);
         m_sheenTint = propList.getFloat("sheenTint", 0.f);
         m_clearcoat = propList.getFloat("clearcoat", 0.f);
         m_clearcoatGloss = propList.getFloat("clearcoatGloss", 0.f);
-        m_specularTransmission = propList.getFloat("specularTransmission", 0.f);
+        // map specualr to fresnel then to eta
+        m_eta = 2.f / (1.f - sqrt(0.08f * m_specular)) - 1.f;
 
         m_aspect = sqrtf(1 - 0.9 * m_anisotropic);
         m_alpha_min = 0.0001f;
@@ -53,23 +53,18 @@ public:
         m_alpha_g = (1.0f - m_clearcoatGloss) * 0.1 + m_clearcoatGloss * 0.001;
 
 
-//        diffuseWeight = 1 - m_metallic;
-//        metalWeight = m_metallic;
-//        clearcoatWeight = 0.25 * m_clearcoat;
-
-        diffuseWeight = (1 - m_metallic) * (1 - m_specularTransmission);
-        metalWeight = 1 - m_specularTransmission * (1 - m_metallic);
+        diffuseWeight = 1 - m_metallic;
+        metalWeight = m_metallic;
         clearcoatWeight = 0.25 * m_clearcoat;
-        sheenWeight = (1 - m_metallic) * m_sheen;
+//        sheenWeight = (1 - m_metallic) * m_sheen;
+
+//        diffuseWeight = 1 - m_metallic;
+//        metalWeight = 1;
+//        clearcoatWeight = 0.25 * m_clearcoat;
+//        sheenWeight = (1 - m_metallic) * m_sheen;
 
         // not used
 //        glassWeight = (1 - m_metallic) * m_specularTransmission;
-
-        /* Interior IOR (default: BK7 borosilicate optical glass) */
-        m_intIOR = propList.getFloat("intIOR", 1.5046f);
-
-        /* Exterior IOR (default: air) */
-        m_extIOR = propList.getFloat("extIOR", 1.000277f);
     }
 
     virtual void addChild(NoriObject *obj) override {
@@ -205,8 +200,7 @@ public:
 
     Color3f C_0(const BSDFQueryRecord &bRec) const {
         Color3f baseColor = m_albedo->eval(bRec.uv);
-        float eta = m_intIOR / m_extIOR;
-        return m_specular * R_0(eta) * (1 - m_metallic) * K_s(bRec) + m_metallic * baseColor;
+        return m_specular * R_0(m_eta) * (1 - m_metallic) * K_s(bRec) + m_metallic * baseColor;
     }
 
     Color3f K_s(const BSDFQueryRecord &bRec) const {
@@ -214,6 +208,14 @@ public:
     }
 
     Color3f F_m(const BSDFQueryRecord &bRec) const {
+        Color3f baseColor = m_albedo->eval(bRec.uv);
+        Vector3f wh = (bRec.wi + bRec.wo).normalized();
+        float cosTheta = wh.dot(bRec.wo);
+        // modified F_m_tilde
+        return baseColor + (1 - baseColor) * pow(1 - cosTheta, 5);
+    }
+
+    Color3f F_m_tilde(const BSDFQueryRecord &bRec) const {
         Vector3f wh = (bRec.wi + bRec.wo).normalized();
         float cosTheta = wh.dot(bRec.wo);
         Color3f c0 = C_0(bRec);
@@ -255,7 +257,7 @@ public:
         Vector3f wh = (bRec.wi + bRec.wo).normalized();
         float cosTheta_i = abs(Frame::cosTheta(wi));
         float cosTheta_o = abs(Frame::cosTheta(wo));
-        return F_m(bRec) * D_m(wh) * G_m(wi, wo) / (4 * cosTheta_i * cosTheta_o);
+        return F_m_tilde(bRec) * D_m(wh) * G_m(wi, wo) / (4 * cosTheta_i * cosTheta_o);
     }
 
     /*
@@ -271,6 +273,7 @@ public:
 
     float F_c(Vector3f wh, Vector3f wo) const {
         float cosTheta = abs(wh.dot(wo));
+        // default eta, specular = 0.5
         return R_0(1.5) + (1.0f - R_0(1.5)) * pow(1 - cosTheta, 5);
     }
 
@@ -386,6 +389,11 @@ public:
     }
 
     float pdfDiffuse(const BSDFQueryRecord &bRec) const {
+        if (bRec.measure != ESolidAngle
+            || Frame::cosTheta(bRec.wi) <= 0
+            || Frame::cosTheta(bRec.wo) <= 0)
+            return 0.0f;
+
         return Warp::squareToCosineHemispherePdf(bRec.wo);
     }
 
@@ -409,8 +417,10 @@ public:
         float cosTheta_o = abs(Frame::cosTheta(bRec.wo));
         float cosTheta_i = abs(Frame::cosTheta(bRec.wi));
         // transform pdf_h to pdf_wo
+        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) / (4 * abs(wh.dot(bRec.wo)));
+        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i) / 4 / abs(wh.dot(bRec.wo));
         return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i);
-//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) / (4 * cosTheta_o);
+        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * abs(wh.dot(bRec.wo)));
     }
 
     /*
@@ -430,10 +440,9 @@ public:
             return 0.0;
 
         Vector3f wh = (bRec.wi + bRec.wo).normalized();
-        float cosTheta_o = abs(wh.dot(bRec.wo));
         // transform pdf_h to pdf_wo
-        return Warp::squareToGTR1Pdf(wh, m_alpha_g) * abs(Frame::cosTheta(wh)) / (4 * cosTheta_o);
-        return Warp::squareToGTR1Pdf(wh, m_alpha_g) / (4 * wh.dot(bRec.wo));
+        return Warp::squareToGTR1Pdf(wh, m_alpha_g) / (4 * abs(wh.dot(bRec.wo)));
+//        return Warp::squareToGTR1Pdf(wh, m_alpha_g) * abs(Frame::cosTheta(wh)) / (4 * abs(wh.dot(bRec.wo))) / (4 * abs(wh.dot(bRec.wo)));
     }
 
     /*
@@ -452,11 +461,10 @@ public:
                + clearcoatWeight * evalClearcoat(bRec)
                + sheenWeight * evalSheen(bRec);
 
-//        return diffuseWeight * evalDiffuse(bRec)
-//               + metalWeight * evalMetal(bRec)
-//               + clearcoatWeight * evalClearcoat(bRec)
-//               + glassWeight * evalGlass(bRec)
-//               + sheenWeight * evalSheen(bRec);
+        return diffuseWeight * evalDiffuse(bRec)
+               + metalWeight * evalMetal(bRec)
+               + clearcoatWeight * evalClearcoat(bRec)
+               + sheenWeight * evalSheen(bRec);
     }
 
 
@@ -475,37 +483,29 @@ public:
     virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &_sample) const override {
         bRec.measure = ESolidAngle;
         if (Frame::cosTheta(bRec.wi) < 0) {
-            //relative IOR: incident / outgoing
-            bRec.eta = m_intIOR / m_extIOR;
+            //relative IOR: outgoing / incident
+            bRec.eta = -m_eta;
         } else {
-            //relative IOR: incident / outgoing
-            bRec.eta = m_extIOR / m_intIOR;
+            //relative IOR: outgoing / incident
+            bRec.eta = m_eta;
         }
 
-        DiscretePDF cdf(3);
-        cdf.append(diffuseWeight);
-        cdf.append(metalWeight);
-        cdf.append(clearcoatWeight);
-        cdf.normalize();
-
+        Vector3f lobePdf(diffuseWeight, metalWeight, clearcoatWeight);
+        lobePdf.normalize();
         // importance sampling
         float xi = _sample.x();
-        // renormalized sampleValue already
-        int lobe_idx = cdf.sampleReuse(xi);
-
-        Point2f sample(_sample);
-        sample.x() = xi;
-
+        Point2f sample = Point2f(_sample);
         // need to fill in the bRec.wo in each sample component
-
-        if (lobe_idx == 0) {
+        // need to sample reuse(renomalize)
+        if (xi < lobePdf[0]) {
+            sample.x() /= lobePdf[0];
             sampleDiffuse(bRec, sample);
-        } else if (lobe_idx == 1) {
+        } else if (xi < lobePdf[0] + lobePdf[1]) {
+            sample.x() = (sample.x() - lobePdf[0]) / lobePdf[1];
             sampleMetal(bRec, sample);
-        } else if (lobe_idx == 2) {
-            sampleClearcoat(bRec, sample);
         } else {
-            throw NoriException("Not implemented lobe");
+            sample.x() = (sample.x() - (lobePdf[0] + lobePdf[1])) / lobePdf[2];
+            sampleClearcoat(bRec, sample);
         }
 
         float pdfValue = pdf(bRec);
@@ -530,9 +530,7 @@ public:
             "  sheenTint = %f\n"
             "  clearcoat = %f\n"
             "  clearcoatGloss = %f\n"
-            "  specularTransmission = %f\n"
-            "  intIOR = %f\n"
-            "  extIOR = %f\n"
+            "  eta = %f\n"
             "]",
             m_albedo ? indent(m_albedo->toString()) : std::string("null"),
             m_normalmap ? indent(m_albedo->toString()) : std::string("null"),
@@ -546,8 +544,7 @@ public:
             m_sheenTint,
             m_clearcoat,
             m_clearcoatGloss,
-            m_intIOR,
-            m_extIOR
+            m_eta
         );
     }
 private:
@@ -570,13 +567,13 @@ private:
     float m_sheenTint;
     float m_clearcoat;
     float m_clearcoatGloss;
-    float m_specularTransmission;
 
     float m_aspect;
     float m_alpha_min;
     float m_alpha_x;
     float m_alpha_y;
     float m_alpha_g;
+    float m_eta;
 
     float diffuseWeight;
     float metalWeight;
@@ -584,8 +581,6 @@ private:
     // not used
     float glassWeight;
     float sheenWeight;
-
-    float m_intIOR, m_extIOR;
 };
 
 NORI_REGISTER_CLASS(Disney, "disney");
