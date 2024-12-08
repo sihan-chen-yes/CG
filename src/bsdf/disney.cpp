@@ -53,15 +53,15 @@ public:
         m_alpha_g = (1.0f - m_clearcoatGloss) * 0.1 + m_clearcoatGloss * 0.001;
 
 
-        diffuseWeight = 1 - m_metallic;
-        metalWeight = m_metallic;
-        clearcoatWeight = 0.25 * m_clearcoat;
-//        sheenWeight = (1 - m_metallic) * m_sheen;
-
 //        diffuseWeight = 1 - m_metallic;
-//        metalWeight = 1;
+//        metalWeight = m_metallic;
 //        clearcoatWeight = 0.25 * m_clearcoat;
 //        sheenWeight = (1 - m_metallic) * m_sheen;
+
+        diffuseWeight = 1 - m_metallic;
+        metalWeight = 1;
+        clearcoatWeight = 0.25 * m_clearcoat;
+        sheenWeight = (1 - m_metallic) * m_sheen;
 
         // not used
 //        glassWeight = (1 - m_metallic) * m_specularTransmission;
@@ -418,9 +418,9 @@ public:
         float cosTheta_i = abs(Frame::cosTheta(bRec.wi));
         // transform pdf_h to pdf_wo
         return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) / (4 * abs(wh.dot(bRec.wo)));
-        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i) / 4 / abs(wh.dot(bRec.wo));
-        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i);
-        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * abs(wh.dot(bRec.wo)));
+//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i) / 4 / abs(wh.dot(bRec.wo));
+//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * cosTheta_i);
+//        return Warp::squareToGTR2Pdf(wh, m_alpha_x, m_alpha_y) * g_m(bRec.wi) / (4 * abs(wh.dot(bRec.wo)));
     }
 
     /*
@@ -456,15 +456,21 @@ public:
             || Frame::cosTheta(bRec.wo) <= 0)
             return Color3f(0.0f);
 
-        return diffuseWeight * evalDiffuse(bRec)
+        Color3f res = diffuseWeight * evalDiffuse(bRec)
                + metalWeight * evalMetal(bRec)
                + clearcoatWeight * evalClearcoat(bRec)
                + sheenWeight * evalSheen(bRec);
 
-        return diffuseWeight * evalDiffuse(bRec)
-               + metalWeight * evalMetal(bRec)
-               + clearcoatWeight * evalClearcoat(bRec)
-               + sheenWeight * evalSheen(bRec);
+        if (abs(res.x()) < SEpsilon) {
+            res.x() = 0.f;
+        }
+        if (abs(res.y()) < SEpsilon) {
+            res.y() = 0.f;
+        }
+        if (abs(res.z()) < SEpsilon) {
+            res.z() = 0.f;
+        }
+        return res;
     }
 
 
