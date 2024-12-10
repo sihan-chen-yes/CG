@@ -89,25 +89,35 @@ public:
 
 
 protected:
-    //sRGB format
-    std::vector<Color3f> m_texture;
+    //1.sRGB format 2.float
+    std::vector<T> m_texture;
 
     Vector2f m_scale;
     int m_width;
     int m_height;
     std::string m_file;
 
-    T getPixel(int x, int y) {
-        assert(x >= 0 && x < m_width && y >= 0 && y < m_height);
+    T getPixel(int x, int y);
 
-        return m_texture[y * m_width + x].toLinearRGB();
-    }
-
-    bool readImage(std::string const filename);
+    bool readImage(const std::string &filename);
 };
 
 template <>
-bool TextureMap<Color3f>::readImage(std::string const filename) {
+Color3f TextureMap<Color3f>::getPixel(int x, int y) {
+    assert(x >= 0 && x < m_width && y >= 0 && y < m_height);
+
+    return m_texture[y * m_width + x].toLinearRGB();
+}
+
+template <>
+float TextureMap<float>::getPixel(int x, int y) {
+    assert(x >= 0 && x < m_width && y >= 0 && y < m_height);
+
+    return m_texture[y * m_width + x];
+}
+
+template <>
+bool TextureMap<Color3f>::readImage(std::string const &filename) {
     size_t pos = filename.find_last_of('.');
     if (pos == std::string::npos) {
         return false; // No extension found
@@ -161,6 +171,33 @@ bool TextureMap<Color3f>::readImage(std::string const filename) {
 }
 
 template <>
+bool TextureMap<float>::readImage(std::string const &filename) {
+    size_t pos = filename.find_last_of('.');
+    if (pos == std::string::npos) {
+        return false; // No extension found
+    }
+    std::string extension = filename.substr(pos + 1);
+    if (extension != "png") {
+        std::cerr << "Unsupported file format: " << filename << std::endl;
+        return false;
+    }
+    int channels;
+    unsigned char *data = stbi_load(filename.c_str(), &m_width, &m_height, &channels, 1);
+    if (!data) return false;
+
+    m_texture.reserve(m_width * m_height);
+    // map [0, 255] to [0, 1]
+    for (int y = 0; y < m_height; ++y) {
+        for (int x = 0; x < m_width; ++x) {
+            m_texture.push_back(data[y * m_width + x] / 255.0f);
+        }
+    }
+    //release mem
+    stbi_image_free(data);
+    return true;
+}
+
+template <>
 TextureMap<Color3f>::TextureMap(const PropertyList &props) {
     filesystem::path texture_path =
             getFileResolver()->resolve(props.getString("filename"));
@@ -178,7 +215,23 @@ TextureMap<Color3f>::TextureMap(const PropertyList &props) {
     m_scale = props.getVector2("scale", Vector2f(1));
 }
 
+template <>
+TextureMap<float>::TextureMap(const PropertyList &props) {
+    filesystem::path texture_path =
+            getFileResolver()->resolve(props.getString("filename"));
 
+    std::ifstream is(texture_path.str());
+    if (is.fail())
+        throw NoriException("Unable to open texture file \"%s\"!", texture_path);
+
+    m_file = texture_path.str();
+
+    if (!readImage(m_file)) {
+        throw NoriException("Unable to read texture file \"%s\"!", texture_path);
+    }
+
+    m_scale = props.getVector2("scale", Vector2f(1));
+}
 
 template <>
 std::string TextureMap<Color3f>::toString() const {
@@ -186,11 +239,26 @@ std::string TextureMap<Color3f>::toString() const {
             "TextureMap[\n"
             "  scale = %s,\n"
             "  image_texture = %s,\n"
+            "  type = Color3f"
             "]",
             m_scale.toString(),
             m_file
     );
 }
 
+template <>
+std::string TextureMap<float>::toString() const {
+    return tfm::format(
+            "TextureMap[\n"
+            "  scale = %s,\n"
+            "  image_texture = %s,\n"
+            "  type = float"
+            "]",
+            m_scale.toString(),
+            m_file
+    );
+}
+
+NORI_REGISTER_TEMPLATED_CLASS(TextureMap, float, "image_texture_float")
 NORI_REGISTER_TEMPLATED_CLASS(TextureMap, Color3f, "image_texture")
 NORI_NAMESPACE_END
