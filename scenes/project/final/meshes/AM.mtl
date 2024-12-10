@@ -1,0 +1,15 @@
+# Blender MTL File: 'final.blend'
+# Material Count: 1
+
+newmtl AM
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.991723 0.991723 0.991723
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Bump \\\\wsl.localhost\\Ubuntu\\home\\csh\\cg\\sihchen\\scenes\\project\\final\\textures\\AM_n.png
+map_Kd \\\\wsl.localhost\\Ubuntu\\home\\csh\\cg\\sihchen\\scenes\\project\\final\\textures\\AM_a.png
+refl \\\\wsl.localhost\\Ubuntu\\home\\csh\\cg\\sihchen\\scenes\\project\\final\\textures\\AM_m.png

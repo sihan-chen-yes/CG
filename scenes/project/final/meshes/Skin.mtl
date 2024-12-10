@@ -1,0 +1,15 @@
+# Blender MTL File: 'final.blend'
+# Material Count: 1
+
+newmtl Skin
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.991723 0.991723 0.991723
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Bump -bm 0.100000 \\\\wsl.localhost\\Ubuntu\\home\\csh\\cg\\sihchen\\scenes\\project\\final\\textures\\Skin_n.png
+map_Kd \\\\wsl.localhost\\Ubuntu\\home\\csh\\cg\\sihchen\\scenes\\project\\final\\textures\\Skin_a.png
+map_Ns \\\\wsl.localhost\\Ubuntu\\home\\csh\\cg\\sihchen\\scenes\\project\\final\\textures\\Skin_r.png

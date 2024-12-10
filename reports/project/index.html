@@ -321,7 +321,69 @@ We could conclude these:
 3. For more complex mesh(e.g., sphere), with TBN map, we could get more consistent and realistic reflection.
 
 # Mesh Modelling
+In this part, I'll prepare all the meshes and textures for the final scene, including the water, Rennala and moon mesh. I modelled the water mesh,
+sculpted the Rennala to specific pose by myself, and used the moon mesh from others. Next I'll mainly introduce the part done by myself.
 
+## Water Mesh
+I followed the <a href="https://www.bilibili.com/video/BV1qs4y177Pc/?spm_id_from=333.337.search-card.all.click&vd_source=a9063a720abf17fbbf6c9b9f77914e66" target="_blank">tutorial</a> to model the water mesh by myself:
+
+First, I create a plane, and attach an ocean physics modifier, tuning the parameters to find a good water surface.
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Water1.png" alt="Mitsuba, w normal map" clcreate ass="img-responsive">
+</div>
+Then select the edges and translate along Z axis, close the mesh to get the initial water cube.
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Water2.png" alt="Mitsuba, w normal map" class="img-responsive">
+</div>
+Finally, use another cube to do intersect boolean operation to get the final water cube.
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Water3.png" alt="Mitsuba, w normal map" class="img-responsive">
+</div>
+For water material, I'm going to use the dielectrics bsdf with a new color properties added, to make the ocean color deeper.
+
+## Rennala Mesh
+Long story short, it's very hard to get the high detailed game character mesh from online resource market (of course),
+so I just followed the <a href="https://www.bilibili.com/video/BV1N4421c7R8/?spm_id_from=333.337.search-card.all.click&vd_source=a9063a720abf17fbbf6c9b9f77914e66" target="_blank">tutorial</a> to hack the assets in the game packages,
+and extract the mesh and texture, which is possible theoretically due to soul game's shared old engine. But even unpacked the game assets, its format is engine specific (<a href="https://www.bilibili.com/video/BV1N4421c7R8/?spm_id_from=333.337.search-card.all.click&vd_source=a9063a720abf17fbbf6c9b9f77914e66" target="_blank">havok</a>), and then
+need some tools to recover them back in normal form (obj mesh, png texture) as much as possible, so that our renderer could load them.
+In one word, our task is to import the mesh, and attach the textures in Blender.
+But due to complicated reasons during unpacking, some UV map of specific parts are collapsed, making texture mapping impossible.
+However, luckily for Rennala, there are two different characters mesh wish different size, and they can contribute to a complete one via scaling.
+Also there are some artifacts for some textures (missing corner due to hacking), and there's no method to handle this. Finally, I put mesh and texture together in Blender:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala1.png" alt="Init mesh in Blender" class="img-responsive">
+</div>
+Obviously, that's not the pose we want, and also the clothes texture is wrong, because the pattern appears on the wrong place.
+I first used GIMP to move the pattern to the correct place referring the UV map:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala2.png" alt="Moving pattern via GIMP" class="img-responsive">
+</div>
+Second, I need to do skeleton binding to change the pose of character, I used <a href="https://blendermarket.com/products/auto-rig-pro" target="_blank">ARP</a>  plugin in Blender to create general skeleton:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala3.png" alt="Creating Skeleton" class="img-responsive">
+</div>
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala4.png" alt="Creating Skeleton" class="img-responsive">
+</div>
+Then generate the rig:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala5.png" alt="Creating Rig" class="img-responsive">
+</div>
+And as the sleeves and skirts are super long, and the mesh is very high detailed, the automatics skeleton generation is sometimes wrong, so I adjust the weight painting by hands:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala6.png" alt="Weight Painting" class="img-responsive">
+</div>
+
+Last, because I only need a specific pose, I used the sculpt mode in Blender to sculpt the sleeves to make them more realistic and avoid the penetration:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/Rennala7.png" alt="Before Sculpting" class="img-responsive">
+    <img src="solution/mesh/Rennala8.png" alt="After Sculpting" class="img-responsive">
+</div>
+
+Finally, put everything together:
+<div class="twentytwenty-container">
+    <img src="solution/mesh/scene.png" alt="Scene" class="img-responsive">
+</div>
 # Environment Map
 
 **modified files:**

@@ -1,0 +1,830 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="70.71728564726497"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="1.0,-9.123184748850686e-17,-1.4668335568887716e-16,0.00865904800593853,-1.4604008710499672e-16,0.007011367939412594,-0.9999754428863525,-6.993579864501953,9.225805437388504e-17,0.9999754428863525,0.007011367939412594,3.0,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<emitter type="envmap">
+		<string name="filename" value="textures/wells6.exr"/>
+		<transform name="toWorld">
+			<rotate axis="1, 0, 0" angle="0" />
+			<rotate axis="0, 1, 0" angle="0" />
+			<rotate axis="0, 0, 1" angle="0" />
+		</transform>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="0.039172,-2.973811,2.988268"/>
+		<color name="power" value="10.000000,10.000000,10.000000"/>
+	</emitter>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere_roughness_0.1.obj"/>
+		<bsdf type="disney" name="roughness_0.1">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.100000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.001_roughness_0.2.obj"/>
+		<bsdf type="disney" name="roughness_0.2">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.200000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.002_roughness_0.3.obj"/>
+		<bsdf type="disney" name="roughness_0.3">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.300000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.003_roughness_0.4.obj"/>
+		<bsdf type="disney" name="roughness_0.4">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.400000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.004_roughness_0.5.obj"/>
+		<bsdf type="disney" name="roughness_0.5">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.005_roughness_0.6.obj"/>
+		<bsdf type="disney" name="roughness_0.6">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.600000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.006_roughness_0.7.obj"/>
+		<bsdf type="disney" name="roughness_0.7">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.700000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.007_roughness_0.8.obj"/>
+		<bsdf type="disney" name="roughness_0.8">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.800000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.008_roughness_0.9.obj"/>
+		<bsdf type="disney" name="roughness_0.9">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.900000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.009_roughness_1.0.obj"/>
+		<bsdf type="disney" name="roughness_1.0">
+			<color name="baseColor" value="1.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.019_subsurface_0.1.obj"/>
+		<bsdf type="disney" name="subsurface_0.1">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.100000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.018_subsurface_0.2.obj"/>
+		<bsdf type="disney" name="subsurface_0.2">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.200000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.017_subsurface_0.3.obj"/>
+		<bsdf type="disney" name="subsurface_0.3">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.300000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.016_subsurface_0.4.obj"/>
+		<bsdf type="disney" name="subsurface_0.4">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.400000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.015_subsurface_0.5.obj"/>
+		<bsdf type="disney" name="subsurface_0.5">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.500000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.014_subsurface_0.6.obj"/>
+		<bsdf type="disney" name="subsurface_0.6">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.600000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.013_subsurface_0.7.obj"/>
+		<bsdf type="disney" name="subsurface_0.7">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.700000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.012_subsurface_0.8.obj"/>
+		<bsdf type="disney" name="subsurface_0.8">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.800000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.011_subsurface_0.9.obj"/>
+		<bsdf type="disney" name="subsurface_0.9">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.900000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.010_subsurface_1.0.obj"/>
+		<bsdf type="disney" name="subsurface_1.0">
+			<color name="baseColor" value="0.800000,0.800000,0.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="1.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.029_Metallic_0.1.obj"/>
+		<bsdf type="disney" name="Metallic_0.1">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.100000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.028_Metallic_0.2.obj"/>
+		<bsdf type="disney" name="Metallic_0.2">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.200000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.027_Metallic_0.3.obj"/>
+		<bsdf type="disney" name="Metallic_0.3">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.300000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.026_Metallic_0.4.obj"/>
+		<bsdf type="disney" name="Metallic_0.4">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.400000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.025_Metallic_0.5.obj"/>
+		<bsdf type="disney" name="Metallic_0.5">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.500000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.024_Metallic_0.6.obj"/>
+		<bsdf type="disney" name="Metallic_0.6">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.600000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.023_Metallic_0.7.obj"/>
+		<bsdf type="disney" name="Metallic_0.7">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.700000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.022_Metallic_0.8.obj"/>
+		<bsdf type="disney" name="Metallic_0.8">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.800000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.021_Metallic_0.9.obj"/>
+		<bsdf type="disney" name="Metallic_0.9">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="0.900000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.020_Metallic_1.0.obj"/>
+		<bsdf type="disney" name="Metallic_1.0">
+			<color name="baseColor" value="0.000000,0.000000,0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.039_Specular_0.1.obj"/>
+		<bsdf type="disney" name="Specular_0.1">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.100000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.038_Specular_0.2.obj"/>
+		<bsdf type="disney" name="Specular_0.2">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.200000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.037_Specular_0.3.obj"/>
+		<bsdf type="disney" name="Specular_0.3">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.300000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.036_Specular_0.4.obj"/>
+		<bsdf type="disney" name="Specular_0.4">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.400000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.035_Specular_0.5.obj"/>
+		<bsdf type="disney" name="Specular_0.5">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.034_Specular_0.6.obj"/>
+		<bsdf type="disney" name="Specular_0.6">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.600000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.033_Specular_0.7.obj"/>
+		<bsdf type="disney" name="Specular_0.7">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.700000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.032_Specular_0.8.obj"/>
+		<bsdf type="disney" name="Specular_0.8">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.800000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.031_Specular_0.9.obj"/>
+		<bsdf type="disney" name="Specular_0.9">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.900000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.030_Specular_1.0.obj"/>
+		<bsdf type="disney" name="Specular_1.0">
+			<color name="baseColor" value="0.800000,0.029691,0.799352"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.049_Clearcoat_0.1.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.1">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.100000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.048_Clearcoat_0.2.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.2">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.200000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.047_Clearcoat_0.3.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.3">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.300000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.046_Clearcoat_0.4.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.4">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.400000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.045_Clearcoat_0.5.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.5">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.500000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.044_Clearcoat_0.6.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.6">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.600000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.043_Clearcoat_0.7.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.7">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.700000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.042_Clearcoat_0.8.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.8">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.800000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.041_Clearcoat_0.9.obj"/>
+		<bsdf type="disney" name="Clearcoat_0.9">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.900000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.040_Clearcoat_1.0.obj"/>
+		<bsdf type="disney" name="Clearcoat_1.0">
+			<color name="baseColor" value="0.000000,0.000000,1.000000"/>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.500000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.500000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="1.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+</scene>
