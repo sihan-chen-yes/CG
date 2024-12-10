@@ -83,12 +83,13 @@ enum WarpType : int {
     MicrofacetBRDF,
     GTR1,
     GTR2,
+    DisneyBSDF,
     WarpTypeCount
 };
 
 static const std::string kWarpTypeNames[WarpTypeCount] = {
     "square", "disk", "uniform_sphere", "uniform_sphere_cap", "uniform_hemisphere",
-    "cosine_hemisphere", "beckmann", "microfacet_brdf", "GTR1", "GTR2"
+    "cosine_hemisphere", "beckmann", "microfacet_brdf", "GTR1", "GTR2", "disney_bsdf"
 };
 
 
@@ -184,13 +185,17 @@ struct WarpTest {
                     br.wo = v;
                     br.measure = nori::ESolidAngle;
                     return bsdf->pdf(br);
+                } else if (warpType == DisneyBSDF) {
+                    BSDFQueryRecord br(bRec);
+                    br.wo = v;
+                    br.measure = nori::ESolidAngle;
+                    return bsdf->pdf(br);
                 }
                 else if (warpType == GTR1) {
                     return Warp::squareToGTR1Pdf(v, parameterValue);
                 } else if (warpType == GTR2) {
                     return Warp::squareToGTR2Pdf(v, parameterValue, parameter2Value);
-                }
-                else {
+                } else {
                     throw NoriException("Invalid warp type");
                 }
             }
@@ -261,6 +266,14 @@ struct WarpTest {
                 result << Warp::squareToGTR1(sample, parameterValue); break;
             case GTR2:
                 result << Warp::squareToGTR2(sample, parameterValue, parameter2Value); break;
+            case DisneyBSDF: {
+                BSDFQueryRecord br(bRec);
+                float value = bsdf->sample(br, sample).getLuminance();
+                return std::make_pair(
+                        br.wo,
+                        value == 0 ? 0.f : bsdf->eval(br)[0]
+                );
+            }
              default:
                 throw std::runtime_error("Unsupported warp type.");
         }
@@ -315,6 +328,17 @@ struct WarpTest {
 
         nori::Vector3f wi(std::sin(bsdfAngle), 0.f,
                     std::max(std::cos(bsdfAngle), 1e-4f));
+        wi = wi.normalized();
+        BSDFQueryRecord bRec(wi, Point2f());
+        return { brdf, bRec };
+    }
+
+    static std::pair<BSDF *, BSDFQueryRecord>
+    create_disney_bsdf(float bsdfAngle) {
+        PropertyList list;
+        auto * brdf = (BSDF *) NoriObjectFactory::createInstance("disney", list);
+        nori::Vector3f wi(std::sin(bsdfAngle), 0.f,
+                          std::max(std::cos(bsdfAngle), 1e-4f));
         wi = wi.normalized();
         BSDFQueryRecord bRec(wi, Point2f());
         return { brdf, bRec };
@@ -446,6 +470,12 @@ public:
             std::tie(ptr, m_bRec) = WarpTest::create_microfacet_bsdf(
                 parameterValue, parameter2Value, bsdfAngle);
             m_brdf.reset(ptr);
+        } else if (warpType == DisneyBSDF) {
+            BSDF *ptr;
+            float bsdfAngle = M_PI * (m_angleSlider->value() - 0.5f);
+            std::tie(ptr, m_bRec) = WarpTest::create_disney_bsdf(
+                    bsdfAngle);
+            m_brdf.reset(ptr);
         }
 
         /* Generate the point positions */
@@ -465,7 +495,7 @@ public:
             value_scale = std::max(value_scale, values(0, i));
         value_scale = 1.f / value_scale;
 
-        if (!m_brdfValueCheckBox->checked() || warpType != MicrofacetBRDF)
+        if (!m_brdfValueCheckBox->checked() || warpType != MicrofacetBRDF || warpType != DisneyBSDF)
             value_scale = 0.f;
 
         if (warpType != Square) {
@@ -548,13 +578,13 @@ public:
         m_parameterBox->set_value(tfm::format("%.1g", parameterValue));
         m_parameter2Box->set_value(tfm::format("%.1g", parameter2Value));
         m_angleBox->set_value(tfm::format("%.1f", m_angleSlider->value() * 180-90));
-        m_parameterSlider->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap || warpType == GTR1 || warpType == GTR2);
-        m_parameterBox->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap || warpType == GTR1 || warpType == GTR2);
-        m_parameter2Slider->set_enabled(warpType == MicrofacetBRDF || warpType == GTR2);
-        m_parameter2Box->set_enabled(warpType == MicrofacetBRDF || warpType == GTR2);
-        m_angleBox->set_enabled(warpType == MicrofacetBRDF);
-        m_angleSlider->set_enabled(warpType == MicrofacetBRDF);
-        m_brdfValueCheckBox->set_enabled(warpType == MicrofacetBRDF);
+        m_parameterSlider->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap || warpType == GTR1 || warpType == GTR2 || warpType == DisneyBSDF);
+        m_parameterBox->set_enabled(warpType == Beckmann || warpType == MicrofacetBRDF || warpType == UniformSphereCap || warpType == GTR1 || warpType == GTR2 || warpType == DisneyBSDF);
+        m_parameter2Slider->set_enabled(warpType == MicrofacetBRDF || warpType == GTR2 || warpType == DisneyBSDF);
+        m_parameter2Box->set_enabled(warpType == MicrofacetBRDF || warpType == GTR2 || warpType == DisneyBSDF);
+        m_angleBox->set_enabled(warpType == MicrofacetBRDF || warpType == DisneyBSDF);
+        m_angleSlider->set_enabled(warpType == MicrofacetBRDF || warpType == DisneyBSDF);
+        m_brdfValueCheckBox->set_enabled(warpType == MicrofacetBRDF || warpType == DisneyBSDF);
         m_pointCountSlider->set_value((std::log((float) m_pointCount) / std::log(2.f) - 5) / 15);
     }
 
@@ -652,7 +682,7 @@ public:
                 m_gridShader->draw_array(nanogui::Shader::PrimitiveType::Line, 0, m_lineCount);
                 m_gridShader->end();
             }
-            if (m_warpTypeBox->selected_index() == MicrofacetBRDF) {
+            if (m_warpTypeBox->selected_index() == MicrofacetBRDF || m_warpTypeBox->selected_index() == DisneyBSDF) {
                 m_arrowShader->set_uniform("mvp", mvp);
                 m_arrowShader->begin();
                 m_arrowShader->draw_array(nanogui::Shader::PrimitiveType::Line, 0, 106);
@@ -740,7 +770,7 @@ public:
 
         new Label(m_window, "Warping method", "sans-bold");
         m_warpTypeBox = new ComboBox(m_window, { "Square", "Disk", "Sphere", "Spherical cap", "Hemisphere (unif.)",
-                "Hemisphere (cos)", "Beckmann distr.", "Microfacet BRDF", "GTR1 distr.", "GTR2 distr." });
+                "Hemisphere (cos)", "Beckmann distr.", "Microfacet BRDF", "GTR1 distr.", "GTR2 distr.", "Disney BSDF" });
         m_warpTypeBox->set_callback([&](int) { refresh(); });
 
         panel = new Widget(m_window);
@@ -1000,6 +1030,13 @@ int main(int argc, char **argv) {
         BSDF *ptr;
         std::tie(ptr, bRec) = WarpTest::create_microfacet_bsdf(
             paramValue, param2Value, bsdfAngle);
+        bsdf.reset(ptr);
+    }
+    if (warpType == DisneyBSDF) {
+        float bsdfAngle = M_PI * 0.f;
+        BSDF *ptr;
+        std::tie(ptr, bRec) = WarpTest::create_disney_bsdf(
+                bsdfAngle);
         bsdf.reset(ptr);
     }
 
