@@ -339,6 +339,7 @@ a single indefinite light source point according to its radiance. Using this met
 manually anymore and can get realistic and consistent lighting. Besides, we could also get background without pure black
 colors when not hitting light sources (in any direction we would finally hit a light source point with env map).
 
+I mainly followed the <a href="https://web.cs.wpi.edu/~emmanuel/courses/cs563/S07/projects/envsample.pdf" target="_blank">paper</a>.
 We first implement envlight envmaplight relative files, in `emitter.h`, we need to judge if the emitter is envmaplight or not,
 and need a counter to validate importance sampling later.
 ```cpp
@@ -569,6 +570,339 @@ all the results match with Mitsuba:
 
 # Disney BSDF
 
+**modified files:**
+
+- `src/disney/disney.cpp`
+
+- `src/warp.cpp`
+
+- `include/nori/warp.h`
+
+- `src/warptest.cpp`
+
+- `include/nori/texture.h`
+
+- `src/map/texture_map.cpp`
+
+
+This feature permits us using lots of parameters to simulate the materials that we want like metal, plastic, etc. Without necessarily obeying the physical rules,
+disney brdf allow us tuning these parameters to change the materials with intuition. My graded parameters are roughness, subsurface, metallic, specular, clearcoat.
+
+As far as I know, there are many implementation methods for disney brdf even with an enhanced version (with scattering)
+for the original <a href="https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf" target="_blank">paper</a>.
+For theory, I mainly follow the paper. For implementation, I first tried the <a href="https://cseweb.ucsd.edu/~tzli/cse272/wi2023/homework1.pdf" target="_blank"> method from UCSD </a>.
+But due to the detailed implementation (formula), the results varied a lot with Mitsuba. Then I turned to follow this paper for GTR1 and GTR2 sampling and pdf,
+and the <a href="https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf" target="_blank">disney studio implementation</a>
+for brdf eval with a more close results.
+
+In summary, there should be an eval function for evaluate the value for each component including diffuse, subsurface, specular, clearcoat.
+And lobes for sampling and pdf evaluation including cosine weighted hemisphere, GTR2 and GTR1, which will be used for importance sampling. For my final scene, I should make
+the renderer could load roughness and metallic map as input. So there's a small fix for relative parameters calculation (queried value from map not limited to fix ones).
+
+## eval
+
+I followed the disney studio implementation for eval part.
+``` cpp
+virtual Color3f eval(const BSDFQueryRecord &bRec) const override {
+    if (bRec.measure != ESolidAngle
+    || Frame::cosTheta(bRec.wi) <= 0
+    || Frame::cosTheta(bRec.wo) <= 0)
+    return Color3f(0.0f);
+
+    float cosTheta_i = Frame::cosTheta(bRec.wi);
+    float cosTheta_o = Frame::cosTheta(bRec.wo);
+    Normal3f wh = (bRec.wi + bRec.wo).normalized();
+    Color3f baseColor = m_albedo->eval(bRec.uv);
+    Color3f Ctint(1.f);
+    if (baseColor.getLuminance() > 0) {
+    Ctint = baseColor / baseColor.getLuminance();
+    }
+    Color3f Cspec0 = getMetallic(bRec) * baseColor + (1 - getMetallic(bRec)) * m_specular * .08 * (m_specularTint * Ctint + (1 - m_specularTint));
+    Color3f Csheen = m_sheenTint * Ctint + (1 - m_sheenTint);
+
+    // diffuse component
+    float wh_dot_wo = wh.dot(bRec.wo);
+    float FO = SchlickFresnel(cosTheta_o); // FL
+    float FI = SchlickFresnel(cosTheta_i); // FV
+    float Fd90 = 0.5f + 2 * getRoughness(bRec) * wh_dot_wo * wh_dot_wo;
+    float Fd = lerp(FO, 1.f, Fd90) * lerp(FI, 1.f, Fd90);
+
+    // subsurface component
+    float Fss90 = getRoughness(bRec) * wh_dot_wo * wh_dot_wo;
+    float Fss = lerp(FO, 1.f, Fss90) * lerp(FI, 1.f, Fss90);
+    float ss = 1.25 * (Fss * (1.f / (cosTheta_i + cosTheta_o) - 0.5) + 0.5);
+
+    // specular component
+    // include cosTheta_h already, need to cancel out
+    float Ds = Warp::squareToGTR2Pdf(wh, get_alpha_x(bRec), get_alpha_y(bRec)) / Frame::cosTheta(wh);
+    float FH = SchlickFresnel(wh_dot_wo);
+    Color3f Fs = FH + (1 - FH) * Cspec0;
+    //        float Gs = smithG_GGX_aniso(bRec.wi, m_alpha_x, m_alpha_y) * smithG_GGX_aniso(bRec.wo, m_alpha_x, m_alpha_y); // light ring outside
+    float Gs = G_m(bRec);
+    //        Color3f Fsheen = FH * m_sheen * Csheen;
+
+    // clearcoat component
+    // include cosTheta_h already, need to cancel out
+    float Dr = Warp::squareToGTR1Pdf(wh, m_alpha_g) / Frame::cosTheta(wh);
+    float Fr = lerp(FH, 0.04, 1.0);
+    //        float Gr = smith_GGX(bRec.wi, 0.25) * smith_GGX(bRec.wo, 0.25);// light ring outside
+    float Gr = G_c(bRec.wi, bRec.wo);
+
+    float diffuseWeight = 1 - getMetallic(bRec);
+    float specularWeight = 1;
+    float clearcoatWeight = 0.25 * m_clearcoat;
+    // normalize like microfacet
+    return (INV_PI * lerp(m_subsurface, Fd, ss) * baseColor) * diffuseWeight
+    + (Gs * Fs * Ds) / (4.f * cosTheta_o) + clearcoatWeight * Gr * Fr * Dr / (4.f * cosTheta_o);
+}
+```
+
+What need to be careful is we sample wo for diffuse part, and wh for specular and clearcoat part. So there should be a jacobian for transfering.
+Also using the `smithG_GGX_aniso` and `smith_GGX` provided in <a href="https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf" target="_blank">disney studio implementation</a>
+will provide weired white edges, I changed the two geometry term calculations using <a href="https://cseweb.ucsd.edu/~tzli/cse272/wi2023/homework1.pdf" target="_blank"> method from UCSD </a>.
+
+G_m:
+```cpp
+float lambda_m(const BSDFQueryRecord &bRec, Vector3f w) const {
+    float xSquare = pow(w.x() * get_alpha_x(bRec), 2);
+    float ySquare = pow(w.y() * get_alpha_y(bRec), 2);
+    return (sqrtf(1 + (xSquare + ySquare) / (w.z() * w.z())) - 1) / 2;
+}
+
+float g_m(const BSDFQueryRecord &bRec, Vector3f w) const {
+    return 1.0f / (1 + lambda_m(bRec, w));
+}
+
+// Metallic geometry term
+float G_m(const BSDFQueryRecord &bRec) const {
+    return g_m(bRec, bRec.wi) * g_m(bRec, bRec.wo);
+}
+
+```
+G_c:
+```cpp
+float lambda_c(Vector3f w) const {
+    float xSquare = w.x() * 0.25 * w.x() * 0.25;
+    float ySquare = w.y() * 0.25 * w.y() * 0.25;
+    return (sqrtf(1 + ((xSquare + ySquare) / (w.z() * w.z()))) - 1) / 2;
+}
+
+float g_c(Vector3f w) const {
+    return 1.0f / (1 + lambda_c(w));
+}
+
+// Clearcoat geometry term
+float G_c(Vector3f wi, Vector3f wo) const {
+    return g_c(wi) * g_c(wo);
+}
+
+```
+
+## sampling and pdf
+
+Apart from cosine weighted hemisphere sampling, we should add GTR1 and GTR2 sampling and pdf evaluation. I followed the 2012 paper's appendix.
+
+GTR1 sampling:
+```cpp
+Vector3f Warp::squareToGTR1(const Point2f &sample, float alpha) {
+    //sampling a half vector wh
+    float phi = 2 * M_PI * sample.x();
+
+    //following the Disney bsdf paper
+    float cosTheta2 = (1 - pow(alpha, 2 - 2 * sample.y())) / (1 - alpha * alpha);
+    cosTheta2 = std::clamp(cosTheta2, 0.0f, 1.0f);
+
+    float cosTheta = sqrtf(cosTheta2);
+    float sinTheta = sqrtf(1 - cosTheta2);
+    Vector3f wh;
+    wh.x() = sinTheta * cos(phi);
+    wh.y() = sinTheta * sin(phi);
+    wh.z() = cosTheta;
+    wh.normalize();
+
+    return wh;
+}
+```
+GTR1 pdf:
+
+```
+cpp
+float Warp::squareToGTR1Pdf(const Vector3f &m, float alpha) {
+    // m is the half vector wh, already in local frame
+    float cosTheta = Frame::cosTheta(m);
+    if (cosTheta < 0) {
+        return 0.0f;
+    }
+    float alpha_2 = alpha * alpha;
+    return cosTheta * (alpha_2 - 1) * INV_TWOPI / (log(alpha)) / (1 + (alpha_2 - 1) * cosTheta * cosTheta);
+}
+```
+
+GTR2 sampling:
+```cpp
+Vector3f Warp::squareToGTR2(const Point2f &sample, float alpha_x, float alpha_y) {
+    //sampling a half vector wh
+    float phi = 2 * M_PI * sample.x();
+
+    //following the Disney bsdf paper
+    float sinPhi = alpha_y * sin(phi);
+    float cosPhi = alpha_x * cos(phi);
+    float thanTheta = sqrtf(sample.y() / (1 - sample.y() + SEpsilon));
+    // tangent and bitangent and normal in local frame
+    Vector3f wh = thanTheta * (cosPhi * Vector3f(1.0f, 0, 0) + sinPhi * Vector3f(0, 1.0f, 0)) + Vector3f(0, 0, 1.0f);
+    wh.normalize();
+
+    return wh;
+}
+```
+
+GTR2 pdf:
+```cpp
+float Warp::squareToGTR2Pdf(const Vector3f &m, float alpha_x, float alpha_y) {
+// m is the half vector wh, already in local frame
+    float cosTheta = Frame::cosTheta(m);
+    if (cosTheta < 0) {
+        return 0.0f;
+    }
+    float x_normalized = (m.x() / alpha_x) * (m.x() / alpha_x);
+    float y_normalized = (m.y() / alpha_y) * (m.y() / alpha_y);
+    float z = m.z() * m.z();
+    return cosTheta * INV_PI / (alpha_x * alpha_y) / (x_normalized + y_normalized + z) / (x_normalized + y_normalized + z);
+}
+
+```
+Together pdf sampling:
+
+```cpp
+virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &_sample) const override {
+    bRec.measure = ESolidAngle;
+
+    float diffuseWeight = 1 - getMetallic(bRec);
+    float specularWeight = 1;
+    float clearcoatWeight = 0.25 * m_clearcoat;
+    float total = diffuseWeight + specularWeight + clearcoatWeight;
+
+    Vector3f lobePdf(diffuseWeight / total, specularWeight / total, clearcoatWeight / total);
+    // importance sampling
+    // need to fill in the bRec.wo in each sample component
+    // need to sample reuse(renomalize)
+    // specular part
+    if (_sample.x() < lobePdf[1] + lobePdf[2]) {
+        Point2f sample(_sample);
+        sample.x() /= lobePdf[1] + lobePdf[2];
+        float pdf_clearcoat = lobePdf[2] / (lobePdf[1] + lobePdf[2]);
+        // clearcoat component
+        if (sample.x() < pdf_clearcoat) {
+            sample.x() /= pdf_clearcoat;
+            sampleClearcoat(bRec, sample);
+        } else {
+            // metal component
+            sample.x() = (sample.x() - pdf_clearcoat) / (1.f - pdf_clearcoat);
+            sampleMetal(bRec, sample);
+        }
+    } else {
+        // diffuse part
+        Point2f sample(_sample);
+        sample.x() = (sample.x() - (lobePdf[1] + lobePdf[2])) / (1.f - lobePdf[1] + lobePdf[2]);
+        sampleDiffuse(bRec, sample);
+    }
+
+    float pdfValue = pdf(bRec);
+    if (pdfValue < SEpsilon) {
+        return Color3f(0.0f);
+    }
+    return eval(bRec) * Frame::cosTheta(bRec.wo) / pdfValue;
+}
+
+
+```
+
+Together pdf
+```cpp
+virtual float pdf(const BSDFQueryRecord &bRec) const override {
+    if (bRec.measure != ESolidAngle
+    || Frame::cosTheta(bRec.wi) <= 0
+    || Frame::cosTheta(bRec.wo) <= 0)
+        return 0.0f;
+
+    float diffuseWeight = 1 - getMetallic(bRec);
+    float specularWeight = 1;
+    float clearcoatWeight = 0.25 * m_clearcoat;
+    float total = diffuseWeight + specularWeight + clearcoatWeight;
+    Vector3f weight(diffuseWeight / total, specularWeight / total, clearcoatWeight / total);
+    // blending pdf should in [0, 1]
+    return weight[0] * pdfDiffuse(bRec) + weight[1] * pdfSpecular(bRec) + weight[2] * pdfClearcoat(bRec);
+}
+```
+
+
+## Validation
+First we have to make newly added sampling lobes work via warptest:
+
+<div class="twentytwenty-container">
+    <img src="solution/disney/GTR1.png" alt="GTR1" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/disney/GTR1_test.png" alt="GTR1 test" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/disney/GTR2.png" alt="GTR2" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/disney/GTR2_test.png" alt="GTR2 test" class="img-responsive">
+</div>
+
+Second, we have to validate in real scenes:
+
+For roughness, subsurface, metallic, specular, clearcoat, these 5 parameters, I changed the value from 0 to 1 with 0.1 pace while keeping other parameters as default values,
+and compared the results with Mitsuba. All the scenes are lit by a single point sphere and the same hight res env map.
+
+Because the implementation details varied a lot, especially the formula. And the Mitsuba implementation even included the <a href="https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf" target="_blank">enhanced version of disney bsdf</a>,
+like refraction (fresnel) which is not covered by the 2012's version. Then it could handle the situation where the rays are inside the object, but I simply return 0 if inside (no transmission at all).
+
+Besides, the light in Mitsuba is somehow lighter compared to Nori like previous mentioned (texture and normal comparison). So my results will be darker than Mitsuba, but that's not correlated with disney brdf feature, so please ignore them.
+
+For roughness, I could find the material indeed varied from smooth ones to rough ones. But the highlight is bigger than Mitsuba especially for small roughness parameters.
+Mitsuba considered the fresnel coefficients for specular part, and retro-reflection for diffuse part, which is more complex and advanced.
+<div class="twentytwenty-container">
+    <img src="ref/disney/disney_roughness_mitsuba.png" alt="Mitsuba, roughness" class="img-responsive">
+    <img src="solution/disney/disney_roughness_nori.png" alt="Mine, roughness" class="img-responsive">
+</div>
+
+For subsurface, the results look very similar, because the subsurface eval is the same. But due to the retro-reflection, Mitsuba results seems lighter.
+
+<div class="twentytwenty-container">
+    <img src="ref/disney/disney_subsurface_mitsuba.png" alt="Mitsuba, subsurface" class="img-responsive">
+    <img src="solution/disney/disney_subsurface_nori.png" alt="Mine, subsurface" class="img-responsive">
+</div>
+
+For metallic, when it increases, the material is indeed with more metallic sense, also due to the retro-reflection and fresnel coefficient, my edges seem darker.
+
+<div class="twentytwenty-container">
+    <img src="ref/disney/disney_metallic_mitsuba.png" alt="Mitsuba, metallic" class="img-responsive">
+    <img src="solution/disney/disney_metallic_nori.png" alt="Mine, metallic" class="img-responsive">
+</div>
+
+For specular, results look very similar, when it increases, the highlight indeed becomes more apparent.
+<div class="twentytwenty-container">
+    <img src="ref/disney/disney_specular_mitsuba.png" alt="Mitsuba, specular" class="img-responsive">
+    <img src="solution/disney/disney_specular_nori.png" alt="Mine, specular" class="img-responsive">
+</div>
+
+For clearcoat, my highlight seems darker than Mitsuba. Mitsuba also considered inside situation according to eta, but I just return 0, if the rays are inside.
+
+<div class="twentytwenty-container">
+    <img src="ref/disney/disney_clearcoat_mitsuba.png" alt="Mitsuba, clearcoat" class="img-responsive">
+    <img src="solution/disney/disney_clearcoat_nori.png" alt="Mine, clearcoat" class="img-responsive">
+</div>
+
+I also tested on the final scene:
+<div class="twentytwenty-container">
+    <img src="solution/final/final.png" alt="disney brdf test" class="img-responsive">
+</div>
 
 <!-- Bootstrap core CSS and JavaScript -->
 
