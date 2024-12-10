@@ -50,11 +50,11 @@ public:
         if (Frame::cosTheta(bRec.wi) < 0) {
             n = -n;
             cosThetaI = -cosThetaI;
-            //relative IOR: incident / outgoing
-            bRec.eta = m_intIOR / m_extIOR;
-        } else {
-            //relative IOR: incident / outgoing
+            //relative IOR: outgoing / incident
             bRec.eta = m_extIOR / m_intIOR;
+        } else {
+            //relative IOR: outgoing / incident
+            bRec.eta = m_intIOR / m_extIOR;
         }
         sinThetaI = sqrt(1 - cosThetaI * cosThetaI);
 
@@ -89,9 +89,9 @@ public:
 //            // unit tangent vector
 //            bRec.wo = - cosThetaT * n - sinThetaT * t;
 
-            bRec.wo = -bRec.eta * (bRec.wi - (bRec.wi.dot(n)) * n) -
-                      n * sqrt(1 - bRec.eta * bRec.eta * (1 - bRec.wi.dot(n) * bRec.wi.dot(n)));
-            return  bRec.eta * bRec.eta * Color3f(1.0f);
+            bRec.wo = -(bRec.wi - (bRec.wi.dot(n)) * n) / bRec.eta -
+                      n * sqrt(1 - (1 - bRec.wi.dot(n) * bRec.wi.dot(n)) / (bRec.eta * bRec.eta));
+            return Color3f(1.0f) / (bRec.eta * bRec.eta);
 //            return bRec.eta * bRec.eta * Color3f(refracted_coeff) / refracted_coeff;
         }
     }
