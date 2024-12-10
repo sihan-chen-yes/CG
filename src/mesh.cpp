@@ -151,7 +151,6 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
         Vector3f n = (bary.x() * m_N.col(idx0) +
                       bary.y() * m_N.col(idx1) +
                       bary.z() * m_N.col(idx2)).normalized();
-
         if (m_T.size() > 0 && m_B.size() > 0) {
             Vector3f t = (bary.x() * m_T.col(idx0) +
                           bary.y() * m_T.col(idx1) +
@@ -160,7 +159,14 @@ void Mesh::setHitInformation(uint32_t index, const Ray3f &ray, Intersection & it
             Vector3f b = (bary.x() * m_B.col(idx0) +
                           bary.y() * m_B.col(idx1) +
                           bary.z() * m_B.col(idx2)).normalized();
-            its.shFrame = Frame(t, b, n);
+            if (isNan(t) || isNan(b)) {
+//                cout << "TB nan with degenerate triangle:" << "t:" << t << "b:" << b << endl;
+                // degenerate triangle then use geoframe
+                its.shFrame = Frame(n);
+            } else {
+                // use TBN frame
+                its.shFrame = Frame(t, b, n);
+            }
         } else {
             its.shFrame = Frame(n);
         }

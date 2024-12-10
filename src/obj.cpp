@@ -188,7 +188,9 @@ protected:
         // column first for Eigen
         // Initialize m_T and m_B to have the same size as m_V (3, N)
         m_T.resize(3, m_V.cols());
+        m_T.setZero();
         m_B.resize(3, m_V.cols());
+        m_B.setZero();
 
         // Iterate over each face to compute tangents and bitangents
         for (int i = 0; i < m_F.cols(); ++i) {
@@ -213,7 +215,10 @@ protected:
             Vector2f deltaUV2 = uv2 - uv0;
 
             // Compute tangent and bitangent for this face
-            float r = 1.0f / (deltaUV1.x() * deltaUV2.y() - deltaUV1.y() * deltaUV2.x());
+            float denom = deltaUV1.x() * deltaUV2.y() - deltaUV1.y() * deltaUV2.x();
+            // careful with degenerate triangle
+            float r = 1.0f / denom;
+            // weighting the degenerate TB with area
             Vector3f T = r * (deltaUV2.y() * edge1 - deltaUV1.y() * edge2);
             Vector3f B = r * (-deltaUV2.x() * edge1 + deltaUV1.x() * edge2);
 
