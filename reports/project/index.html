@@ -1,6 +1,17 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<a href="#Images as Textures">Images as Textures</a>
+
+<a href="#Normal Mapping">Normal Mapping</a>
+
+<a href="#Mesh Modelling">Mesh Modelling</a>
+
+<a href="#Environment Map">Environment Map</a>
+
+<a href="#Homogeneous Participating Media">Homogeneous Participating Media</a>
+
+<a href="#Disney BSDF">Disney BSDF</a>
 
 **Report**
 Comparison pipeline:
@@ -10,7 +21,7 @@ Comparison pipeline:
 4. Align the ply and obj file, ensure they are the same
 5. Rendering with both ones and compare the images
 
-# Images as Textures
+<h1 id="Images as Textures">Images as Textures</h1>
 **modified files:**
 
 - `src/map/texture_map.cpp`
@@ -123,7 +134,7 @@ I used the plugin of Blender to export xml format of Mitsuba and Nori respective
 
 We could find the results are almost the same. The minor shadow difference is due to the implementation of path tracer. I suppose it's some different parameters like `max_depth` causing this.
 
-# Normal Mapping
+<h1 id="Normal Mapping">Normal Mapping</h1>
 **modified files:**
 
 - `include/nori/bsdf.h`
@@ -320,7 +331,8 @@ We could conclude these:
 2. For plane, even without TBN map, normal map could work well with inherent consistent tangent across the surface.
 3. For more complex mesh(e.g., sphere), with TBN map, we could get more consistent and realistic reflection.
 
-# Mesh Modelling
+<h1 id="Mesh Modelling">Mesh Modelling</h1>
+
 In this part, I'll prepare all the meshes and textures for the final scene, including the water, Rennala and moon mesh. I modelled the water mesh,
 sculpted the Rennala to specific pose by myself, and used the moon mesh from others. Next I'll mainly introduce the part done by myself.
 
@@ -384,7 +396,8 @@ Finally, put everything together:
 <div class="twentytwenty-container">
     <img src="solution/mesh/scene.png" alt="Scene" class="img-responsive">
 </div>
-# Environment Map
+
+<h1 id="Environment Map">Environment Map</h1>
 
 **modified files:**
 
@@ -628,9 +641,9 @@ all the results match with Mitsuba:
 
 
 
-# Homogeneous Participating Media
+<h1 id="Homogeneous Participating Media">Homogeneous Participating Media</h1>
 
-# Disney BSDF
+<h1 id="Disney BSDF">Disney BSDF</h1>
 
 **modified files:**
 
@@ -923,7 +936,8 @@ For roughness, subsurface, metallic, specular, clearcoat, these 5 parameters, I 
 and compared the results with Mitsuba. All the scenes are lit by a single point sphere and the same hight res env map.
 
 Because the implementation details varied a lot, especially the formula. And the Mitsuba implementation even included the <a href="https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf" target="_blank">enhanced version of disney bsdf</a>,
-like refraction (fresnel) which is not covered by the 2012's version. Then it could handle the situation where the rays are inside the object, but I simply return 0 if inside (no transmission at all).
+like refraction which is not covered by the 2012's version. Then it could handle the situation where the rays are inside the object, but I simply return 0 if inside (no transmission at all).
+They calculate the fresnel coefficient using eta to get `F`, I just followed the implementation to approximate the `F_m` and `F_c` using specular parameter. So there might be a mismatch as well.
 
 Besides, the light in Mitsuba is somehow lighter compared to Nori like previous mentioned (texture and normal comparison). So my results will be darker than Mitsuba, but that's not correlated with disney brdf feature, so please ignore them.
 
@@ -963,7 +977,7 @@ For clearcoat, my highlight seems darker than Mitsuba. Mitsuba also considered i
 
 I also tested on the final scene:
 <div class="twentytwenty-container">
-    <img src="solution/final/final.png" alt="disney brdf test" class="img-responsive">
+    <img src="solution/final/final.png" alt="Disney Brdf Test" class="img-responsive">
 </div>
 
 <!-- Bootstrap core CSS and JavaScript -->
