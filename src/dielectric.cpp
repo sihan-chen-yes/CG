@@ -25,6 +25,8 @@ NORI_NAMESPACE_BEGIN
 class Dielectric : public BSDF {
 public:
     Dielectric(const PropertyList &propList) {
+        baseColor = propList.getColor("color", Color3f(1.f));
+
         /* Interior IOR (default: BK7 borosilicate optical glass) */
         m_intIOR = propList.getFloat("intIOR", 1.5046f);
 
@@ -71,7 +73,7 @@ public:
                     bRec.wi.z()
             );
             // don't forget the pdf of event happening!
-            return Color3f(1.0f);
+            return baseColor;
 //            return Color3f(reflected_coeff) / reflected_coeff;
         } else {
             //refraction event: fixed wo according to Snell's law
@@ -91,7 +93,7 @@ public:
 
             bRec.wo = -(bRec.wi - (bRec.wi.dot(n)) * n) / bRec.eta -
                       n * sqrt(1 - (1 - bRec.wi.dot(n) * bRec.wi.dot(n)) / (bRec.eta * bRec.eta));
-            return Color3f(1.0f) / (bRec.eta * bRec.eta);
+            return baseColor / (bRec.eta * bRec.eta);
 //            return bRec.eta * bRec.eta * Color3f(refracted_coeff) / refracted_coeff;
         }
     }
@@ -106,6 +108,8 @@ public:
     }
 private:
     float m_intIOR, m_extIOR;
+
+    Color3f baseColor;
 };
 
 NORI_REGISTER_CLASS(Dielectric, "dielectric");
