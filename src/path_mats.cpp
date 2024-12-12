@@ -8,7 +8,8 @@ NORI_NAMESPACE_BEGIN
 class PathMATSIntegrator : public Integrator {
 public:
     PathMATSIntegrator(const PropertyList &props) {
-        // no properties
+        m_max_depth = props.getInteger("max_depth", std::numeric_limits<int>::max());
+        m_rr_depth = props.getInteger("m_rr_depth", 3);
     }
 
 //    Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
@@ -169,8 +170,8 @@ public:
             if (!scene->rayIntersect(shadowRay, its)) {
                 // direct to camera
                 if (envMapLight != nullptr) {
-                    EmitterQueryRecord eRec(ray.o);
-                    eRec.wi = ray.d.normalized();
+                    EmitterQueryRecord eRec(shadowRay.o);
+                    eRec.wi = shadowRay.d.normalized();
                     Color3f Li = envMapLight->eval(eRec);
                     Lo += t * Li;
                 }
@@ -195,8 +196,8 @@ public:
                 Lo += t * Li;
             }
 
-            // start Russian Roulette after 3 bounces
-            if (bounces > 3) {
+            // start Russian Roulette after m_rr_depth bounces
+            if (bounces > m_rr_depth) {
                 float success = std::min(std::max(t.x(), std::max(t.y(), t.z())), 0.99f);
 
                 if (sampler->next1D() < success) {
@@ -221,9 +222,18 @@ public:
 
     std::string toString() const {
         return tfm::format(
-                "PathMATSIntegrator[]");
+                "PathMATSIntegrator[\n"
+                "  m_max_depth = %d\n"
+                "  m_rr_depth = %d\n"
+                "]",
+                m_max_depth,
+                m_rr_depth
+        );
     }
 
+protected:
+    int m_max_depth;
+    int m_rr_depth;
 };
 
 NORI_REGISTER_CLASS(PathMATSIntegrator, "path_mats");
