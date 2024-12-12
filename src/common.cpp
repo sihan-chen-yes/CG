@@ -271,6 +271,13 @@ Point2f sphericalCoordinates(const Vector3f &v) {
     return result;
 }
 
+Vector3f sphericalDirection(float sinTheta, float cosTheta, float phi,
+                            const Vector3f &x, const Vector3f &y,
+                            const Vector3f &z) {
+    return sinTheta * std::cos(phi) * x + sinTheta * std::sin(phi) * y +
+           cosTheta * z;
+}
+
 void coordinateSystem(const Vector3f &a, Vector3f &b, Vector3f &c) {
     if (std::abs(a.x()) > std::abs(a.y())) {
         float invLen = 1.0f / std::sqrt(a.x() * a.x() + a.z() * a.z());

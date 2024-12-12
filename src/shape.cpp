@@ -55,6 +55,13 @@ void Shape::addChild(NoriObject *obj) {
             m_emitter->setShape(static_cast<Shape*>(this));
             break;
 
+        case EMedium:
+            if (m_medium)
+                throw NoriException(
+                    "Shape: tried to register multiple Medium instances!");
+            m_medium = static_cast<Medium *>(obj);
+            break;
+
         default:
             throw NoriException("Shape::addChild(<%s>) is not supported!",
                                 classTypeName(obj->getClassType()));

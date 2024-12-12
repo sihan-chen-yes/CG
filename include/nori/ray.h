@@ -45,31 +45,44 @@ template <typename _PointType, typename _VectorType> struct TRay {
     VectorType dRcp; ///< Componentwise reciprocals of the ray direction
     Scalar mint;     ///< Minimum position on the ray segment
     Scalar maxt;     ///< Maximum position on the ray segment
+    const Medium *medium;
 
     /// Construct a new ray
     TRay() : mint(Epsilon), 
-        maxt(std::numeric_limits<Scalar>::infinity()) { }
+        maxt(std::numeric_limits<Scalar>::infinity()), medium(nullptr) { }
     
     /// Construct a new ray
-    TRay(const PointType &o, const VectorType &d) : o(o), d(d), 
-            mint(Epsilon), maxt(std::numeric_limits<Scalar>::infinity()) {
+    TRay(const PointType &o, const VectorType &d) : o(o), d(d),
+            mint(Epsilon), maxt(std::numeric_limits<Scalar>::infinity()), medium(nullptr) {
+        update();
+    }
+
+    /// Construct a new ray
+    TRay(const PointType &o, const VectorType &d, const Medium* medium) : o(o), d(d),
+                                                    mint(Epsilon), maxt(std::numeric_limits<Scalar>::infinity()), medium(medium) {
         update();
     }
 
     /// Construct a new ray
     TRay(const PointType &o, const VectorType &d, 
-        Scalar mint, Scalar maxt) : o(o), d(d), mint(mint), maxt(maxt) {
+        Scalar mint, Scalar maxt) : o(o), d(d), mint(mint), maxt(maxt), medium(nullptr) {
+        update();
+    }
+
+    /// Construct a new ray
+    TRay(const PointType &o, const VectorType &d,
+         Scalar mint, Scalar maxt, const Medium* medium) : o(o), d(d), mint(mint), maxt(maxt), medium(medium) {
         update();
     }
 
     /// Copy constructor
     TRay(const TRay &ray) 
      : o(ray.o), d(ray.d), dRcp(ray.dRcp),
-       mint(ray.mint), maxt(ray.maxt) { }
+       mint(ray.mint), maxt(ray.maxt), medium(ray.medium) { }
 
     /// Copy a ray, but change the covered segment of the copy
     TRay(const TRay &ray, Scalar mint, Scalar maxt) 
-     : o(ray.o), d(ray.d), dRcp(ray.dRcp), mint(mint), maxt(maxt) { }
+     : o(ray.o), d(ray.d), dRcp(ray.dRcp), mint(mint), maxt(maxt), medium(ray.medium) { }
 
     /// Update the reciprocal ray directions after changing 'd'
     void update() {

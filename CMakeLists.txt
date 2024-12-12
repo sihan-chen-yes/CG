@@ -45,8 +45,10 @@ set(NORI_SOURCE_FILES
   include/nori/frame.h
   include/nori/gui.h
   include/nori/integrator.h
+  include/nori/interaction.h
   include/nori/emitter.h
   include/nori/kdtree.h
+  include/nori/medium.h
   include/nori/mesh.h
   include/nori/object.h
   include/nori/parser.h
@@ -113,6 +115,12 @@ set(NORI_SOURCE_FILES
         src/emitter/envmaplight.cpp
 
         src/bsdf/disney.cpp
+        src/bsdf/null.cpp
+
+        src/medium/vol_path_mats.cpp
+        src/medium/vol_path_mis.cpp
+        src/medium/medium.cpp
+        src/medium/homogeneous.cpp
 )
 
 add_executable(nori ${NORI_SOURCE_FILES})

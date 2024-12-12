@@ -123,6 +123,21 @@ public:
     }
 };
 
+/// linear interpolation between colors
+inline Color3f lerp(Color3f t, Color3f c1, Color3f c2) {
+    return (Color3f(1.f) - t) * c1 + t * c2;
+}
+
+/// linear interpolation between colors
+inline Color3f lerp(float t, Color3f c1, Color3f c2) {
+    return (1 - t) * c1 + t * c2;
+}
+
+/// Element-wise exponential
+inline Color3f Exp(const Color3f &color) {
+    return Color3f(std::exp(color.r()), std::exp(color.g()), std::exp(color.b()));
+}
+
 NORI_NAMESPACE_END
 
 #endif /* __NORI_COLOR_H */

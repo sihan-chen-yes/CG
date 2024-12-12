@@ -120,6 +120,7 @@ typedef TRay<Point3f, Vector3f> Ray3f;
 
 /// Some more forward declarations
 class BSDF;
+class Medium;
 class Bitmap;
 class BlockGenerator;
 class Camera;
@@ -198,7 +199,7 @@ extern std::string memString(size_t size, bool precise = false);
 enum EMeasure {
     EUnknownMeasure = 0,
     ESolidAngle,
-    EDiscrete
+    EDiscrete,
 };
 
 //// Convert radians to degrees
@@ -246,6 +247,10 @@ inline int mod(int a, int b) {
 
 /// Compute a direction for the given coordinates in spherical coordinates
 extern Vector3f sphericalDirection(float theta, float phi);
+/// using provided basis
+extern Vector3f sphericalDirection(float sinTheta, float cosTheta, float phi,
+                                   const Vector3f &x, const Vector3f &y,
+                                   const Vector3f &z);
 
 /// \brief Compute a direction for the given coordinates in spherical coordinates
 /// \returns A Point2f (x: theta, y: phi) in [0,Pi]x[0,2Pi]
