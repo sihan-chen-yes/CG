@@ -642,6 +642,447 @@ all the results match with Mitsuba:
 
 
 <h1 id="Homogeneous Participating Media">Homogeneous Participating Media</h1>
+**modified files:**
+
+- `include/nori/interaction.h`
+
+- `include/nori/medium.h`
+
+- `include/nori/ray.h`
+
+- `include/nori/shape.h`
+
+- `src/medium/homogeneous.cpp`
+
+- `src/medium/medium.cpp`
+
+- `src/medium/vol_path_mats.cpp`
+
+- `src/medium/vol_path_mis.cpp`
+
+- `src/bsdf/null.cpp`
+
+- `src/shape.cpp`
+
+- `src/common.cpp`
+
+This feature is about volumetric rendering, where the ray interact with the medium, e.g., absorption, scattering, emission. I implemented the
+homogeneous participating media (constant $\sigma_s$, $\sigma_a$) and volumetric path tracer with both material sampling and naive multi-strategy importance sampling (only do mis
+outside the volume), following this <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">paper</a>, and <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">pbrt's</a> code.
+I create a new class `medium` (phase function attached inside), the medium itself is attached to a shape and ray, and a new class `homogeneous` extending `medium`,
+and a new class `interaction` extending `intersection`, which has phase function attached inside for more convenient scattering integration (similar to integration with brdf at surface),
+For volumetric path tracer, I keep everything the same when outside the volumes, only change the radiance contribution when inside the volumes, and use mis for outside like normal `path_mis`.
+Besides, when inside the volumes I didn't do emitter sampling, only when the ray tracing out the volumes can it get contribution from emitters (if hits).
+For test convenience, I also create a `null` bsdf class (trivial bsdf), to simulate ray go through the shape bounding directly (otherwise it will be detected as hitting a scene at boundary), so that I can
+limit the participating media inside a shape.
+
+## Medium
+I mainly follow the pbrt for code. `Medium.h` includes the superclass `Medium`, all kinds of medium has to implement `Tr`
+for evaluate transmittance given a ray(has length record inside). `sample` to decide how far to go given a ray, the results will
+be stored in the `interaction` class, then use it to do phase function sampling (illustrated later).
+
+
+```cpp
+virtual Color3f Tr(const Ray3f &ray) const = 0;
+
+virtual Color3f sample(const Ray3f &ray, Sampler *sampler,
+Interaction &mi) const = 0;
+```
+
+For detailed class of medium, I implemented `homogeneous` following pbrt code:
+
+```cpp
+Color3f Tr(const Ray3f &ray) const override {
+    return Exp(-sigma_t * std::min(ray.maxt * ray.d.norm(), std::numeric_limits&ltfloat>::max()));
+}
+
+Color3f sample(const Ray3f &ray, Sampler *sampler, Interaction &mi) const override {
+    // Sample a channel and distance along the ray
+    int channel = std::min((int)(sampler->next1D() * 3), 2);
+    float dist = -std::log(1 - sampler->next1D()) / sigma_t[channel];
+    float t = std::min(dist / ray.d.norm(), ray.maxt);
+    bool sampledMedium = t < ray.maxt;
+    if (sampledMedium) {
+        mi = Interaction((ray)(t), ray.reverse().d, m_phaseFunction);
+    }
+
+    // Compute the transmittance and sampling density
+    Color3f Tr = Exp(-sigma_t * std::min(t, std::numeric_limits&ltfloat>::max()) * ray.d.norm());
+
+    // Return weighting factor for scattering from homogeneous medium
+    Color3f density = sampledMedium ? (sigma_t * Tr) : Tr;
+    float pdf = 0;
+    for (int i = 0; i < 3; ++i) pdf += density[i];
+    pdf *= 1.f / 3.f;
+    if (pdf == 0.f) {
+    // CHECK(Tr.IsBlack());
+        if (!Tr.isZero(SEpsilon)) {
+            throw NoriException("Tr is not Zero! when pdf is 0.f");
+        }
+    pdf = 1.f;
+    }
+
+    if (sampledMedium) {
+        return Tr * sigma_s / pdf;
+    } else {
+        return Tr / pdf;
+    }
+}
+```
+
+## PhaseFunction
+I follow the pbrt, put the phase function and phase function record (like bRec for integration) inside `Medium.h` as well.
+Phase function record is almost the same as bsdf record except I removed some useless properties.
+
+For the superclass of all kinds of phase function, it needs `sample` method for MC integration, returning the phase
+function value divided by pdf, also we need to fill in the sampled direction `wo` as bsdf `sample` method.
+
+```cpp
+virtual float sample(PhaseFunctionQueryRecord &pRec, const Point2f &sample) const = 0;
+```
+For detailed phase function, I implemented HenyeyGreenstein in `medium.cpp` following pbrt code:
+```cpp
+float HenyeyGreenstein::sample(PhaseFunctionQueryRecord &pRec, const Point2f &sample) const {
+// Compute $\cos \theta$ for Henyey--Greenstein sample
+float cosTheta;
+if (std::abs(g) < 1e-3)
+    cosTheta = 1 - 2 * sample.x();
+else {
+    float sqrTerm = (1 - g * g) / (1 + g - 2 * g * sample.x());
+    cosTheta = -(1 + g * g - sqrTerm * sqrTerm) / (2 * g);
+}
+
+// Compute direction _wo_ for Henyey--Greenstein sample
+float sinTheta = std::sqrt(std::max((float)0, 1 - cosTheta * cosTheta));
+float phi = 2 * M_PI * sample.y();
+Vector3f v1, v2;
+coordinateSystem(pRec.wi, v1, v2);
+pRec.wo = sphericalDirection(sinTheta, cosTheta, phi, v1, v2, pRec.wi);
+pRec.measure = ESolidAngle;
+// don't need to consider cosine term for phase function
+//    return PhaseHG(cosTheta, g) / pdf(pRec);
+// cancel out, directly return 1
+return 1.f;
+}
+```
+## Interaction
+I create a subclass of `intersection`, the `interaction` will only exit inside a volume for in-scattering integration. After
+sampled out the next event point along the ray, we need to do the integration at the point like bsdf at surface. Compared to
+normal `intersection` class, `interaction` has phase function attached, which could be used to distinguish. For distance sampling,
+if t is bigger than $t_max$, then no phase function attached, we wiil do bsdf integration like outside the volumes. We use `isValid` to
+detect this situation.
+```cpp
+struct Interaction: public Intersection {
+
+    /// Direction of the ray
+    Vector3f d;
+
+    // phase function of the participating media
+    const PhaseFunction *phase;
+
+    Interaction() : Intersection(), phase(nullptr) { }
+
+    ...
+
+    bool isValid() const { return phase != nullptr; }
+```
+
+## Null Bsdf
+For ray go through the boundary of shape without detected as hitting a shape and stop, I set null bsdf to the shape.
+It's essentially a pretty easy discrete measure bsdf:
+```cpp
+class Null : public BSDF {
+public:
+    Null(const PropertyList &propList) {
+    // no properties
+    }
+
+    virtual Color3f eval(const BSDFQueryRecord &bRec) const override {
+    /* Discrete BRDFs always evaluate to zero in Nori */
+        return Color3f(0.0f);
+    }
+
+    virtual float pdf(const BSDFQueryRecord &bRec) const override {
+    /* Discrete BRDFs always evaluate to zero in Nori */
+        return 0.0f;
+    }
+
+    virtual Color3f sample(BSDFQueryRecord &bRec, const Point2f &sample) const override {
+        bRec.wo = -bRec.wi;
+        bRec.measure = EDiscrete;
+
+        return Color3f(1.f);
+    }
+    ...
+}
+```
+
+## Volumetric Path Tracer
+I implemented volumetric path tracer for mats and mis both following normal path tracer, they are very similar except we need to
+consider one more situations where the ray is inside the volumes. For mats volumetric path tracer, I marked the difference compared to normal `path_mats`:
+```cpp
+// path reuse version and optimized loop
+Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
+    ... handling the env map if not intersect with scene ...
+
+    while (bounces < m_max_depth) {
+
+        // update the length of ray
+        float length = (its.p - shadowRay.o).norm();
+        shadowRay = Ray3f(shadowRay, Epsilon, length - Epsilon);
+
+        // intersection with emitter
+        // direct illumination
+        if (its.mesh->isEmitter()) {
+            ... emitter radiacne eval preparation ...
+        if (shadowRay.medium) {
+            // account Tr for attenuation if inside a medium
+            Lo += t * shadowRay.medium->Tr(shadowRay) * Li;
+        } else {
+            // not inside a medium, no attenuation
+            Lo += t * Li;
+        }
+        ... russian roulette ...
+
+        bool sampleMedium = false;
+        // sigma_s * Tr / pdf_t
+        Color3f distanceValue(1.f);
+        // medium interaction point
+        Interaction ita;
+        if (shadowRay.medium) {
+            // ray associated with medium
+            // sample t to decide how far to go
+            distanceValue = shadowRay.medium->sample(shadowRay, sampler, ita);
+            // still inside the volume not touching the boundary
+            sampleMedium = ita.isValid();
+        }
+
+        if (sampleMedium) {
+            // scattering inside a medium
+            // wi for pRec
+            PhaseFunctionQueryRecord pRec(-shadowRay.d);
+            // sample wo for pRec
+            float phaseValue = ita.phase->sample(pRec, sampler->next2D());
+
+            // update throughout for NEE
+            t *= distanceValue * phaseValue;
+
+            // new shadowRay
+            // still use the old medium
+            shadowRay = Ray3f(ita.p, pRec.wo, shadowRay.medium);
+        } else {
+            ... sampling a new ray using bsdf ...
+
+            // new shadowRay
+            Vector3f wo = its.shFrame.toWorld(bRec.wo);
+            shadowRay = Ray3f(its.p, wo);
+
+            if (wo.dot(its.shFrame.n) < 0.f) {
+                // goes into a shape, use associated medium
+                shadowRay.medium = its.mesh->getMedium();
+            } else {
+                // goes into a shape, use associated medium
+                shadowRay.medium = nullptr;
+            }
+        }
+    bounces++;
+    }
+    return Lo;
+}
+```
+
+For mis, I keep everything the same inside the volume (so no emitter sampling inside the volume), and do mis outside the volume,
+it's almost the same as above, except considering weights of contribution outside and do emitter sampling also:
+```cpp
+// path reuse version and optimized loop
+Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
+    ... handling the env map if not intersect with scene ...
+
+    while (bounces < m_max_depth) {
+        // update the length of ray
+        float length = (its.p - shadowRay.o).norm();
+        shadowRay = Ray3f(shadowRay, Epsilon, length - Epsilon);
+
+        // intersection with emitter
+        // direct illumination
+        if (its.mesh->isEmitter()) {
+            ... emitter radiacne eval preparation ...
+        if (shadowRay.medium) {
+            // account Tr for attenuation if inside a medium
+            Lo += t * shadowRay.medium->Tr(shadowRay) * Li;
+        } else {
+            ... calculate weights of material sampling contribution ...
+            // not inside a medium, no attenuation
+            Lo += t * wMats * Li;
+        }
+        ... russian roulette ...
+
+        bool sampleMedium = false;
+        // sigma_s * Tr / pdf_t
+        Color3f distanceValue(1.f);
+        // medium interaction point
+        Interaction ita;
+        if (shadowRay.medium) {
+            // ray associated with medium
+            // sample t to decide how far to go
+            distanceValue = shadowRay.medium->sample(shadowRay, sampler, ita);
+            // still inside the volume not touching the boundary
+            sampleMedium = ita.isValid();
+        }
+
+        if (sampleMedium) {
+            // scattering inside a medium
+            // wi for pRec
+            PhaseFunctionQueryRecord pRec(-shadowRay.d);
+            // sample wo for pRec
+            float phaseValue = ita.phase->sample(pRec, sampler->next2D());
+
+            // update throughout for NEE
+            t *= distanceValue * phaseValue;
+
+            // new shadowRay
+            // still use the old medium
+            shadowRay = Ray3f(ita.p, pRec.wo, shadowRay.medium);
+        } else {
+            ... Emitter sampling for contribution ...
+
+            ... sampling a new ray using bsdf ...
+
+            // new shadowRay
+            Vector3f wo = its.shFrame.toWorld(bRec.wo);
+            shadowRay = Ray3f(its.p, wo);
+
+            if (wo.dot(its.shFrame.n) < 0.f) {
+                // goes into a shape, use associated medium
+                shadowRay.medium = its.mesh->getMedium();
+            } else {
+                // goes into a shape, use associated medium
+                shadowRay.medium = nullptr;
+            }
+        }
+    bounces++;
+    }
+    return Lo;
+}
+```
+
+## Validation
+I compared my results with Mitsuba, because I didn't do emitter sampling when inside the volume, so turn down the switch in mitsuba as well. And the input paramters should be
+transformed a little bit between nori and Mitsuba (using albedo).
+
+First I test a low extinction coefficient:
+```xml
+<medium type="homogeneous">
+    <color name="sigma_a" value="0.99 0.9 0.96"/>
+    <color name="sigma_s" value="4.01 4.1 4.04"/>
+
+    <phase type="hg">
+        <float name="g" value="0.7"/>
+    </phase>
+    <boolean name="sample_emitters" value="false" />
+</medium>
+```
+
+<div class="twentytwenty-container">
+    <img src="ref/medium/cbox_sphere_homogeneous_mitsuba.png" alt="Mitsuba, white homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mats_nori.png" alt="Mine, mats white homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_nori.png" alt="Mine, mis white homogeneous" class="img-responsive">
+</div>
+
+For mis it's the same with Mitsuba, for mats it gets more noise with expectation.
+
+I also changed the scattering spectrum to get different color inside the volume:
+```xml
+<medium type="homogeneous">
+    <color name="sigma_a" value="5 0.5 5"/>
+    <color name="sigma_s" value="0 4.5 0"/>
+    <phase type="hg">
+        <float name="g" value="0.7"/>
+    </phase>
+    <boolean name="sample_emitters" value="false" />
+</medium>
+```
+
+<div class="twentytwenty-container">
+    <img src="ref/medium/cbox_sphere_homogeneous_green_mitsuba.png" alt="Mitsuba, green homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mats_green_nori.png" alt="Mine, mats green homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_green_nori.png" alt="Mine, mis green homogeneous" class="img-responsive">
+</div>
+
+I also make the extinction coefficient higher (dense volumes):
+```xml
+<medium type="homogeneous">
+    <color name="sigma_a" value="5 0.5 5"/>
+    <color name="sigma_s" value="0 4.5 0"/>
+    <phase type="hg">
+        <float name="g" value="0.7"/>
+    </phase>
+    <boolean name="sample_emitters" value="false" />
+</medium>
+```
+
+<div class="twentytwenty-container">
+    <img src="ref/medium/cbox_sphere_homogeneous_dense_mitsuba.png" alt="Mitsuba, dense green homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_dense_nori.png" alt="Mine, dense green homogeneous" class="img-responsive">
+</div>
+
+At last I tested the hg phase function with different g including forward, backward, and isotropic medium:
+```xml
+<medium type="homogeneous">
+    <color name="sigma_a" value="5 0.5 5"/>
+    <color name="sigma_s" value="0 4.5 0"/>
+    <phase type="hg">
+        <float name="g" value="0.7"/>
+    </phase>
+    <boolean name="sample_emitters" value="false" />
+</medium>
+```
+
+```xml
+<medium type="homogeneous">
+    <color name="sigma_a" value="5 0.5 5"/>
+    <color name="sigma_s" value="0 4.5 0"/>
+    <phase type="hg">
+        <float name="g" value="0"/>
+    </phase>
+    <boolean name="sample_emitters" value="false" />
+</medium>
+```
+
+```xml
+<medium type="homogeneous">
+    <color name="sigma_a" value="5 0.5 5"/>
+    <color name="sigma_s" value="0 4.5 0"/>
+    <phase type="hg">
+        <float name="g" value="-0.7"/>
+    </phase>
+    <boolean name="sample_emitters" value="false" />
+</medium>
+```
+
+<div class="twentytwenty-container">
+    <img src="ref/medium/cbox_sphere_homogeneous_mitsuba.png" alt="Mitsuba, forward homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_nori.png" alt="Mine, forward homogeneous" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="ref/medium/cbox_sphere_homogeneous_isotropic_mitsuba.png" alt="Mitsuba, isotropic homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_isotropic_nori.png" alt="Mine, isotropic homogeneous" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="ref/medium/cbox_sphere_homogeneous_backward_mitsuba.png" alt="Mitsuba, backward homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_backward_nori.png" alt="Mine, backward homogeneous" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_nori.png" alt="Mine, forward homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_isotropic_nori.png" alt="Mine, isotropic homogeneous" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_backward_nori.png" alt="Mine, backward homogeneous" class="img-responsive">
+</div>
+
+We could find for isotropic, the upper part is lighter compared to the bottom part due to extinction. For forward,
+the both upper and bottom part is lighter. And for backward, both parts become darker. It meets with expectation.
 
 <h1 id="Disney BSDF">Disney BSDF</h1>
 
