@@ -175,7 +175,7 @@ Vector3f Warp::squareToGTR2(const Point2f &sample, float alpha_x, float alpha_y)
     //following the Disney bsdf paper
     float sinPhi = alpha_y * sin(phi);
     float cosPhi = alpha_x * cos(phi);
-    float thanTheta = sqrtf(sample.y() / (1 - sample.y() + SEpsilon));
+    float thanTheta = sqrtf(sample.y() / (1 - sample.y()));
     // tangent and bitangent and normal in local frame
     Vector3f wh = thanTheta * (cosPhi * Vector3f(1.0f, 0, 0) + sinPhi * Vector3f(0, 1.0f, 0)) + Vector3f(0, 0, 1.0f);
     wh.normalize();

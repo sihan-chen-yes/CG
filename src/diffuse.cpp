@@ -46,7 +46,7 @@ public:
     virtual void addChild(NoriObject *obj) override {
         switch (obj->getClassType()) {
             case ETexture:
-                if(obj->getIdName() == "baseColor") {
+                if(obj->getIdName() == "albedo") {
                     if (m_albedo)
                         throw NoriException("There is already an albedo defined!");
                     m_albedo = static_cast<Texture<Color3f> *>(obj);

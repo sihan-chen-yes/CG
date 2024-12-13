@@ -133,7 +133,7 @@ public:
         }
 
         // calculate TBN map
-        if (!texcoords.empty()) {
+        if (!normals.empty() && !texcoords.empty()) {
             compute_pervertex_TBN();
             cout << "per vertex TBN map constructed" << endl;
         }
