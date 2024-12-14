@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="32"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="39.597755335771296"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="0.6859206557273865,-0.32401347160339355,0.6515582203865051,7.358891487121582,0.7276763319969177,0.305420845746994,-0.6141703724861145,-6.925790786743164,0.0,0.8953956365585327,0.44527140259742737,4.958309173583984,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<emitter type="spot">
+		<point name="position" value="0.127524 -4.52557 4.10614"/>
+		<color name="power" value="1000.000000,1000.000000,1000.000000"/>
+		<float name="thetaMax" value="40"/>
+		<float name="thetaFall" value="20"/>
+
+		<transform name="toWorld">
+			<rotate axis="1, 0, 0" angle="52.7379" />
+			<rotate axis="0, 1, 0" angle="0" />
+			<rotate axis="0, 0, 1" angle="0" />
+		</transform>
+	</emitter>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/plane.obj"/>
+		<bsdf type="diffuse">
+			<texture type="image_texture" name="albedo">
+				<string name="filename" value="textures/brick_wall_10_diff_4k.jpg"/>
+			</texture>
+			<texture type="image_normal" name="normalmap">
+				<string name="filename" value="textures/brick_wall_10_nor_gl_4k.exr"/>
+			</texture>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Monkey.obj"/>
+		<bsdf type="diffuse" >
+			<texture type="image_texture" name="albedo">
+				<string name="filename" value="textures/brick_wall_10_diff_4k.jpg"/>
+			</texture>
+
+			<texture type="image_normal" name="normalmap">
+				<string name="filename" value="textures/brick_wall_10_nor_gl_4k.exr"/>
+			</texture>
+
+		</bsdf>
+	</mesh>
+</scene>
