@@ -669,7 +669,7 @@ all the results match with Mitsuba:
 - `src/common.cpp`
 
 This feature is about volumetric rendering, where the ray interact with the medium, e.g., absorption, scattering, emission. I implemented the
-homogeneous participating media (constant $\sigma_s$, $\sigma_a$) and volumetric path tracer with both material sampling and naive multi-strategy importance sampling (only do mis
+homogeneous participating media (constant $\m_sigma_s$, $\m_sigma_a$) and volumetric path tracer with both material sampling and naive multi-strategy importance sampling (only do mis
 outside the volume), following this <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">paper</a>, and <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">pbrt's</a> code.
 I create a new class `medium` (phase function attached inside), the medium itself is attached to a shape and ray, and a new class `homogeneous` extending `medium`,
 and a new class `interaction` extending `intersection`, which has phase function attached inside for more convenient scattering integration (similar to integration with brdf at surface),
@@ -695,13 +695,13 @@ For detailed class of medium, I implemented `homogeneous` following pbrt code:
 
 ```cpp
 Color3f Tr(const Ray3f &ray) const override {
-    return Exp(-sigma_t * std::min(ray.maxt * ray.d.norm(), std::numeric_limits&ltfloat>::max()));
+    return Exp(-m_sigma_t * std::min(ray.maxt * ray.d.norm(), std::numeric_limits&ltfloat>::max()));
 }
 
 Color3f sample(const Ray3f &ray, Sampler *sampler, Interaction &mi) const override {
     // Sample a channel and distance along the ray
     int channel = std::min((int)(sampler->next1D() * 3), 2);
-    float dist = -std::log(1 - sampler->next1D()) / sigma_t[channel];
+    float dist = -std::log(1 - sampler->next1D()) / m_sigma_t[channel];
     float t = std::min(dist / ray.d.norm(), ray.maxt);
     bool sampledMedium = t < ray.maxt;
     if (sampledMedium) {
@@ -709,10 +709,10 @@ Color3f sample(const Ray3f &ray, Sampler *sampler, Interaction &mi) const overri
     }
 
     // Compute the transmittance and sampling density
-    Color3f Tr = Exp(-sigma_t * std::min(t, std::numeric_limits&ltfloat>::max()) * ray.d.norm());
+    Color3f Tr = Exp(-m_sigma_t * std::min(t, std::numeric_limits&ltfloat>::max()) * ray.d.norm());
 
     // Return weighting factor for scattering from homogeneous medium
-    Color3f density = sampledMedium ? (sigma_t * Tr) : Tr;
+    Color3f density = sampledMedium ? (m_sigma_t * Tr) : Tr;
     float pdf = 0;
     for (int i = 0; i < 3; ++i) pdf += density[i];
     pdf *= 1.f / 3.f;
@@ -725,7 +725,7 @@ Color3f sample(const Ray3f &ray, Sampler *sampler, Interaction &mi) const overri
     }
 
     if (sampledMedium) {
-        return Tr * sigma_s / pdf;
+        return Tr * m_sigma_s / pdf;
     } else {
         return Tr / pdf;
     }
@@ -847,7 +847,7 @@ Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
         ... russian roulette ...
 
         bool sampleMedium = false;
-        // sigma_s * Tr / pdf_t
+        // m_sigma_s * Tr / pdf_t
         Color3f distanceValue(1.f);
         // medium interaction point
         Interaction ita;
@@ -920,7 +920,7 @@ Color3f Li(const Scene *scene, Sampler *sampler, const Ray3f &ray) const {
         ... russian roulette ...
 
         bool sampleMedium = false;
-        // sigma_s * Tr / pdf_t
+        // m_sigma_s * Tr / pdf_t
         Color3f distanceValue(1.f);
         // medium interaction point
         Interaction ita;
@@ -975,8 +975,8 @@ transformed a little bit between nori and Mitsuba (using albedo).
 First I test a low extinction coefficient:
 ```xml
 <medium type="homogeneous">
-    <color name="sigma_a" value="0.99 0.9 0.96"/>
-    <color name="sigma_s" value="4.01 4.1 4.04"/>
+    <color name="m_sigma_a" value="0.99 0.9 0.96"/>
+    <color name="m_sigma_s" value="4.01 4.1 4.04"/>
 
     <phase type="hg">
         <float name="g" value="0.7"/>
@@ -996,8 +996,8 @@ For mis it's the same with Mitsuba, for mats it gets more noise with expectation
 I also changed the scattering spectrum to get different color inside the volume:
 ```xml
 <medium type="homogeneous">
-    <color name="sigma_a" value="5 0.5 5"/>
-    <color name="sigma_s" value="0 4.5 0"/>
+    <color name="m_sigma_a" value="5 0.5 5"/>
+    <color name="m_sigma_s" value="0 4.5 0"/>
     <phase type="hg">
         <float name="g" value="0.7"/>
     </phase>
@@ -1014,8 +1014,8 @@ I also changed the scattering spectrum to get different color inside the volume:
 I also make the extinction coefficient higher (dense volumes):
 ```xml
 <medium type="homogeneous">
-    <color name="sigma_a" value="5 0.5 5"/>
-    <color name="sigma_s" value="0 4.5 0"/>
+    <color name="m_sigma_a" value="5 0.5 5"/>
+    <color name="m_sigma_s" value="0 4.5 0"/>
     <phase type="hg">
         <float name="g" value="0.7"/>
     </phase>
@@ -1031,8 +1031,8 @@ I also make the extinction coefficient higher (dense volumes):
 At last I tested the hg phase function with different g including forward, backward, and isotropic medium:
 ```xml
 <medium type="homogeneous">
-    <color name="sigma_a" value="5 0.5 5"/>
-    <color name="sigma_s" value="0 4.5 0"/>
+    <color name="m_sigma_a" value="5 0.5 5"/>
+    <color name="m_sigma_s" value="0 4.5 0"/>
     <phase type="hg">
         <float name="g" value="0.7"/>
     </phase>
@@ -1042,8 +1042,8 @@ At last I tested the hg phase function with different g including forward, backw
 
 ```xml
 <medium type="homogeneous">
-    <color name="sigma_a" value="5 0.5 5"/>
-    <color name="sigma_s" value="0 4.5 0"/>
+    <color name="m_sigma_a" value="5 0.5 5"/>
+    <color name="m_sigma_s" value="0 4.5 0"/>
     <phase type="hg">
         <float name="g" value="0"/>
     </phase>
@@ -1053,8 +1053,8 @@ At last I tested the hg phase function with different g including forward, backw
 
 ```xml
 <medium type="homogeneous">
-    <color name="sigma_a" value="5 0.5 5"/>
-    <color name="sigma_s" value="0 4.5 0"/>
+    <color name="m_sigma_a" value="5 0.5 5"/>
+    <color name="m_sigma_s" value="0 4.5 0"/>
     <phase type="hg">
         <float name="g" value="-0.7"/>
     </phase>
@@ -1540,9 +1540,32 @@ input from power (pointlight) to intensity (spotlight).
 
 Tested on different $\theta_{max}$ and $\theta_{fall}$, everything works good.
 
-## Denoising
+## Emissive Participating Media
+In the volume rendering equation, we still forgot one self emission term (considering homogeneous meidum):
+$$
+\begin{aligned}&\int_0^zT_r(\mathbf{x},\mathbf{x}_t)\sigma_a(\mathbf{x}_t)L_e(\mathbf{x}_t,\vec{\omega})dt\end{aligned}
+= \sigma_a L_e\int_0^z e^{-\sigma_t (z - t)}dt
+= \frac{\sigma_a L_e}{\sigma_t}(1 - e^{-\sigma_t z})
+$$
+
+<div class="twentytwenty-container">
+    <img src="solution/medium/cbox_sphere_homogeneous_mats_nori.png" alt="mats wo self red emission" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mats_emission_nori.png" alt="mats w self red emission" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_green_nori.png" alt="mis wo self green emission" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_green_green_emission_nori.png" alt="mis w self green emission" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_green_green_emission_nori.png" alt="mis w self green emission" class="img-responsive">
+    <img src="solution/medium/cbox_sphere_homogeneous_mis_green_red_emission_nori.png" alt="mis w self red emission" class="img-responsive">
+</div>
 
 
+## NL-means using Pixel Variance Estimates
+Intel's Open Image Denoise integration
 <!-- Bootstrap core CSS and JavaScript -->
 
 <link href="../resources/offcanvas.css" rel="stylesheet">
