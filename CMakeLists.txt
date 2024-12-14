@@ -113,6 +113,7 @@ set(NORI_SOURCE_FILES
         src/map/normal_map.cpp
 
         src/emitter/envmaplight.cpp
+        src/emitter/spotlight.cpp
 
         src/bsdf/disney.cpp
         src/bsdf/null.cpp
