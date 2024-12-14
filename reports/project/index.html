@@ -13,6 +13,8 @@
 
 <a href="#Disney BSDF">Disney BSDF</a>
 
+<a href="#Extra Features">Extra Features</a>
+
 **Report**
 Comparison pipeline:
 1. Establish scene in blender.
@@ -311,7 +313,7 @@ To make sure the convention is the same, I also change the place of light to the
 
 Then I tested more complicated materials on sphere:
 
-For to using TBN map:
+Before using TBN map:
 <div class="twentytwenty-container">
     <img src="ref/normal/sphere_normal_mitsuba.png" alt="Mitsuba, w normal map" class="img-responsive">
     <img src="solution/normal/sphere_normal_wo_TBN_nori.png" alt="Mine, w normal map" class="img-responsive">
@@ -1485,6 +1487,61 @@ More parameters experiments apart from the graded ones:
 <div class="twentytwenty-container">
     <img src="solution/disney/disney.png" alt="Disney Brdf Test" class="img-responsive">
 </div>
+
+<h1 id="Extra Features">Extra Features</h1>
+
+Features below are not graded extra ones, thus I will not illustrate too much about the details like graded ones and will only do some simple validations to
+ensure the basic function that I want is implemented due to time restrictions.
+
+## TBN Map
+
+For hitting points on mesh and analytical geometry shape, we just use the normal to build the frames directly, making the tangent and bitangent not
+continuous along the surfaces. This will cause some artifacts in features which are sensitive to the local frames, e.g., normal mapping, anisotropic
+bsdf.
+
+Especially for anisotropic material on analytical geometry (e.g., sphere), we could find the discontinuity on the surface obviously.
+
+<div class="twentytwenty-container">
+    <img src="solution/extra/sphere_disney-anisotropic-10-wo-TBN.png" alt="wo TBN" class="img-responsive">
+    <img src="solution/extra/sphere_disney-anisotropic-10.png" alt="w TBN" class="img-responsive">
+</div>
+
+For analytical geometry, use the points coordinate to do partial derivative w.r.t. corresponding UV coordinates, the regard these
+two vectors as tangents and bitangents to build continuous local frames along the surface.
+
+Mesh situation is a little bit hard to recognize the visual effect, but Mitsuba used this optimization already:
+
+<div class="twentytwenty-container">
+    <img src="solution/normal/sphere_normal_wo_TBN_nori.png" alt="Mine wo TBN" class="img-responsive">
+    <img src="solution/normal/sphere_normal_nori.png" alt="Mine w TBN" class="img-responsive">
+    <img src="ref/normal/sphere_normal_mitsuba.png" alt="Mitsuba w TBN" class="img-responsive">
+</div>
+
+For mesh, I followed this tutorial <a href="https://learnopengl.com/Advanced-Lighting/Normal-Mapping" target="_blank">tutorial</a>.
+Besides be careful with the degraded triangles on UV map, which will make the TBN map calculation unstable and cause artifacts.
+For this situation, I only use normal to contruct the local frames.
+
+## Spot Light
+
+I followed <a href="https://pbr-book.org/3ed-2018/Light_Sources/Point_Lights" target="_blank">pbrt</a> to implement the spotlight,
+which is a special case of point light, I set default direction to (0, 0, -1) to align with Blender, also changed the xml
+input from power (pointlight) to intensity (spotlight).
+
+<div class="twentytwenty-container">
+    <img src="solution/spotlight/spot_light_30_0_nori.png" alt="theta_max 30, theta_fall 0" class="img-responsive">
+    <img src="solution/spotlight/spot_light_30_20_nori.png" alt="theta_max 30, theta_fall 20" class="img-responsive">
+    <img src="solution/spotlight/spot_light_40_20_nori.png" alt="theta_max 40, theta_fall 0" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/spotlight/spot_light_40_20_nori.png" alt="wo transformation" class="img-responsive">
+    <img src="solution/spotlight/spot_light_transform_nori.png" alt="w transformation" class="img-responsive">
+</div>
+
+Tested on different $\theta_{max}$ and $\theta_{fall}$, everything works good.
+
+## Denoising
+
 
 <!-- Bootstrap core CSS and JavaScript -->
 
