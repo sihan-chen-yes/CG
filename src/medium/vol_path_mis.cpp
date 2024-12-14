@@ -1,3 +1,21 @@
+/*
+    This file is part of Nori, a simple educational ray tracer
+
+    Copyright (c) 2024 by Sihan Chen
+
+    Nori is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License Version 3
+    as published by the Free Software Foundation.
+
+    Nori is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <nori/integrator.h>
 #include <nori/scene.h>
 #include <nori/warp.h>
@@ -138,7 +156,7 @@ public:
             }
 
             bool sampleMedium = false;
-            // sigma_s * Tr / pdf_t
+            // m_sigma_s * Tr / pdf_t
             Color3f distanceValue(1.f);
             // medium interaction point
             Interaction ita;
@@ -152,6 +170,9 @@ public:
 
             if (sampleMedium) {
                 // scattering inside a medium
+                // self emission contribution
+                Lo += t * shadowRay.medium->Le(shadowRay);
+
                 // wi for pRec
                 PhaseFunctionQueryRecord pRec(-shadowRay.d);
                 // sample wo for pRec

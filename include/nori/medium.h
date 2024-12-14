@@ -91,6 +91,7 @@ public:
     // Medium Interface
     virtual bool sampleEmitter() const = 0;
     virtual Color3f Tr(const Ray3f &ray) const = 0;
+    virtual Color3f Le(const Ray3f &ray) const = 0;
     virtual Color3f sample(const Ray3f &ray, Sampler *sampler,
                            Interaction &mi) const = 0;
 

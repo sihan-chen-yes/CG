@@ -25,11 +25,13 @@ NORI_NAMESPACE_BEGIN
 class HomogeneousMedium : public Medium {
 public:
     HomogeneousMedium(const PropertyList &props): m_phaseFunction(nullptr) {
-        sigma_a = props.getColor("sigma_a", Color3f(0.5));
-        sigma_s = props.getColor("sigma_s", Color3f(0.5));
+        m_sigma_a = props.getColor("sigma_a", Color3f(0.5));
+        m_sigma_s = props.getColor("sigma_s", Color3f(0.5));
         m_sampleEmitter = props.getBoolean("sampleEmitter", true);
 
-        sigma_t = sigma_a + sigma_s;
+        m_sigma_t = m_sigma_a + m_sigma_s;
+
+        m_Le = props.getColor("Le", Color3f(1.f));
     }
 
     ~HomogeneousMedium() {
@@ -67,14 +69,19 @@ public:
     }
 
     Color3f Tr(const Ray3f &ray) const override {
-        return Exp(-sigma_t * std::min(ray.maxt * ray.d.norm(), std::numeric_limits<float>::max()));
+        return Exp(-m_sigma_t * std::min(ray.maxt * ray.d.norm(), std::numeric_limits<float>::max()));
+    }
+
+    Color3f Le(const Ray3f &ray) const override {
+        float z = std::min(ray.maxt * ray.d.norm(), std::numeric_limits<float>::max());
+        return m_sigma_a * m_Le * (1 - Exp(-m_sigma_t * z)) / m_sigma_t;
     }
 
     Color3f sample(const Ray3f &ray, Sampler *sampler,
                    Interaction &mi) const override {
         // Sample a channel and distance along the ray
         int channel = std::min((int)(sampler->next1D() * 3), 2);
-        float dist = -std::log(1 - sampler->next1D()) / sigma_t[channel];
+        float dist = -std::log(1 - sampler->next1D()) / m_sigma_t[channel];
         float t = std::min(dist / ray.d.norm(), ray.maxt);
         bool sampledMedium = t < ray.maxt;
         if (sampledMedium) {
@@ -82,10 +89,10 @@ public:
         }
 
         // Compute the transmittance and sampling density
-        Color3f Tr = Exp(-sigma_t * std::min(t, std::numeric_limits<float>::max()) * ray.d.norm());
+        Color3f Tr = Exp(-m_sigma_t * std::min(t, std::numeric_limits<float>::max()) * ray.d.norm());
 
         // Return weighting factor for scattering from homogeneous medium
-        Color3f density = sampledMedium ? (sigma_t * Tr) : Tr;
+        Color3f density = sampledMedium ? (m_sigma_t * Tr) : Tr;
         float pdf = 0;
         for (int i = 0; i < 3; ++i) pdf += density[i];
         pdf *= 1.f / 3.f;
@@ -98,7 +105,7 @@ public:
         }
 
         if (sampledMedium) {
-            return Tr * sigma_s / pdf;
+            return Tr * m_sigma_s / pdf;
         } else {
             return Tr / pdf;
         }
@@ -107,27 +114,29 @@ public:
     virtual std::string toString() const override {
         return tfm::format(
                 "HomogeneousMedium[\n"
-                "  sigma_a = %s,\n"
-                "  sigma_s = %s,\n"
-                "  sigma_t = %s,\n"
+                "  m_sigma_a = %s,\n"
+                "  m_sigma_s = %s,\n"
+                "  m_sigma_t = %s,\n"
                 "  sampleEmitter = %d,\n"
                 "  phaseFunction = %s\n"
                 "]",
-                sigma_a.toString(),
-                sigma_s.toString(),
-                sigma_t.toString(),
+                m_sigma_a.toString(),
+                m_sigma_s.toString(),
+                m_sigma_t.toString(),
                 m_sampleEmitter,
                 m_phaseFunction ? indent(m_phaseFunction->toString()) : std::string("null")
         );
     }
 
 private:
-    Color3f sigma_a;
-    Color3f sigma_s;
-    // sigma_t = sigma_a + sigma_s
-    Color3f sigma_t;
+    Color3f m_sigma_a;
+    Color3f m_sigma_s;
+    // m_sigma_t = m_sigma_a + m_sigma_s
+    Color3f m_sigma_t;
     bool m_sampleEmitter;
     PhaseFunction *m_phaseFunction;
+
+    Color3f m_Le;
 };
 
 NORI_REGISTER_CLASS(HomogeneousMedium, "homogeneous");
