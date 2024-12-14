@@ -113,9 +113,21 @@ public:
         // fill its properties
         // intersection point
         its.p = p;
-        // same geo and sh frame for sphere
         its.geoFrame = Frame(normal);
-        its.shFrame = Frame(normal);
+
+        // calculate the TBN map for analytical sphere
+        float sinTheta = Frame::sinTheta(normal);
+        float sinPhi = Frame::sinPhi(normal);
+        float cosPhi = Frame::cosPhi(normal);
+        // corresponding to theta <-> v
+        Point3f sphere_p = normal * m_radius;
+        Vector3f dpdv = Vector3f(sphere_p.z() * cosPhi, sphere_p.z() * sinPhi, -m_radius * sinTheta);
+        Vector3f tangent = dpdv.normalized();
+        // corresponding to phi <-> u
+        Vector3f dpdu = Vector3f(-sphere_p.y(), sphere_p.x(), 0.f);
+        Vector3f bitangent = dpdu.normalized();
+
+        its.shFrame = Frame(tangent, bitangent, normal);
 
         its.uv.x() = u;
         its.uv.y() = v;
