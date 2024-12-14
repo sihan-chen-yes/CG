@@ -22,7 +22,6 @@
 
 NORI_NAMESPACE_BEGIN
 
-/// Ideal dielectric BSDF
 class Disney : public BSDF {
 public:
     Disney(const PropertyList &propList) {
@@ -96,12 +95,24 @@ public:
         }
     }
 
+    virtual ~Disney() {
+        if (m_albedo != nullptr)
+            delete m_albedo;
+        if (m_normalmap != nullptr)
+            delete m_normalmap;
+        if (m_roughness_map != nullptr)
+            delete m_roughness_map;
+        if (m_metallic_map != nullptr)
+            delete m_metallic_map;
+    }
+
     float lambda_m(const BSDFQueryRecord &bRec, Vector3f w) const {
         float xSquare = pow(w.x() * get_alpha_x(bRec), 2);
         float ySquare = pow(w.y() * get_alpha_y(bRec), 2);
         return (sqrtf(1 + (xSquare + ySquare) / (w.z() * w.z())) - 1) / 2;
     }
 
+    // smith GGX anisotropic for metal
     float g_m(const BSDFQueryRecord &bRec, Vector3f w) const {
         return 1.0f / (1 + lambda_m(bRec, w));
     }
@@ -117,6 +128,7 @@ public:
         return (sqrtf(1 + ((xSquare + ySquare) / (w.z() * w.z()))) - 1) / 2;
     }
 
+    // smith GGX for clearcoat
     float g_c(Vector3f w) const {
         return 1.0f / (1 + lambda_c(w));
     }
@@ -128,6 +140,12 @@ public:
 
     /*
      * Diffuse lobe: cosine weighted hemisphere
+     * parameter:
+     * roughness
+     * subsurface
+     * fake sheen lobe parameters:
+         * sheen
+         * sheenTint
      */
     void sampleDiffuse(BSDFQueryRecord &bRec, const Point2f &sample) const {
         // sample the wo directly
@@ -146,6 +164,11 @@ public:
 
     /*
      * Metallic(Specular) lobes: GTR2
+     * parameter:
+     * metallic
+     * specular
+     * specularTint
+     * anisotropic
      */
 
     void sampleMetal(BSDFQueryRecord &bRec, const Point2f &sample) const {
@@ -167,6 +190,8 @@ public:
 
     /*
      * Clearcoat lobes: GTR1
+     * clearcoat
+     * clearcoatGloss
      */
 
     void sampleClearcoat(BSDFQueryRecord &bRec, const Point2f &sample) const {
@@ -185,10 +210,6 @@ public:
         // transform pdf_h to pdf_wo
         return Warp::squareToGTR1Pdf(wh, m_alpha_g) / (4 * abs(wh.dot(bRec.wo)));
     }
-
-    /*
-     * Glass lobes:
-     */
 
     float SchlickFresnel(float cosTheta) const {
         float m = clamp(1 - cosTheta, 0.f, 1.f);
@@ -210,8 +231,8 @@ public:
         if (baseColor.getLuminance() > 0) {
             Ctint = baseColor / baseColor.getLuminance();
         }
-        Color3f Cspec0 = getMetallic(bRec) * baseColor + (1 - getMetallic(bRec)) * m_specular * .08 * (m_specularTint * Ctint + (1 - m_specularTint));
-        Color3f Csheen = m_sheenTint * Ctint + (1 - m_sheenTint);
+        Color3f Cspec0 = lerp(getMetallic(bRec), m_specular * 0.08 * lerp(m_specularTint, Color3f(1.f), Ctint), baseColor);
+        Color3f Csheen = lerp(m_sheenTint, Color3f(1), Ctint);
 
         // diffuse component
         float wh_dot_wo = wh.dot(bRec.wo);
@@ -229,26 +250,25 @@ public:
         // include cosTheta_h already, need to cancel out
         float Ds = Warp::squareToGTR2Pdf(wh, get_alpha_x(bRec), get_alpha_y(bRec)) / Frame::cosTheta(wh);
         float FH = SchlickFresnel(wh_dot_wo);
-        Color3f Fs = FH + (1 - FH) * Cspec0;
-//        float Gs = smithG_GGX_aniso(bRec.wi, m_alpha_x, m_alpha_y) * smithG_GGX_aniso(bRec.wo, m_alpha_x, m_alpha_y); // light ring outside
+        Color3f Fs = lerp(FH, Cspec0, Color3f(1.f));
+
         float Gs = G_m(bRec);
-//        Color3f Fsheen = FH * m_sheen * Csheen;
+        Color3f Fsheen = FH * m_sheen * Csheen;
 
         // clearcoat component
         // include cosTheta_h already, need to cancel out
         float Dr = Warp::squareToGTR1Pdf(wh, m_alpha_g) / Frame::cosTheta(wh);
         float Fr = lerp(FH, 0.04, 1.0);
-//        float Gr = smith_GGX(bRec.wi, 0.25) * smith_GGX(bRec.wo, 0.25);// light ring outside
         float Gr = G_c(bRec.wi, bRec.wo);
 
         float diffuseWeight = 1 - getMetallic(bRec);
-        float specularWeight = 1;
+        float metallicWeight = 1;
         float clearcoatWeight = 0.25 * m_clearcoat;
         // normalize like microfacet
-        return (INV_PI * lerp(m_subsurface, Fd, ss) * baseColor) * diffuseWeight
-               + (Gs * Fs * Ds) / (4.f * cosTheta_o) + clearcoatWeight * Gr * Fr * Dr / (4.f * cosTheta_o);
+        return diffuseWeight * (INV_PI * lerp(m_subsurface, Fd, ss) * baseColor + Fsheen)
+               + metallicWeight * (Gs * Fs * Ds) / (4.f * cosTheta_o * cosTheta_i)
+               + clearcoatWeight * (Gr * Fr * Dr) / (4.f * cosTheta_o * cosTheta_i);
     }
-
 
     virtual float pdf(const BSDFQueryRecord &bRec) const override {
         if (bRec.measure != ESolidAngle
@@ -257,10 +277,10 @@ public:
         return 0.0f;
 
         float diffuseWeight = 1 - getMetallic(bRec);
-        float specularWeight = 1;
+        float metallicWeight = 1;
         float clearcoatWeight = 0.25 * m_clearcoat;
-        float total = diffuseWeight + specularWeight + clearcoatWeight;
-        Vector3f weight(diffuseWeight / total, specularWeight / total, clearcoatWeight / total);
+        float total = diffuseWeight + metallicWeight + clearcoatWeight;
+        Vector3f weight(diffuseWeight / total, metallicWeight / total, clearcoatWeight / total);
         // blending pdf should in [0, 1]
         return weight[0] * pdfDiffuse(bRec) + weight[1] * pdfSpecular(bRec) + weight[2] * pdfClearcoat(bRec);
     }
@@ -269,33 +289,33 @@ public:
         bRec.measure = ESolidAngle;
 
         float diffuseWeight = 1 - getMetallic(bRec);
-        float specularWeight = 1;
+        float metallicWeight = 1;
         float clearcoatWeight = 0.25 * m_clearcoat;
-        float total = diffuseWeight + specularWeight + clearcoatWeight;
+        float total = diffuseWeight + metallicWeight + clearcoatWeight;
 
-        Vector3f lobePdf(diffuseWeight / total, specularWeight / total, clearcoatWeight / total);
-        // importance sampling
+        // prepare the pdf for importance sampling lobes
+        Vector3f lobePdf(diffuseWeight / total, metallicWeight / total, clearcoatWeight / total);
         // need to fill in the bRec.wo in each sample component
-        // need to sample reuse(renomalize)
-        // specular part
-        if (_sample.x() < lobePdf[1] + lobePdf[2]) {
-            Point2f sample(_sample);
-            sample.x() /= lobePdf[1] + lobePdf[2];
-            float pdf_clearcoat = lobePdf[2] / (lobePdf[1] + lobePdf[2]);
-            // clearcoat component
-            if (sample.x() < pdf_clearcoat) {
-                sample.x() /= pdf_clearcoat;
-                sampleClearcoat(bRec, sample);
-            } else {
-                // metal component
-                sample.x() = (sample.x() - pdf_clearcoat) / (1.f - pdf_clearcoat);
-                sampleMetal(bRec, sample);
-            }
-        } else {
+        // need to sample reuse(re-normalize)
+
+        float diffusePdf = lobePdf[0];
+        float metallicPdf = lobePdf[1];
+        float clearcoatPdf = lobePdf[2];
+
+        Point2f sample(_sample);
+        // importance sampling according to the pdf
+        if (_sample.x() < diffusePdf) {
             // diffuse part
-            Point2f sample(_sample);
-            sample.x() = (sample.x() - (lobePdf[1] + lobePdf[2])) / (1.f - lobePdf[1] + lobePdf[2]);
+            sample.x() /= diffusePdf;
             sampleDiffuse(bRec, sample);
+        } else if (_sample.x() < diffusePdf + metallicPdf) {
+            // metallic part
+            sample.x() = (_sample.x() - diffusePdf) / metallicPdf;
+            sampleMetal(bRec, sample);
+        } else {
+            // clearcoat part
+            sample.x() = (_sample.x() - diffusePdf - metallicPdf) / clearcoatPdf;
+            sampleClearcoat(bRec, sample);
         }
 
         float pdfValue = pdf(bRec);
