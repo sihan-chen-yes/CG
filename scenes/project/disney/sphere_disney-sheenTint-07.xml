@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<scene>
+    <integrator type="path_mis"/>
+
+    <camera type="perspective">
+        <transform name="toWorld">
+            <lookat target="0, 0, 5" origin="0, 0, 0" up="0, 1, 0"/>
+        </transform>
+        <float name="fov" value="38" />
+        <float name="nearClip" value="0.01" />
+        <float name="farClip" value="10000" />
+
+        <integer name="height" value="512"/>
+        <integer name="width" value="512"/>
+    </camera>
+
+    <sampler type="independent">
+        <integer name="sampleCount" value="256"/>
+    </sampler>
+
+    <!-- Illuminate using a envmap emitter -->
+    <emitter type="envmap">
+        <transform name="toWorld">
+            <matrix value="0 1 0 0 0 0 1 0 -1 0 0 0 0 0 0 1" />
+            <rotate axis="0 1 0" angle="-180" />
+        </transform>
+        <string name="filename" value="textures/abandoned_tank_farm_05_1k.exr"/>
+        <float name="scale" value="1" />
+    </emitter>
+
+    <mesh type="sphere">
+        <point name="center" value="0 0 5" />
+        <float name="radius" value="1" />
+        <bsdf type="disney">
+            <color name="baseColor" value="0.48235 0.24705 0"/>
+            <float name="subsurface" value="0.0"/>
+            <float name="anisotropic" value="0.0"/>
+            <float name="specular" value="0.5"/>
+            <float name="specularTint" value="0.0"/>
+            <float name="roughness" value="0.5"/>
+            <float name="metallic" value="0.0"/>
+            <float name="clearcoat" value="0.0"/>
+            <float name="clearcoatGloss" value="0.0"/>
+            <float name="sheen" value="1.0"/>
+            <float name="sheenTint" value="0.7"/>
+        </bsdf>
+    </mesh>
+</scene>

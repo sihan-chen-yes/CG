@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Importance sampling (sample methods) in disney.cpp chi2 test for disney bsdf-->
+<!--Influencing parameters to test:-->
+<!--metallic, clearcoat, roughness, anisotropic, clearcoatGloss-->
+<!--step pace 0.5 for each parameters-->
+
+<test type="chi2test">
+
+<!--    for metallic-->
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.5"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="1.0"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+<!--    for clearcoatGloss-->
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0.5"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="1.0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <!--    for roughness -->
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0.0"/>
+        <float name="roughness" value="1.0"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <!--    for anisotropic -->
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0.0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.5"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0.0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="1.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <!--    for clearcoat -->
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.0"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0.0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="0.5"/>
+    </bsdf>
+
+    <bsdf type="disney">
+        <float name="metallic" value="0.0"/>
+        <float name="clearcoatGloss" value="0.0"/>
+        <float name="roughness" value="0.5"/>
+        <float name="anisotropic" value="0.0"/>
+        <float name="clearcoat" value="1.0"/>
+    </bsdf>
+
+
+</test>
