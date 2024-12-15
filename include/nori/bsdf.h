@@ -118,6 +118,8 @@ public:
     virtual bool isDiffuse() const { return false; }
 
     virtual bool getNormalMap(Texture<Normal3f> * &normal_map) const { return false; }
+
+    virtual Color3f getAlbedo(const BSDFQueryRecord &bRec) const { return Color3f(0.0f); };
 };
 
 NORI_NAMESPACE_END

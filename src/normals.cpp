@@ -17,8 +17,9 @@ public:
 
         /* Return the component-wise absolute
            value of the shading normal as a color */
-        Normal3f n = its.shFrame.n.cwiseAbs();
-//        Normal3f n = (its.shFrame.n + Normal3f(1.0f)) * 0.5f;
+        // warning: for visualization need to remap back to [-1, 1] for using!
+//            Normal3f n = its.shFrame.n.cwiseAbs();
+        Normal3f n = (its.shFrame.n + Normal3f(1.0f)) * 0.5f;
         return Color3f(n.x(), n.y(), n.z());
     }
 

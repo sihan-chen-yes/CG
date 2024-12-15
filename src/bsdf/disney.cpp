@@ -1,7 +1,7 @@
 /*
     This file is part of Nori, a simple educational ray tracer
 
-    Copyright (c) 2015 by Wenzel Jakob
+    Copyright (c) 2024 by Sihan Chen
 
     Nori is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License Version 3
@@ -347,7 +347,11 @@ public:
         return std::max(m_alpha_min, getRoughness(bRec) * getRoughness(bRec) * m_aspect);
     }
 
-        virtual std::string toString() const override {
+    Color3f getAlbedo(const BSDFQueryRecord &bRec) const {
+        return m_albedo->eval(bRec.uv);
+    }
+
+    virtual std::string toString() const override {
         return tfm::format(
             "Disney[\n"
             "  baseColor = %s\n"

@@ -136,6 +136,10 @@ public:
         return m_normalmap != nullptr;
     }
 
+    Color3f getAlbedo(const BSDFQueryRecord &bRec) const {
+        return m_albedo->eval(bRec.uv);
+    }
+
     /// Return a human-readable summary
     virtual std::string toString() const override {
         return tfm::format(

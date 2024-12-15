@@ -54,6 +54,10 @@ public:
         return Color3f(1.0f);
     }
 
+    Color3f getAlbedo(const BSDFQueryRecord &bRec) const {
+        return Color3f(1.0f);
+    }
+
     virtual std::string toString() const override {
         return "Mirror[]";
     }

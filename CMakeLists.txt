@@ -108,6 +108,7 @@ set(NORI_SOURCE_FILES
   src/path_mats.cpp
   src/path_mis.cpp
   src/pointlight.cpp
+        src/albedo.cpp
 
         src/map/texture_map.cpp
         src/map/normal_map.cpp
