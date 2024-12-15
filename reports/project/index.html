@@ -1564,8 +1564,44 @@ $$
 </div>
 
 
-## NL-means using Pixel Variance Estimates
-Intel's Open Image Denoise integration
+## Intel's Open Image Denoise integration
+I followed this <a href="https://www.openimagedenoise.org/documentation.html" target="_blank">tutorial</a> to use the oidn as tools
+to remove the noise. To better denoise, we need normal and albedo feature map, we just need to modify the normal integrator and create
+a similar albedo integrator to export feature map. What need to take care is the default reconstruction is `gaussian` filter, which
+will make the ray tracing denoising fail completely, we need to replace that to a simple `box` filter.
+
+To use `exr` and `png` we need to rebuild the project, after compilation, ensure the oidn is built successfully:
+<div class="twentytwenty-container">
+    <img src="solution/denoise/installation.png" alt="Installation" class="img-responsive">
+</div>
+Before using the normal map, we need to remap it back to the range [-1, 1] from [0, 1]:
+
+```shell
+oiiotool ../img/cbox_path_normals.exr --mulc 2 --subc 1 -o ../img/cbox_path_normals_fixed.exr
+```
+
+Use the cmd below to ensure that:
+```shell
+oiiotool --stats ../img/cbox_path_normals_fixed.exr
+```
+
+Then use oidn to denoise:
+```shell
+./oidnDenoise --ldr ../img/cbox_path_mis.png --alb ../img/cbox_path_albedo.exr --nrm ../img/cbox_path_normals_fixed.exr
+-o ../img/output_image.png -d cpu -f RT -q h --threads 24 --cleanAux
+```
+
+To validate the influence, I set the spp to 16, and the results show a huge improvement:
+<div class="twentytwenty-container">
+    <img src="solution/denoise/cbox_path_mats.png" alt="Before Denoising" class="img-responsive">
+    <img src="solution/denoise/cbox_path_mats_denoised.png" alt="After Denoising" class="img-responsive">
+</div>
+
+<div class="twentytwenty-container">
+    <img src="solution/denoise/cbox_path_mis.png" alt="Before Denoising" class="img-responsive">
+    <img src="solution/denoise/cbox_path_mis_denoised.png" alt="After Denoising" class="img-responsive">
+</div>
+
 <!-- Bootstrap core CSS and JavaScript -->
 
 <link href="../resources/offcanvas.css" rel="stylesheet">
