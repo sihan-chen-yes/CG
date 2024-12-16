@@ -1,27 +1,86 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<a href="#Images as Textures">Images as Textures</a>
+<p style="text-align: center; font-size: 48px; font-weight: bold;  margin-top: 20px; border-bottom: none;">
+    Nori
+</p>
+<p style="text-align: center; font-size: 24px; margin-top: 10px;">
+    Sihan Chen
+</p>
 
-<a href="#Normal Mapping">Normal Mapping</a>
+Graded features are attributed in sections 2~7, section 8 includes more not graded features.
 
-<a href="#Mesh Modelling">Mesh Modelling</a>
+<a href="#Movtivational Image">1 Movtivational Image</a>
 
-<a href="#Environment Map">Environment Map</a>
+<a href="#Images as Textures">2 Images as Textures</a>
 
-<a href="#Homogeneous Participating Media">Homogeneous Participating Media</a>
+<a href="#Normal Mapping">3 Normal Mapping</a>
 
-<a href="#Disney BSDF">Disney BSDF</a>
+<a href="#Mesh Modelling">4 Mesh Modelling</a>
 
-<a href="#Extra Features">Extra Features</a>
+<a href="#Environment Map">5 Environment Map</a>
 
-**Report**
-Comparison pipeline:
+<a href="#Homogeneous Participating Media">6 Homogeneous Participating Media</a>
+
+<a href="#Disney BSDF">7 Disney BSDF</a>
+
+<a href="#Extra Features">8 Extra Features</a>
+
+<a href="#Final Image">9 Final Image</a>
+
+<a href="#Credits">Credits</a>
+
+
+In graded feature parts, I will first illustrate the implementation in details, and then validate following the pipeline
+below:
+
 1. Establish scene in blender.
 2. Export Nori.xml and Mitsuba.xml respectively
 3. Check the xml files with necessary manual adjustment
 4. Align the ply and obj file, ensure they are the same
 5. Rendering with both ones and compare the images
+
+For not graded features, I will only do some simple introduction and basic validation (may not cover all situations) due
+to time restrictions.
+
+<h1 id="Movtivational Image">Movtivational Image</h1>
+
+<div style="text-align: center;">
+    <img src="../resources/whole.jpeg" alt="Motivational image" class="img-responsive">
+    <p>Rennala, Queen of the Full Moon</p>
+</div>
+Game CG from from <a href="https://en.wikipedia.org/wiki/Elden_Ring" target="_blank">Elden Ring</a>(Game of The Year in 2022).
+Galaxy, stars, full moon, water, magic, queen, all the things above are unified into one scene with cold atmosphere, reflecting the loneliness of Rennala,
+Queen of the Full Moon, after being abandoned by the king, Radagon of the Golden Order. Here are the
+
+**1. Blending of the Natural Things**
+
+The most obvious water horizon split the whole image into two parts: sky and water, it fuses the sky and ground.
+
+**2. Fusion of Dynamic and Static State**
+
+The scene shifts between stillness (the water surface, fog) and movement (floating magical particles, gentle ripples), creating tension and balance.
+
+**3. Transition Between Light and Shadow**
+
+The scene juxtaposes the radiant, warm glow of the full moon against the cold, dark vastness of the surrounding night sky.
+Rennala herself embodies a silhouette illuminated by the light, placing her at the crossroads of light and shadow, highlighting her position "in between" these two extremes.
+
+**4. Blurring the Line Between Reality and Illusion**
+
+Reflective Water Surface: The mirror-like water surface creates a duality, where the line between the real world and its reflection becomes indistinguishable. The viewer is placed in a space that feels both grounded and ethereal, existing "in between" reality and fantasy.
+The gentle ripples on the water suggest that while the reflection is a near-perfect illusion, it's still not entirely real, emphasizing a liminal state.
+
+**5. The Mystical and the Natural Coexisting**
+
+The full moon and the magical aura of the scene create an intersection between the natural world (the moon, water, mist) and the supernatural (magic particles, glowing sigils, and mystical energy).
+This blend of natural and otherworldly elements enhances the sense of being in a space where two realms collide. Also the horizon of the water corresponds with the queen's magical particles.
+
+**6. Thematic Duality in Character**
+
+Rennla resides in <a href="https://eldenring.fandom.com/wiki/Lands_Between" target="_blank">The Lands **Between**</a>, once a powerful queen and now a sorrowful, isolated figure, caught between her glorious past and her melancholic present.
+It represents both queen's emotional and status duality.
+
 
 <h1 id="Images as Textures">Images as Textures</h1>
 **modified files:**
@@ -669,7 +728,7 @@ all the results match with Mitsuba:
 - `src/common.cpp`
 
 This feature is about volumetric rendering, where the ray interact with the medium, e.g., absorption, scattering, emission. I implemented the
-homogeneous participating media (constant $\m_sigma_s$, $\m_sigma_a$) and volumetric path tracer with both material sampling and naive multi-strategy importance sampling (only do mis
+homogeneous participating media (constant $\sigma_s$, $\sigma_a$) and volumetric path tracer with both material sampling and naive multi-strategy importance sampling (only do mis
 outside the volume), following this <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">paper</a>, and <a href="https://graphics.pixar.com/library/ProductionVolumeRendering/paper.pdf" target="_blank">pbrt's</a> code.
 I create a new class `medium` (phase function attached inside), the medium itself is attached to a shape and ray, and a new class `homogeneous` extending `medium`,
 and a new class `interaction` extending `intersection`, which has phase function attached inside for more convenient scattering integration (similar to integration with brdf at surface),
@@ -745,26 +804,26 @@ virtual float sample(PhaseFunctionQueryRecord &pRec, const Point2f &sample) cons
 For detailed phase function, I implemented HenyeyGreenstein in `medium.cpp` following pbrt code:
 ```cpp
 float HenyeyGreenstein::sample(PhaseFunctionQueryRecord &pRec, const Point2f &sample) const {
-// Compute $\cos \theta$ for Henyey--Greenstein sample
-float cosTheta;
-if (std::abs(g) < 1e-3)
-    cosTheta = 1 - 2 * sample.x();
-else {
-    float sqrTerm = (1 - g * g) / (1 + g - 2 * g * sample.x());
-    cosTheta = -(1 + g * g - sqrTerm * sqrTerm) / (2 * g);
-}
+    // Compute $\cos \theta$ for Henyey--Greenstein sample
+    float cosTheta;
+    if (std::abs(g) < 1e-3)
+        cosTheta = 1 - 2 * sample.x();
+    else {
+        float sqrTerm = (1 - g * g) / (1 + g - 2 * g * sample.x());
+        cosTheta = -(1 + g * g - sqrTerm * sqrTerm) / (2 * g);
+    }
 
-// Compute direction _wo_ for Henyey--Greenstein sample
-float sinTheta = std::sqrt(std::max((float)0, 1 - cosTheta * cosTheta));
-float phi = 2 * M_PI * sample.y();
-Vector3f v1, v2;
-coordinateSystem(pRec.wi, v1, v2);
-pRec.wo = sphericalDirection(sinTheta, cosTheta, phi, v1, v2, pRec.wi);
-pRec.measure = ESolidAngle;
-// don't need to consider cosine term for phase function
-//    return PhaseHG(cosTheta, g) / pdf(pRec);
-// cancel out, directly return 1
-return 1.f;
+    // Compute direction _wo_ for Henyey--Greenstein sample
+    float sinTheta = std::sqrt(std::max((float)0, 1 - cosTheta * cosTheta));
+    float phi = 2 * M_PI * sample.y();
+    Vector3f v1, v2;
+    coordinateSystem(pRec.wi, v1, v2);
+    pRec.wo = sphericalDirection(sinTheta, cosTheta, phi, v1, v2, pRec.wi);
+    pRec.measure = ESolidAngle;
+    // don't need to consider cosine term for phase function
+    //    return PhaseHG(cosTheta, g) / pdf(pRec);
+    // cancel out, directly return 1
+    return 1.f;
 }
 ```
 ## Interaction
@@ -1601,6 +1660,35 @@ To validate the influence, I set the spp to 16, and the results show a huge impr
     <img src="solution/denoise/cbox_path_mis.png" alt="Before Denoising" class="img-responsive">
     <img src="solution/denoise/cbox_path_mis_denoised.png" alt="After Denoising" class="img-responsive">
 </div>
+
+## Alpha Map
+
+For some detailed pattern and visual effect, I chose alpha map to control the blending of diffuse and background color.
+I implement this mainly in `null` bsdf to simulate the ray shoot through the mesh directly, and carry the corresponding
+color according to the alpha map.
+
+<h1 id="Final Image">Final Image</h1>
+
+<div style="text-align: center;">
+    <img src="../resources/whole.jpeg" alt="Motivational image" class="img-responsive">
+    <p>Rennala, Queen of the Full Moon</p>
+</div>
+
+<h1 id="Credits">Credits</h1>
+## Image Resources
+<a href="https://www.artstation.com/blogs/zeeshannasir/peYz/reference-uv-map-grids" target="_blank">Digits Texture</a>
+
+<a href="https://en.wikipedia.org/wiki/Normal_mapping" target="_blank">Classic Normal Map</a>
+
+## Other Assets
+<a href="https://quixel.com/megascans/home?search=brick" target="_blank">Quixel Megascans</a>
+
+<a href="https://polyhaven.com/a/rogland_clear_night" target="_blank">Poly Haven</a> (also some other env maps from this website)
+
+<a href="https://store.steampowered.com/app/1245620/_/" target="_blank">Elden Ring Assets</a> (via unpacking)
+
+<a href="https://www.turbosquid.com/" target="_blank">Some other Scene Assets</a>
+
 
 <!-- Bootstrap core CSS and JavaScript -->
 

@@ -33,6 +33,7 @@ public:
         m_cosThetaMax = std::cos(m_thetaMax);
         m_thetaFall = propList.getFloat("thetaFall", 5.0) * M_PI / 180.0f;
         m_cosThetaFall = std::cos(m_thetaFall);
+        m_baseColor = propList.getColor("baseColor", Color3f(1.0f));
     }
 
     virtual std::string toString() const override {
@@ -85,7 +86,7 @@ public:
             ratio = (m_thetaMax - theta) / (m_thetaMax - m_thetaFall);
         }
         // radiance Li
-        return ratio * m_intensity / distanceSquared;
+        return ratio * m_intensity * m_baseColor / distanceSquared;
     }
 
     virtual float pdf(const EmitterQueryRecord &lRec) const override {
@@ -109,6 +110,7 @@ protected:
     float m_thetaMax;
     float m_thetaFall;
     Vector3f m_baseDir;
+    Color3f m_baseColor;
 
 };
 

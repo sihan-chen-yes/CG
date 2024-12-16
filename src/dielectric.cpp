@@ -25,7 +25,7 @@ NORI_NAMESPACE_BEGIN
 class Dielectric : public BSDF {
 public:
     Dielectric(const PropertyList &propList) {
-        baseColor = propList.getColor("albedo", Color3f(1.f));
+        baseColor = propList.getColor("color", Color3f(1.f));
 
         /* Interior IOR (default: BK7 borosilicate optical glass) */
         m_intIOR = propList.getFloat("intIOR", 1.5046f);

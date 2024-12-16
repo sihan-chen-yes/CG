@@ -1,7 +1,7 @@
 /*
     This file is part of Nori, a simple educational ray tracer
 
-    Copyright (c) 2015 by Romain Prévost
+    Copyright (c) 2024 by Sihan Chen
 
     Nori is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License Version 3

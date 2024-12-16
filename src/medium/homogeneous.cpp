@@ -31,7 +31,7 @@ public:
 
         m_sigma_t = m_sigma_a + m_sigma_s;
 
-        m_Le = props.getColor("Le", Color3f(1.f));
+        m_Le = props.getColor("Le", Color3f(0.f));
     }
 
     ~HomogeneousMedium() {

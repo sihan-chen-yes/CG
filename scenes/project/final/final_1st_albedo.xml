@@ -1,0 +1,336 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="albedo">
+<!--		<integer name="rr_depth" value="5"/>-->
+<!--		<integer name="max_depth" value="12"/>-->
+	</integrator>
+	<sampler type="independent">
+		<integer name="sampleCount" value="16"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="75.90000586871396"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="1000.0"/>
+		<integer name="width" value="4192"/>
+		<integer name="height" value="4192"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="-0.8382232189178467,-0.11445961892604828,-0.5331799387931824,-1.4861775636672974,-0.5453273057937622,0.1759360134601593,0.8195515275001526,3.0650503635406494,0.0,0.9777246713638306,-0.20989160239696503,2.392554759979248,0.0,0.0,0.0,1.0"/>
+		</transform>
+		<rfilter type="box"/>
+	</camera>
+
+<!--	<emitter type="envmap">-->
+<!--		<string name="filename" value="textures/dikhololo_night_4k.exr"/>-->
+<!--		<transform name="toWorld">-->
+<!--			<rotate axis="1, 0, 0" angle="0" />-->
+<!--			<rotate axis="0, 1, 0" angle="0" />-->
+<!--			<rotate axis="0, 0, 1" angle="90" />-->
+<!--		</transform>-->
+<!--		<float name="radiance_scale" value="1"/>-->
+<!--	</emitter>-->
+
+	<!--	<emitter type="envmap">-->
+	<!--		<string name="filename" value="textures/starry_night_3.exr"/>-->
+	<!--		<transform name="toWorld">-->
+	<!--			<rotate axis="1, 0, 0" angle="0" />-->
+	<!--			<rotate axis="0, 1, 0" angle="0" />-->
+	<!--			<rotate axis="0, 0, 1" angle="0" />-->
+	<!--		</transform>-->
+	<!--		<float name="radiance_scale" value="1"/>-->
+	<!--	</emitter>-->
+
+
+<!--	<emitter type="envmap">-->
+<!--		<string name="filename" value="textures/rogland_clear_night_4k.exr"/>-->
+<!--		<transform name="toWorld">-->
+<!--			<rotate axis="1, 0, 0" angle="0" />-->
+<!--			<rotate axis="0, 1, 0" angle="0" />-->
+<!--			<rotate axis="0, 0, 1" angle="120" />-->
+<!--		</transform>-->
+<!--		<float name="radiance_scale" value="1"/>-->
+<!--	</emitter>-->
+
+
+	<emitter type="envmap">
+		<string name="filename" value="textures/rogland_clear_night_4k.exr"/>
+		<transform name="toWorld">
+			<rotate axis="1, 0, 0" angle="0" />
+			<rotate axis="0, 1, 0" angle="0" />
+			<rotate axis="0, 0, 1" angle="120" />
+		</transform>
+		<float name="radiance_scale" value="1"/>
+	</emitter>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Esfera_Moon.obj"/>
+
+		<bsdf type="disney" name="Moon">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Moon.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/Moon_displacement.png"/>
+			</texture>
+
+			<float name="metallic" value="1.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.789181"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Water_Water.001.obj"/>
+		<transform name="toWorld">
+			<matrix value="1, 0, 0, 0,
+						   0, 1, 0, 0,
+						   0, 0, 1, 1,
+						   0, 0, 0, 1"/>
+		</transform>
+		<bsdf type="dielectric" name="Water.001">
+			<color name="color" value="0.200000,0.300000,0.400000"/>
+			<float name="IOR" value="1.333000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/AM_AM.obj"/>
+
+		<bsdf type="disney" name="AM">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/AM_a.png"/>
+			</texture>
+
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/AM_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/AM_m.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.102273"/>
+			<float name="specularTint" value="0.125000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.100000"/>
+			<float name="clearcoatGloss" value="0.102273"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_BD.obj"/>
+		<bsdf type="disney" name="BD">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.100000"/>
+			<float name="specularTint" value="0.100000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.788636"/>
+			<float name="clearcoatGloss" value="0.800000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/HD_HD.obj"/>
+		<bsdf type="disney" name="HD">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/HD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/HD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/HD_m.png"/>
+			</texture>
+
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.911364"/>
+			<float name="specularTint" value="0.709091"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.922727"/>
+			<float name="clearcoatGloss" value="0.406818"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Leg_Leg.obj"/>
+		<bsdf type="disney" name="Leg">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/LG_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/LG_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/LG_r.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Skin_Skin.obj"/>
+		<bsdf type="disney" name="Skin">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Skin_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/Skin_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/Skin_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.800000"/>
+			<float name="specular" value="0.400000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Eye_Eye.obj"/>
+		<bsdf type="disney">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Eye_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/Eye_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/Eye_m.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/Eye_r.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.188636"/>
+			<float name="specular" value="0.070455"/>
+			<float name="specularTint" value="0.054545"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.075000"/>
+			<float name="clearcoatGloss" value="0.097727"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_Pattern_BD_Pattern.obj"/>
+		<bsdf type="disney" name="BD_Pattern">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_Pattern.png"/>
+				<string name="interpolation" value="Linear"/>
+				<string name="extension" value="REPEAT"/>
+				<string name="projection" value="FLAT"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.100000"/>
+			<float name="specularTint" value="0.090909"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.001000"/>
+			<float name="sheenTint" value="0.245455"/>
+			<float name="clearcoat" value="0.100000"/>
+			<float name="clearcoatGloss" value="1.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/WP.001_WP.obj"/>
+		<bsdf type="disney" name="WP">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/WP_a_test.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/WP_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/WP_m.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+</scene>

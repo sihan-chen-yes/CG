@@ -38,7 +38,8 @@ public:
         const BSDF *bsdf = its.mesh->getBSDF();
         if (bsdf) {
             /* Assuming the BSDF has a method to query diffuse reflectance */
-            BSDFQueryRecord bRec(-ray.d, its.uv);
+            Vector3f wi = its.toLocal(-ray.d);
+            BSDFQueryRecord bRec(wi, its.uv);
             return bsdf->getAlbedo(bRec);
         }
 
