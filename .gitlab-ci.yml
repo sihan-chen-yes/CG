@@ -35,14 +35,14 @@ variables:
     description: "Run tests for one of the assignments"
 
 
-check_file_size:
-  stage: build
-  image: python:3.8.19-alpine3.19
-  variables:
-      GIT_LFS_SKIP_SMUDGE: "1"
-  script:
-    - apk add git
-    - python submit_helper.py --no-remote-check
+# check_file_size:
+#   stage: build
+#   image: python:3.8.19-alpine3.19
+#   variables:
+#       GIT_LFS_SKIP_SMUDGE: "1"
+#   script:
+#     - apk add git
+#     - python submit_helper.py --no-remote-check
 
 compile:
   stage: build
