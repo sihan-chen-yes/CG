@@ -1,0 +1,1325 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="normals">
+		<!--		<integer name="rr_depth" value="5"/>-->
+		<!--		<integer name="max_depth" value="12"/>-->
+	</integrator>
+
+	<sampler type="independent">
+		<integer name="sampleCount" value="64"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="84.40000553606558"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="1000.0"/>
+		<integer name="width" value="4192"/>
+		<integer name="height" value="4192"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="-0.8382232189178467,-0.11445961892604828,-0.5331799387931824,-1.4861775636672974,-0.5453273057937622,0.1759360134601593,0.8195515275001526,3.0650503635406494,0.0,0.9777246713638306,-0.20989160239696503,2.392554759979248,0.0,0.0,0.0,1.0"/>
+		</transform>
+		<rfilter type="box"/>
+	</camera>
+	<emitter type="point">
+		<point name="position" value="2.149553,-137.651108,-22.935850"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="47.049648,-146.026459,-22.935850"/>
+		<color name="power" value="45641.100407,79910.308123,97344.535589"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="32.721725,-142.201691,-22.935850"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="17.741409,-139.313217,-22.935850"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="21.808640,-22.875977,-8.812148"/>
+		<color name="power" value="22820.550203,39955.154061,48672.267795"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="198.865860,-327.572906,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="26.168570,-116.807465,41.927246"/>
+		<color name="power" value="7036.013901,25015.836954,31854.689121"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="52.197159,-131.596420,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="102.389679,-163.497910,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="177.721237,-273.428589,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="125.044083,-191.154556,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-3.409349,-104.976288,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="189.505081,-300.607178,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="165.937363,-241.792007,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-30.639994,-97.707207,41.927246"/>
+		<color name="power" value="2955.684066,12743.769586,15896.084905"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="78.727325,-148.117401,41.927246"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="145.384201,-214.348373,41.927246"/>
+		<color name="power" value="699.540228,4091.520607,6480.327994"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="114.446136,-203.574661,91.607796"/>
+		<color name="power" value="699.540228,4091.520607,6480.327994"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="79.373344,-168.725967,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="6.847313,-139.313202,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="21.827629,-142.201675,91.607796"/>
+		<color name="power" value="2955.684066,12743.769586,15896.084905"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="125.260582,-218.014664,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="137.661179,-248.961365,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="36.155552,-146.026443,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="103.743790,-191.370804,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="131.460892,-234.660858,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="91.823738,-176.818726,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="65.413986,-160.033142,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="51.718548,-152.251648,91.607796"/>
+		<color name="power" value="7036.013901,25015.836954,31854.689121"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-8.744543,-137.651093,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="142.586548,-263.149902,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="113.075531,-271.521790,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="0.122648,-177.850006,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="45.252045,-188.747803,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="55.474258,-194.555878,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="75.186394,-207.084564,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="104.771400,-250.257690,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="84.083473,-217.946167,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="33.635887,-184.101318,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="109.399277,-260.931519,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="100.143509,-237.833038,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="22.941587,-181.246552,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="11.760340,-179.090607,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="65.893478,-201.044159,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="92.071648,-227.055054,150.441376"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-11.685776,-178.455063,150.452316"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-21.018883,-179.792664,150.463898"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-31.544434,-183.127823,150.483185"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-31.544434,-183.127823,150.483185"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-43.266808,-188.989014,150.483185"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-52.531513,-193.377136,150.483185"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-61.904755,-201.548691,150.483185"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-25.607084,-137.651093,91.995438"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-43.826382,-137.651093,91.607796"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="147.759033,-264.492645,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-3.572056,-138.993835,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="56.891037,-153.594391,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="70.586472,-161.375885,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="96.996223,-178.161469,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="136.633377,-236.003601,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="108.916275,-192.713547,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="41.328041,-147.369186,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="142.833664,-250.304108,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="130.433075,-219.357407,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="27.000116,-143.544418,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="12.019800,-140.655945,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="84.545830,-170.068710,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="119.618622,-204.917404,-77.102180"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="101.834671,-200.686935,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="71.997360,-171.040268,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="10.297623,-146.018082,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="23.041759,-148.475388,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="111.034798,-212.971420,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="121.584297,-239.298553,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="35.230888,-151.729218,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="92.729912,-190.304810,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="116.309563,-227.132751,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="82.589226,-177.924988,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="60.121780,-163.645065,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="48.470726,-157.025146,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="-2.966766,-144.604095,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+	<emitter type="point">
+		<point name="position" value="125.774437,-251.369110,-116.905754"/>
+		<color name="power" value="31854.695082,55201.143026,55201.143026"/>
+	</emitter>
+
+	<!--	spot light for Rennala-->
+	<emitter type="spot">
+		<point name="position" value="-1.97751 4.22733 9.23997"/>
+		<color name="power" value="125 125 125"/>
+		<float name="thetaMax" value="44.2"/>
+		<float name="thetaFall" value="20"/>
+		<color name="baseColor" value="0.138 0.337 0.716"/>
+
+
+		<transform name="toWorld">
+			<rotate axis="1, 0, 0" angle="-32.8" />
+			<rotate axis="0, 1, 0" angle="-21.5" />
+			<rotate axis="0, 0, 1" angle="-5" />
+		</transform>
+	</emitter>
+
+	<!--	env map-->
+	<emitter type="envmap">
+		<string name="filename" value="textures/rogland_clear_night_4k.exr"/>
+		<transform name="toWorld">
+			<!--			<rotate axis="0, 0, 1" angle="127" />-->
+			<!--			<rotate axis="0, 0, 1" angle="130" />-->
+			<rotate axis="0, 0, 1" angle="134" />
+			<rotate axis="1, 0, 0" angle="23" />
+			<rotate axis="0, 1, 0" angle="0" />
+		</transform>
+		<float name="radiance_scale" value="1"/>
+	</emitter>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/WP_stick_WP_stick.obj"/>
+		<bsdf type="disney" name="WP_stick">
+
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/WP_a_test.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/WP_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/WP_m.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.054545"/>
+			<float name="clearcoatGloss" value="0.043182"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/WP_magic_WP_magic.obj"/>
+		<bsdf type="disney" name="WP_magic">
+
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/WP_a_test.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/WP_n.png"/>
+			</texture>
+
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/WP_m.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="1.000000"/>
+			<float name="sheenTint" value="1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+		<medium type="homogeneous">
+			<color name="sigma_a" value="0.05 0.1 0.3"/>
+			<color name="sigma_s" value="0.2 0.3 0.6"/>
+			<color name="Le" value="0.3 0.5 1.0"/>
+
+			<phase type="hg">
+				<float name="g" value="0.2"/>
+			</phase>
+			<boolean name="sample_emitters" value="false" />
+		</medium>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/AM_metal_AM_metal.obj"/>
+		<bsdf type="disney" name="AM_metal">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/AM_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/AM_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/AM_m.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.029545"/>
+			<float name="sheenTint" value="0.036364"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/AM_jewelry_AM_jewelry.obj"/>
+		<bsdf type="disney" name="AM_jewelry">
+
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/AM_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/AM_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/AM_m.png"/>
+			</texture>
+
+			<float name="metallic" value="1.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="1.000000"/>
+			<float name="clearcoatGloss" value="1.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/AM_clothes_AM_clothes.obj"/>
+		<bsdf type="disney" name="AM_clothes">
+
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/AM_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/AM_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/AM_m.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.181818"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.050000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_badge_BD_badge.obj"/>
+		<bsdf type="disney" name="BD_badge">
+
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+
+			<float name="metallic" value="0.010256"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.692308"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_brooch_BD_brooch.obj"/>
+		<bsdf type="disney" name="BD_brooch">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.546154"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.130769"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_cappa_BD_cappa.obj"/>
+		<bsdf type="disney" name="BD_cappa">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_jupe_BD_jupe.obj"/>
+		<bsdf type="disney" name="BD_jupe">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.087179"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="1.000000"/>
+			<float name="sheenTint" value="1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_jupe_front_BD_jupe_front.obj"/>
+		<bsdf type="disney" name="BD_jupe_front">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="1.000000"/>
+			<float name="sheenTint" value="1.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_jupe_ring_BD_jupe_ring.obj"/>
+		<bsdf type="disney" name="BD_jupe_ring">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.717949"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.682051"/>
+			<float name="specularTint" value="0.530769"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.761538"/>
+			<float name="clearcoatGloss" value="0.166667"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_neck_ring_inner_BD_neck_ring_inner.obj"/>
+		<bsdf type="disney" name="BD_neck_ring_inner">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.002564"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_neck_ring_outer_BD_neck_ring_outer.obj"/>
+		<bsdf type="disney" name="BD_neck_ring_outer">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.010256"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_Pattern_ribborn_BD_Pattern_ribborn.obj"/>
+		<bsdf type="disney" name="BD_Pattern_ribborn">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/BD_Pattern_sleeve_BD_Pattern_sleeve.obj"/>
+		<bsdf type="disney" name="BD_Pattern_sleeve">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/BD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/BD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/BD_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Eye_Eye.obj"/>
+		<bsdf type="disney" name="Eye">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Eye_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/Eye_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/Eye_m.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/Eye_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.143182"/>
+			<float name="specular" value="0.097727"/>
+			<float name="specularTint" value="0.054545"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.075000"/>
+			<float name="clearcoatGloss" value="0.097727"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/HD_jewelry_HD_jewelry.obj"/>
+		<bsdf type="disney" name="HD_jewelry">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/HD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/HD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/HD_m.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="1.000000"/>
+			<float name="roughness" value="0.504545"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="1.000000"/>
+			<float name="clearcoatGloss" value="1.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/HD_metal_HD_metal.obj"/>
+		<bsdf type="disney" name="HD_metal">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/HD_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/HD_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="metallicmap">
+				<string name="filename" value="textures/HD_m.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.050000"/>
+			<float name="specularTint" value="0.209091"/>
+			<float name="roughness" value="0.381818"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="1.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Leg_Leg.obj"/>
+		<bsdf type="disney" name="Leg">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/LG_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/LG_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/LG_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.554545"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Skin_Skin.obj"/>
+		<bsdf type="disney" name="Skin">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Skin_a.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/Skin_n.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="roughnessmap">
+				<string name="filename" value="textures/Skin_r.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.047727"/>
+			<float name="clearcoatGloss" value="1.000000"/>
+		</bsdf>
+	</mesh>
+	<!--	water homogeneous-->
+	<mesh type="obj">
+		<string name="filename" value="meshes/Water_WaterMedium.obj"/>
+		<bsdf type="null"/>
+
+		<medium type="homogeneous">
+			<color name="sigma_a" value="0.02 0.05 0.08"/>
+			<color name="sigma_s" value="0.05 0.02 0.01"/>
+			<color name="Le" value="0 0 0"/>
+
+			<phase type="hg">
+				<float name="g" value="0.0"/>
+			</phase>
+		</medium>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/WaterSurface_Water.001.obj"/>
+		<bsdf type="dielectric" name="Water.001">
+			<color name="color" value="0.200000,0.300000,0.400000"/>
+			<float name="IOR" value="1.333000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/WaterSurface.001_Water.002.obj"/>
+		<bsdf type="dielectric" name="Water.002">
+			<color name="color" value="0.200000,0.300000,0.400000"/>
+			<float name="IOR" value="1.333000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Esfera_Moon.obj"/>
+		<bsdf type="disney" name="Moon">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Moon.png"/>
+			</texture>
+
+			<float name="metallic" value="1.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="1.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.789181"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.500000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+
+	<!--	visual effect for stick-->
+	<mesh type="obj">
+		<string name="filename" value="meshes/Nebula_Butterfly_Nebula_mat.obj"/>
+		<bsdf type="null" name="Butterfly_Nebula_mat">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Butterfly_nebula_diffuse.png"/>
+			</texture>
+
+			<texture type="image_texture" name="normalmap">
+				<string name="filename" value="textures/Butterfly_nebula_normal.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="alphamap">
+				<string name="filename" value="textures/Butterfly_nebula_alpha.png"/>
+			</texture>
+
+			<texture type="image_texture_float" name="emissionmap">
+				<string name="filename" value="textures/Butterfly_nebula_emission.png"/>
+			</texture>
+
+			<float name="strength" value="5.0"/>
+
+		</bsdf>
+	</mesh>
+
+
+<!--	jellyfish-->
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish_Jelly.obj"/>
+		<bsdf type="disney" name="Jelly">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.001_Jelly.001.obj"/>
+
+		<bsdf type="disney" name="Jelly">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.002_Jelly.002.obj"/>
+		<bsdf type="disney" name="Jelly">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.003_Jelly.009.obj"/>
+		<bsdf type="disney" name="Jelly.009">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.004_Jelly.010.obj"/>
+		<bsdf type="disney" name="Jelly.010">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.005_Jelly.005.obj"/>
+		<bsdf type="disney" name="Jelly.005">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.006_Jelly.006.obj"/>
+		<bsdf type="disney" name="Jelly.006">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.007_Jelly.007.obj"/>
+		<bsdf type="disney" name="Jelly.007">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.009_Jelly.011.obj"/>
+		<bsdf type="disney" name="Jelly.011">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.010_Jelly.012.obj"/>
+		<bsdf type="disney" name="Jelly.012">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.011_Jelly.013.obj"/>
+		<bsdf type="disney" name="Jelly.013">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.012_Jelly.014.obj"/>
+		<bsdf type="disney" name="Jelly.014">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.013_Jelly.015.obj"/>
+		<bsdf type="disney" name="Jelly.015">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.014_Jelly.016.obj"/>
+		<bsdf type="disney" name="Jelly.016">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.015_Jelly.017.obj"/>
+		<bsdf type="disney" name="Jelly.017">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.017_Jelly.019.obj"/>
+		<bsdf type="disney" name="Jelly.019">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Jellyfish.008_Jelly.020.obj"/>
+		<bsdf type="disney" name="Jelly.020">
+			<texture type="image_texture" name="baseColor">
+				<string name="filename" value="textures/Jellyfish_emission.png"/>
+			</texture>
+			<float name="metallic" value="0.000000"/>
+			<float name="subsurface" value="0.000000"/>
+			<float name="specular" value="0.000000"/>
+			<float name="specularTint" value="0.000000"/>
+			<float name="roughness" value="0.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="sheen" value="0.000000"/>
+			<float name="sheenTint" value="0.000000"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoatGloss" value="0.000000"/>
+		</bsdf>
+	</mesh>
+</scene>
