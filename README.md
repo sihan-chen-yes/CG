@@ -4,7 +4,7 @@ This is a simple renderer based on Nori Version 2 framework. Feel free to see th
 
 From Elden Ring, GOTY in 2022.
 
-![final_denoised](./reports/project/solution/final/final_denoised.png)
+![Rennala](./README.assets/Rennala.jpg)
 # Features Overview
 
 * **Maps**
